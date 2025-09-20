@@ -35,7 +35,6 @@ dependencies {
     implementation 'dev.nextftc:hardware:1.0.0'
     implementation 'dev.nextftc:control:1.0.0'
     implementation 'dev.nextftc:bindings:1.0.1'
-  //  implementation 'com.pedropathing:pedro:1.0.9'
     implementation 'dev.nextftc.extensions:pedro:1.0.0'
 
     implementation 'androidx.core:core-ktx:1.15.0'
