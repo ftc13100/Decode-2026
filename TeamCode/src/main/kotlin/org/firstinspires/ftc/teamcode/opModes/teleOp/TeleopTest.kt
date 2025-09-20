@@ -10,6 +10,9 @@ import dev.nextftc.hardware.impl.MotorEx
 
 @TeleOp(name = "NextFTC Main TeleOp")
 class TeleopTest: NextFTCOpMode() {
+    init{
+
+    }
 
     // Change the motor names to suit your robot.
     val frontLeftName = "leftFront"

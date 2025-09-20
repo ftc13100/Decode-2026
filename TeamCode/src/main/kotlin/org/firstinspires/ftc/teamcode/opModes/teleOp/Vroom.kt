@@ -52,5 +52,6 @@ class Vroom : NextFTCOpMode() {
     }
 
     override fun onUpdate() {
+        this.telemetry.update()
     }
 }
