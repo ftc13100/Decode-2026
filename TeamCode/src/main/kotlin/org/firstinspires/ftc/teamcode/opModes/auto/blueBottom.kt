@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto
+/*package org.firstinspires.ftc.teamcode.auto
 import com.pedropathing.follower.Follower
 import com.pedropathing.localization.Pose
 import com.pedropathing.pathgen.BezierCurve
@@ -68,3 +68,5 @@ class blueBottom: NextFTCOpMode() {
         secondRoutine()
     }
 }
+
+ */
