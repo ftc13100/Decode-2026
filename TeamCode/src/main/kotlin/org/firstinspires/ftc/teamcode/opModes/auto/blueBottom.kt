@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto
+package org.firstinspires.ftc.teamcode.opModes.auto
 import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.BezierCurve
 import com.pedropathing.geometry.Pose
@@ -24,8 +24,6 @@ class blueBottom: NextFTCOpMode() {
             SubsystemComponent(),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
-
-
         )
     }
     //starting position
@@ -39,27 +37,20 @@ class blueBottom: NextFTCOpMode() {
 
 
     private fun buildPaths() {
-
         skib = follower.pathBuilder()
             .addPath(BezierCurve(startPose, curvePoint, depositPose))
             .setLinearHeadingInterpolation(startPose.heading, depositPose.heading)
             .build()
     }
 
-
-
-
-
     val secondRoutine: Command
         get() = SequentialGroup(
-            FollowPath.(skib)
+            FollowPath(skib)
         )
 
     override fun onInit() {
-        follower = Follower(hardwareMap, FConstants::class.java, LConstants::class.java)
-
         follower.setMaxPower(0.7)
-        follower.setStartingPose(//startPose)
+        follower.setStartingPose(startPose)
         buildPaths()
     }
 
