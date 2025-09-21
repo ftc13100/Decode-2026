@@ -2,29 +2,30 @@ package org.firstinspires.ftc.teamcode.TeleOp
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
+import dev.nextftc.bindings.BindingManager
 import dev.nextftc.core.commands.CommandManager
+import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.Component
+import dev.nextftc.core.components.SubsystemComponent
+import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
+import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants.createFollower
 
 @TeleOp(name = "NextFTC Main TeleOp")
 class TeleopTest: NextFTCOpMode() {
 
     init {
-        class MyComponent : Component {
-            override fun preInit() { }
-            override fun postInit() { }
-            override fun preWaitForStart() { }
-            override fun postWaitForStart() { }
-            override fun preStartButtonPressed() { }
-            override fun postStartButtonPressed() { }
-            override fun preUpdate() { }
-            override fun postUpdate() { }
-            override fun preStop() { }
-            override fun postStop() { }
-        }
+        addComponents(
+            SubsystemComponent(),
+            BindingsComponent,
+            BulkReadComponent,
+            PedroComponent(Constants::createFollower)
+        )
     }
 
     // Change the motor names to suit your robot.
@@ -64,9 +65,15 @@ class TeleopTest: NextFTCOpMode() {
     }
 
     override fun onUpdate() {
+        BindingManager.update()
         //this.telemetry.addData("Position", Arm.armMotor.currentPosition)
         driverControlled()
         this.telemetry.update()
         driverControlled()
+    }
+
+    override fun onStop() {
+        BindingManager.reset()
+
     }
 }

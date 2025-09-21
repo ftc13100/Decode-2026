@@ -6,6 +6,8 @@ import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.groups.SequentialGroup
+import dev.nextftc.core.components.BindingsComponent
+import dev.nextftc.core.components.Component
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
@@ -20,6 +22,7 @@ class blueBottom: NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(),
+            BindingsComponent,
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
