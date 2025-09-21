@@ -1,10 +1,8 @@
-/*package org.firstinspires.ftc.teamcode.auto
+package org.firstinspires.ftc.teamcode.auto
 import com.pedropathing.follower.Follower
-import com.pedropathing.localization.Pose
-import com.pedropathing.pathgen.BezierCurve
-import com.pedropathing.pathgen.PathChain
-import com.pedropathing.pathgen.Point
-import com.pedropathing.util.Constants
+import com.pedropathing.geometry.BezierCurve
+import com.pedropathing.geometry.Pose
+import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.groups.SequentialGroup
@@ -14,8 +12,9 @@ import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants
-import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants
+
+import kotlin.jvm.java
 
 
 @Autonomous(name = "PedroPath")
@@ -42,7 +41,7 @@ class blueBottom: NextFTCOpMode() {
     private fun buildPaths() {
 
         skib = follower.pathBuilder()
-            .addPath(BezierCurve(Point(startPose), Point(curvePoint), Point(depositPose)))
+            .addPath(BezierCurve(startPose, curvePoint, depositPose))
             .setLinearHeadingInterpolation(startPose.heading, depositPose.heading)
             .build()
     }
@@ -68,5 +67,3 @@ class blueBottom: NextFTCOpMode() {
         secondRoutine()
     }
 }
-
- */
