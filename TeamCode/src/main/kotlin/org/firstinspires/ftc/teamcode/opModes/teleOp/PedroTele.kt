@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroDriverControlled
@@ -17,6 +18,7 @@ class PedroTele : NextFTCOpMode() {
         addComponents(
             SubsystemComponent(),
             BulkReadComponent,
+            BindingsComponent,
             PedroComponent(Constants::createFollower)
         )
     }

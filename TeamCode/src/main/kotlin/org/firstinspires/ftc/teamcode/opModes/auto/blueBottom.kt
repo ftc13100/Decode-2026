@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.jvm.java
 
 
-@Autonomous(name = "PedroPath")
+@Autonomous(name = "blueBottom")
 class blueBottom: NextFTCOpMode() {
     init {
         addComponents(
@@ -49,6 +49,7 @@ class blueBottom: NextFTCOpMode() {
         )
 
     override fun onInit() {
+
         follower.setMaxPower(0.7)
         follower.setStartingPose(startPose)
         buildPaths()

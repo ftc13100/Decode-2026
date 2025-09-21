@@ -5,7 +5,7 @@ import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.ftc.NextFTCOpMode
 
 
-@Autonomous(name = "PedroPath")
+@Autonomous(name = "blueTop")
 class blueTop: NextFTCOpMode() {
     //starting position
 

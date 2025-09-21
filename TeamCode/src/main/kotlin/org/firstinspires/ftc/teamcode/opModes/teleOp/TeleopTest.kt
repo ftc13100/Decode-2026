@@ -57,5 +57,6 @@ class TeleopTest: NextFTCOpMode() {
     override fun onUpdate() {
         //this.telemetry.addData("Position", Arm.armMotor.currentPosition)
         this.telemetry.update()
+        driverControlled()
     }
 }
