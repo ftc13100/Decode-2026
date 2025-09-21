@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.TeleOp
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.DcMotorSimple
+import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.hardware.driving.MecanumDriverControlled
@@ -10,10 +10,6 @@ import dev.nextftc.hardware.impl.MotorEx
 
 @TeleOp(name = "NextFTC Main TeleOp")
 class TeleopTest: NextFTCOpMode() {
-    init{
-
-    }
-
     // Change the motor names to suit your robot.
     val frontLeftName = "leftFront"
     val frontRightName = "rightFront"
@@ -24,8 +20,6 @@ class TeleopTest: NextFTCOpMode() {
     val frontRightMotor = MotorEx(frontRightName)
     val backLeftMotor = MotorEx(backLeftName)
     val backRightMotor = MotorEx(backRightName)
-
-    lateinit var motors: Array<MotorEx>
 
     lateinit var driverControlled: MecanumDriverControlled
 
@@ -49,13 +43,12 @@ class TeleopTest: NextFTCOpMode() {
             Gamepads.gamepad1.rightStickX
         )
         driverControlled.scalar = 1.0
-        driverControlled()
-
         //put subsystems here
     }
 
     override fun onUpdate() {
         //this.telemetry.addData("Position", Arm.armMotor.currentPosition)
+        driverControlled()
         this.telemetry.update()
     }
 }
