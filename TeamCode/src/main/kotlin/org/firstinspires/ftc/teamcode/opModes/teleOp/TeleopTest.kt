@@ -25,6 +25,8 @@ class TeleopTest: NextFTCOpMode() {
             BindingsComponent,
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
+
+
         )
     }
 

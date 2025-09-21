@@ -21,21 +21,19 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 class blueBottom: NextFTCOpMode() {
     init {
         addComponents(
-            SubsystemComponent(),
             BindingsComponent,
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
     }
-    //starting position
 
+    //starting position
     private val startPose = Pose(85.5, 8.3, Math.toRadians(90.0))
     private val depositPose = Pose(84.3, 61.9, Math.toRadians(0.0))
 
     private val curvePoint = Pose(138.2, 48.1, Math.toRadians(45.0))
 
     private lateinit var skib: PathChain
-
 
     private fun buildPaths() {
         skib = follower.pathBuilder()
