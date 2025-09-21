@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.opModes.auto
-import com.pedropathing.follower.Follower
+
 import com.pedropathing.geometry.BezierCurve
 import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
@@ -13,8 +13,6 @@ import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
-
-import kotlin.jvm.java
 
 
 @Autonomous(name = "blueBottom")
