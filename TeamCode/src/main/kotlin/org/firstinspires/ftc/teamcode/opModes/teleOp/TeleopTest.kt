@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOp
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.core.commands.CommandManager
+import dev.nextftc.core.components.Component
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.hardware.driving.MecanumDriverControlled
@@ -10,6 +11,22 @@ import dev.nextftc.hardware.impl.MotorEx
 
 @TeleOp(name = "NextFTC Main TeleOp")
 class TeleopTest: NextFTCOpMode() {
+
+    init {
+        class MyComponent : Component {
+            override fun preInit() { }
+            override fun postInit() { }
+            override fun preWaitForStart() { }
+            override fun postWaitForStart() { }
+            override fun preStartButtonPressed() { }
+            override fun postStartButtonPressed() { }
+            override fun preUpdate() { }
+            override fun postUpdate() { }
+            override fun preStop() { }
+            override fun postStop() { }
+        }
+    }
+
     // Change the motor names to suit your robot.
     val frontLeftName = "leftFront"
     val frontRightName = "rightFront"
