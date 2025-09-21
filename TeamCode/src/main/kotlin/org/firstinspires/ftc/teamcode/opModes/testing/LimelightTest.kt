@@ -16,7 +16,7 @@ class LimelightTest : LinearOpMode() {
 
         telemetry.msTransmissionInterval = 11
 
-        limelight.pipelineSwitch(0)
+        limelight.pipelineSwitch(1)
 
         // Starts polling for data
         limelight.start()

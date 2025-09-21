@@ -3,79 +3,75 @@ package org.firstinspires.ftc.teamcode.TeleOp
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
-import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.core.components.BindingsComponent
-import dev.nextftc.core.components.Component
 import dev.nextftc.core.components.SubsystemComponent
-import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants.createFollower
 
 @TeleOp(name = "NextFTC Main TeleOp")
-class TeleopTest: NextFTCOpMode() {
+class TeleopTest : NextFTCOpMode() {
 
     init {
         addComponents(
             SubsystemComponent(),
             BindingsComponent,
             BulkReadComponent,
-            PedroComponent(Constants::createFollower)
-
-
         )
     }
 
-    // Change the motor names to suit your robot.
-    val frontLeftName = "leftFront"
-    val frontRightName = "rightFront"
-    val backLeftName = "leftRear"
-    val backRightName = "rightRear"
+    // Motor names (change if needed)
+    private val frontLeftName = "leftFront"
+    private val frontRightName = "rightFront"
+    private val backLeftName = "leftRear"
+    private val backRightName = "rightRear"
 
-    val frontLeftMotor = MotorEx(frontLeftName)
-    val frontRightMotor = MotorEx(frontRightName)
-    val backLeftMotor = MotorEx(backLeftName)
-    val backRightMotor = MotorEx(backRightName)
+    private lateinit var frontLeftMotor: MotorEx
+    private lateinit var frontRightMotor: MotorEx
+    private lateinit var backLeftMotor: MotorEx
+    private lateinit var backRightMotor: MotorEx
 
-    lateinit var driverControlled: MecanumDriverControlled
-
+    private lateinit var driverControlled: MecanumDriverControlled
 
     override fun onInit() {
-        //braking instead of coasting
-        frontLeftMotor.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        backLeftMotor.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        frontRightMotor.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        backRightMotor.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        // Initialize motors AFTER hardwareMap is ready
+        frontLeftMotor = MotorEx(frontLeftName).reversed()
+        frontRightMotor = MotorEx(frontRightName)
+        backLeftMotor = MotorEx(backLeftName).reversed()
+        backRightMotor = MotorEx(backRightName)
+
+        // Braking instead of coasting
+        listOf(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor).forEach {
+            it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        }
     }
 
     override fun onStartButtonPressed() {
         driverControlled = MecanumDriverControlled(
             frontLeftMotor,
-            backLeftMotor,
             frontRightMotor,
+            backLeftMotor,
             backRightMotor,
-            Gamepads.gamepad1.leftStickY,
+           - Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
             Gamepads.gamepad1.rightStickX
         )
         driverControlled.scalar = 1.0
-        //put subsystems here
+        // Put other subsystems here
     }
 
     override fun onUpdate() {
         BindingManager.update()
-        //this.telemetry.addData("Position", Arm.armMotor.currentPosition)
-        driverControlled()
-        this.telemetry.update()
-        driverControlled()
+
+        driverControlled.update() // safer than driverControlled()
+
+        telemetry.addData("Mode", "TeleOp Running")
+        telemetry.update()
     }
 
     override fun onStop() {
         BindingManager.reset()
-
     }
 }
