@@ -12,7 +12,7 @@ import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 
 @TeleOp(name = "NextFTC Main TeleOp")
-class TeleopTest : NextFTCOpMode() {
+class NextFTCMainTeleOp : NextFTCOpMode() {
 
     init {
         addComponents(
