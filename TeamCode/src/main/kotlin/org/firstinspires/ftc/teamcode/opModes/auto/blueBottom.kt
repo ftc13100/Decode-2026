@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.opModes.auto
 
+import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.BezierCurve
 import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import dev.nextftc.bindings.BindingManager
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.BindingsComponent
@@ -21,7 +23,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 class blueBottom: NextFTCOpMode() {
     init {
         addComponents(
-            BindingsComponent,
+            SubsystemComponent(),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
@@ -48,7 +50,6 @@ class blueBottom: NextFTCOpMode() {
         )
 
     override fun onInit() {
-
         follower.setMaxPower(0.7)
         follower.setStartingPose(startPose)
         buildPaths()
@@ -57,4 +58,5 @@ class blueBottom: NextFTCOpMode() {
     override fun onStartButtonPressed() {
         secondRoutine()
     }
+
 }
