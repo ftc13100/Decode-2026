@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOp
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
+import dev.nextftc.bindings.button
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.ftc.Gamepads
@@ -61,11 +62,13 @@ class NextFTCMainTeleOp : NextFTCOpMode() {
         driverControlled.scalar = 1.0
         // Put other subsystems here
 
-        Gamepads.gamepad1.y.whenBecomesFalse {
-            driverControlled.scalar = 1.0
-        }
 
-        Gamepads.gamepad1.y.whenTrue {
+        button { gamepad1.y}
+            .toggleOnBecomesTrue()
+            .whenBecomesTrue { driverControlled.scalar = 0.4 } // runs every other rising edge, including the first one
+            .whenBecomesFalse { driverControlled.scalar = 1.0 } // runs the rest of the rising edges
+
+        Gamepads.gamepad1.y.whenBecomesTrue {
             driverControlled.scalar = 0.4
         }
     }
