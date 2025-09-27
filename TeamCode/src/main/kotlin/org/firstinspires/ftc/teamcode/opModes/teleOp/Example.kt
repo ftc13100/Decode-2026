@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing
 
 import com.bylazar.configurables.annotations.Configurable
-import com.bylazar.telemetry.PanelsTelemetry
-import com.bylazar.telemetry.TelemetryManager
 import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
@@ -18,9 +16,15 @@ class Example : OpMode() {
     private lateinit var follower: Follower
     private var automatedDrive = false
     private lateinit var pathChain: () -> PathChain
-    private lateinit var telemetryM: TelemetryManager
     private var slowMode = false
     private var slowModeMultiplier = 0.5
+
+    // Variables to track previous gamepad button states for edge detection (wasPressed behavior)
+    private var previousGamepad1A = false
+    private var previousGamepad1B = false
+    private var previousGamepad1RightBumper = false
+    private var previousGamepad1X = false
+    private var previousGamepad1Y = false
 
     companion object {
         /**
@@ -61,7 +65,6 @@ class Example : OpMode() {
     override fun loop() {
         // Call this once per loop
         follower.update()
-        telemetryM.update()
 
         if (!automatedDrive) {
             // Use an 'if' expression to determine the multiplier. This avoids duplicating the
@@ -76,35 +79,51 @@ class Example : OpMode() {
             )
         }
 
+        // --- Gamepad logic with edge detection to simulate "wasPressed" ---
+
         // Automated PathFollowing
-        if (gamepad1.a) {
+        val currentGamepad1A = gamepad1.a
+        if (currentGamepad1A && !previousGamepad1A) {
             follower.followPath(pathChain()) // Invoke the lambda to get the path
             automatedDrive = true
         }
+        previousGamepad1A = currentGamepad1A
 
         // Stop automated following if the follower is done or 'B' is pressed
-        if (automatedDrive && (gamepad1.b || !follower.isBusy)) {
+        val currentGamepad1B = gamepad1.b
+        if (automatedDrive && ((currentGamepad1B && !previousGamepad1B) || !follower.isBusy)) {
             follower.startTeleopDrive()
             automatedDrive = false
         }
+        previousGamepad1B = currentGamepad1B
 
         // Toggle Slow Mode
-        if (gamepad1.right_bumper) {
+        val currentGamepad1RightBumper = gamepad1.right_bumper
+        if (currentGamepad1RightBumper && !previousGamepad1RightBumper) {
             slowMode = !slowMode
         }
+        previousGamepad1RightBumper = currentGamepad1RightBumper
 
         // Optional way to change slow mode strength
-        if (gamepad1.x) {
+        val currentGamepad1X = gamepad1.x
+        if (currentGamepad1X && !previousGamepad1X) {
             slowModeMultiplier += 0.25
         }
+        previousGamepad1X = currentGamepad1X
 
         // Optional way to change slow mode strength
-        if (gamepad1.y) {
+        val currentGamepad1Y = gamepad1.y
+        if (currentGamepad1Y && !previousGamepad1Y) {
             slowModeMultiplier -= 0.25
         }
+        previousGamepad1Y = currentGamepad1Y
 
-        telemetryM.debug("position", follower.pose)
-        telemetryM.debug("velocity", follower.velocity)
-        telemetryM.debug("automatedDrive", automatedDrive)
+
+        // Standard FTC Telemetry to show key information on the Driver Station.
+        telemetry.addData("Pose", "X: %.2f, Y: %.2f, Heading: %.2f", follower.pose.x, follower.pose.y, Math.toDegrees(follower.pose.heading))
+        telemetry.addData("Automated Drive Active", automatedDrive)
+        telemetry.addData("Slow Mode Active", slowMode)
+        telemetry.update()
     }
 }
+

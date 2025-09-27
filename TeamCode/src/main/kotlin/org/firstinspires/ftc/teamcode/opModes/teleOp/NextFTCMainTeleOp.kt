@@ -60,6 +60,14 @@ class NextFTCMainTeleOp : NextFTCOpMode() {
         )
         driverControlled.scalar = 1.0
         // Put other subsystems here
+
+        Gamepads.gamepad1.y.whenFalse {
+            driverControlled.scalar = 1.0
+        }
+
+        Gamepads.gamepad1.y.whenTrue {
+            driverControlled.scalar = 0.4
+        }
     }
 
     override fun onUpdate() {
