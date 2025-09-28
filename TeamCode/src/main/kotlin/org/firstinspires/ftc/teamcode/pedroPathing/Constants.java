@@ -16,8 +16,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Constants {
 
-    public static FollowerConstants followerConstants = new FollowerConstants();
-     /*       .mass(5.9)
+    public static FollowerConstants followerConstants = new FollowerConstants()
+            .mass(5.9)
             .forwardZeroPowerAcceleration(-55.6057305272)
             .lateralZeroPowerAcceleration(-85.464139171)
             .useSecondaryTranslationalPIDF(false)
@@ -27,9 +27,9 @@ public class Constants {
             .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0, 0.01, 0))
             .headingPIDFCoefficients(new PIDFCoefficients(2, 0, 0.1, 0))
             .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.1, 0, 0, 0.6, 0));
-*/
-    public static MecanumConstants driveConstants = new MecanumConstants();
-         /*   .leftFrontMotorName("leftFront")
+
+    public static MecanumConstants driveConstants = new MecanumConstants()
+            .leftFrontMotorName("leftFront")
             .leftRearMotorName("leftRear")
             .rightFrontMotorName("rightFront")
             .rightRearMotorName("rightRear")
@@ -39,9 +39,9 @@ public class Constants {
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
             .xVelocity(20)
             .yVelocity(15);
-*/
-    public static PinpointConstants localizerConstants = new PinpointConstants();
- /*           .forwardPodY(1.25)
+
+    public static PinpointConstants localizerConstants = new PinpointConstants()
+            .forwardPodY(1.25)
             .strafePodX(-7.5)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName("pinpoint")
@@ -52,7 +52,7 @@ public class Constants {
             .customEncoderResolution(13.26291192)
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
-*/
+
     public static PathConstraints pathConstraints = new PathConstraints(
             0.975,
             100,

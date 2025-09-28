@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto
+package org.firstinspires.ftc.teamcode.opModes.auto
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.groups.SequentialGroup
