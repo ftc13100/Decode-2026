@@ -67,10 +67,6 @@ class NextFTCMainTeleOp : NextFTCOpMode() {
             .toggleOnBecomesTrue()
             .whenBecomesTrue { driverControlled.scalar = 0.4 } // runs every other rising edge, including the first one
             .whenBecomesFalse { driverControlled.scalar = 1.0 } // runs the rest of the rising edges
-
-        Gamepads.gamepad1.y.whenBecomesTrue {
-            driverControlled.scalar = 0.4
-        }
     }
 
     override fun onUpdate() {
