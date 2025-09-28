@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.testing
+package org.firstinspires.ftc.teamcode.opModes.testing
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
@@ -35,4 +35,3 @@ class LimelightTest : LinearOpMode() {
         }
     }
 }
-

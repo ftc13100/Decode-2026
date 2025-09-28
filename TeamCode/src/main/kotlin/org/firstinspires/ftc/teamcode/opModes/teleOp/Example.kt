@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing
+package org.firstinspires.ftc.teamcode.opModes.teleOp
 
 import com.bylazar.configurables.annotations.Configurable
 import com.pedropathing.follower.Follower
@@ -9,6 +9,7 @@ import com.pedropathing.paths.Path
 import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 
 @Configurable
 @TeleOp

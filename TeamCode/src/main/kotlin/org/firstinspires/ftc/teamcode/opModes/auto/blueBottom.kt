@@ -23,8 +23,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 class blueBottom: NextFTCOpMode() {
     init {
         addComponents(
-            SubsystemComponent(),
-            BulkReadComponent,
+//            SubsystemComponent(),
+//            BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
     }
