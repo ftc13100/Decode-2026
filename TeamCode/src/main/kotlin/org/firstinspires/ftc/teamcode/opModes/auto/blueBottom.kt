@@ -17,17 +17,20 @@ import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants.createFollower
+
 
 
 @Autonomous(name = "blueBottom")
 class blueBottom: NextFTCOpMode() {
     init {
         addComponents(
-//            SubsystemComponent(),
-//            BulkReadComponent,
+               SubsystemComponent(),
+                  BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
     }
+
 
     //starting position
     private val startPose = Pose(85.5, 8.3, Math.toRadians(90.0))
