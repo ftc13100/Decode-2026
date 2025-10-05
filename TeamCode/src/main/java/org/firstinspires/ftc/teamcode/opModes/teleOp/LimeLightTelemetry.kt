@@ -14,9 +14,12 @@ import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
+// Import the necessary Pedro Pathing classes
+import com.pedropathing.follower.Follower
+import com.pedropathing.geometry.Pose
 
-@TeleOp(name = "NextLimelight")
-class TeleOpWithLimelight : NextFTCOpMode() {
+@TeleOp(name = "LimeLight with more Telemetry")
+class LimeLightTelemetry : NextFTCOpMode() {
 
     init {
         addComponents(
@@ -42,6 +45,9 @@ class TeleOpWithLimelight : NextFTCOpMode() {
     // Limelight
     private lateinit var limelight: Limelight3A
 
+    // Pedro Pathing Follower (ODOMETRY)
+    private lateinit var follower: Follower
+
     override fun onInit() {
         // Motors
         frontLeftMotor = MotorEx(frontLeftName).reversed()
@@ -58,9 +64,30 @@ class TeleOpWithLimelight : NextFTCOpMode() {
         telemetry.msTransmissionInterval = 11
         limelight.pipelineSwitch(1)
         limelight.start()
+
+        // --- Pedro Pathing Follower Init ---
+        // NOTE: You must replace 'Constants.createFollower(hardwareMap)'
+        // with the actual way you initialize the Follower in your project.
+        // I am using the method from your 'Example' code for consistency.
+        // Ensure you have access to the Pedro Pathing 'Constants' setup.
+        try {
+            // Assuming you have a Constants object with a createFollower method
+            val constantsClass = Class.forName("org.firstinspires.ftc.teamcode.pedroPathing.Constants")
+            val createFollowerMethod = constantsClass.getMethod("createFollower", com.qualcomm.robotcore.hardware.HardwareMap::class.java)
+            follower = createFollowerMethod.invoke(null, hardwareMap) as Follower
+        } catch (e: Exception) {
+            // Fallback initialization or error handling if Constants.createFollower is not available
+            telemetry.log().add("Error initializing Follower: ${e.message}")
+            // Consider throwing a RuntimeException or initializing with a mock/simple Follower if possible
+        }
+
+        // Use a default starting pose for teleop if not set by an auto
+        follower.setStartingPose(Pose())
+        follower.update()
     }
 
     override fun onStartButtonPressed() {
+        // ... (existing driver controlled setup)
         driverControlled = MecanumDriverControlled(
             frontLeftMotor,
             frontRightMotor,
@@ -76,20 +103,37 @@ class TeleOpWithLimelight : NextFTCOpMode() {
             .toggleOnBecomesTrue()
             .whenBecomesTrue { driverControlled.scalar = 0.4 }
             .whenBecomesFalse { driverControlled.scalar = 1.0 }
+
+        // Start the follower's teleop drive mode if desired (it's optional
+        // since NextFTC handles the motor control)
+        // follower.startTeleopDrive()
     }
 
     override fun onUpdate() {
         BindingManager.update()
         driverControlled.update()
 
-        // Limelight data
+        // --- CRUCIAL: Update the follower's odometry at the start of the loop ---
+        follower.update()
+
+        // Limelight data (AprilTag Vision)
         val result: LLResult? = limelight.latestResult
         if (result != null && result.isValid) {
             val botpose: Pose3D = result.botpose
-            telemetry.addData("tx", result.tx)
-            telemetry.addData("ty", result.ty)
-            telemetry.addData("Botpose", botpose.toString())
+            telemetry.addData("LL_tx", result.tx)
+            telemetry.addData("LL_ty", result.ty)
+            telemetry.addData("LL_Botpose", botpose.toString())
         }
+
+        // --- Robot Position Data (Odometry) ---
+        val robotPose: Pose = follower.pose
+        val headingDegrees = Math.toDegrees(robotPose.heading)
+
+        telemetry.addLine("*** Robot Pose (Odometry) ***")
+        telemetry.addData("OD_X", "%.2f", robotPose.x)
+        telemetry.addData("OD_Y", "%.2f", robotPose.y)
+        telemetry.addData("OD_Heading", "%.2f deg", headingDegrees)
+        telemetry.addLine("*****************************")
 
         telemetry.addData("Mode", "TeleOp Running")
         telemetry.update()
