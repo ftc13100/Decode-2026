@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opModes.auto
 
 import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.BezierCurve
+import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
@@ -37,13 +38,13 @@ class blueBottom: NextFTCOpMode() {
     private val startPose = Pose(85.5, 8.3, Math.toRadians(90.0))
     private val depositPose = Pose(84.3, 61.9, Math.toRadians(0.0))
 
-    private val curvePoint = Pose(138.2, 48.1, Math.toRadians(45.0))
+    private val curvePoint = Pose(138.2, 48.1)
 
     private lateinit var skib: PathChain
 
     private fun buildPaths() {
         skib = follower.pathBuilder()
-            .addPath(BezierCurve(startPose, curvePoint, depositPose))
+            .addPath(BezierLine(startPose, depositPose))
             .setLinearHeadingInterpolation(startPose.heading, depositPose.heading)
             .build()
     }
