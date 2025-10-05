@@ -16,6 +16,7 @@ import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import org.firstinspires.ftc.teamcode.opModes.Subsystems.LimelightTest
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants.createFollower
 
@@ -25,7 +26,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants.createFollower
 class blueBottom: NextFTCOpMode() {
     init {
         addComponents(
-               SubsystemComponent(),
+               SubsystemComponent(LimelightTest),
                   BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
