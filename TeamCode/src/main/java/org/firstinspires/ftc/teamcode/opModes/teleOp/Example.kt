@@ -18,7 +18,7 @@ class Example : OpMode() {
     private var automatedDrive = false
     private lateinit var pathChain: () -> PathChain
     private var slowMode = false
-    private var slowModeMultiplier = 0.5
+    private var slowModeMultiplier = 0.4
 
     // Variables to track previous gamepad button states for edge detection (wasPressed behavior)
     private var previousGamepad1A = false
