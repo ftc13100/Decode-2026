@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import com.qualcomm.robotcore.hardware.DcMotor
+import com.sun.tools.javac.main.Option
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.PedroComponent
+import dev.nextftc.extensions.pedro.PedroComponent.Companion.gyro
 import dev.nextftc.extensions.pedro.PedroDriverControlled
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
@@ -27,12 +30,28 @@ class PedroTele : NextFTCOpMode() {
             PedroComponent(Constants::createFollower)
         )
     }
+    // Motor names
+    private val frontLeftName = "leftFront"
+    private val frontRightName = "rightFront"
+    private val backLeftName = "leftRear"
+    private val backRightName = "rightRear"
 
-        // change the names and directions to suit your robot
-        private val frontLeftMotor = MotorEx("leftFront").reversed()
-        private val frontRightMotor = MotorEx("rightFront")
-        private val backLeftMotor = MotorEx("leftRear").reversed()
-        private val backRightMotor = MotorEx("rightRear")
+    // change the names and directions to suit your robot
+    private lateinit var frontLeftMotor: MotorEx
+    private lateinit var frontRightMotor: MotorEx
+    private lateinit var backLeftMotor: MotorEx
+    private lateinit var backRightMotor: MotorEx
+
+    override fun onInit() {
+        frontLeftMotor = MotorEx(frontLeftName)
+        frontRightMotor = MotorEx(frontRightName)
+        backLeftMotor = MotorEx(backLeftName)
+        backRightMotor = MotorEx(backRightName)
+
+        listOf(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor).forEach {
+            it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        }
+    }
 
     override fun onStartButtonPressed() {
         val driverControlled = MecanumDriverControlled(
@@ -40,11 +59,11 @@ class PedroTele : NextFTCOpMode() {
             frontRightMotor,
             backLeftMotor,
             backRightMotor,
-            Gamepads.gamepad1.leftStickY,
+            -Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
             Gamepads.gamepad1.rightStickX,
         )
-        driverControlled()
 
+        driverControlled()
     }
-    }
+}
