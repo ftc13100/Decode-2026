@@ -27,7 +27,6 @@ class NextLimelight : NextFTCOpMode() {
         )
     }
 
-    // Motor names
     private val frontLeftName = "leftFront"
     private val frontRightName = "rightFront"
     private val backLeftName = "leftRear"
@@ -40,7 +39,6 @@ class NextLimelight : NextFTCOpMode() {
 
     private lateinit var driverControlled: MecanumDriverControlled
 
-    // Limelight
     private lateinit var limelight: Limelight3A
 
     // 🎯 NEW: State flag to track alignment mode
@@ -93,6 +91,8 @@ class NextLimelight : NextFTCOpMode() {
         // Note: If you want B to stop alignment when it becomes false (released),
         // you'd use a separate binding, but here we honor the 'toggle' style.
     }
+
+
 
     override fun onUpdate() {
         BindingManager.update()

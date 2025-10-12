@@ -4,9 +4,8 @@ import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.ftc.ActiveOpMode
 import dev.nextftc.ftc.NextFTCOpMode
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
-import org.firstinspires.ftc.teamcode.opModes.Subsystems.LimelightTest
-import org.firstinspires.ftc.teamcode.opModes.Subsystems.LimelightTest.limelight
-import org.firstinspires.ftc.teamcode.pedroPathing.Tuning
+import org.firstinspires.ftc.teamcode.opModes.subsystems.LimelightTest
+import org.firstinspires.ftc.teamcode.opModes.subsystems.LimelightTest.limelight
 
 @Autonomous(name = "Autotest")
 class Autotest : NextFTCOpMode() {

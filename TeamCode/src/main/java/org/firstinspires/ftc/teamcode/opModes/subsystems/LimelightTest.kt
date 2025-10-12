@@ -1,13 +1,7 @@
-package org.firstinspires.ftc.teamcode.opModes.Subsystems
-import com.qualcomm.hardware.limelightvision.LLResult
+package org.firstinspires.ftc.teamcode.opModes.subsystems
 import com.qualcomm.hardware.limelightvision.Limelight3A
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode
-import dev.nextftc.ftc.ActiveOpMode.opModeIsActive
-import dev.nextftc.ftc.ActiveOpMode.telemetry
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
 
 object LimelightTest : Subsystem {
 

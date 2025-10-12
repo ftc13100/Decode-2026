@@ -14,7 +14,6 @@ import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
-// Import the necessary Pedro Pathing classes
 import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.Pose
 
@@ -29,7 +28,6 @@ class LimeLightTelemetry : NextFTCOpMode() {
         )
     }
 
-    // Motor names
     private val frontLeftName = "leftFront"
     private val frontRightName = "rightFront"
     private val backLeftName = "leftRear"
@@ -42,14 +40,11 @@ class LimeLightTelemetry : NextFTCOpMode() {
 
     private lateinit var driverControlled: MecanumDriverControlled
 
-    // Limelight
     private lateinit var limelight: Limelight3A
 
-    // Pedro Pathing Follower (ODOMETRY)
     private lateinit var follower: Follower
 
     override fun onInit() {
-        // Motors
         frontLeftMotor = MotorEx(frontLeftName).reversed()
         frontRightMotor = MotorEx(frontRightName)
         backLeftMotor = MotorEx(backLeftName).reversed()
@@ -59,7 +54,6 @@ class LimeLightTelemetry : NextFTCOpMode() {
             it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
 
-        // Limelight init
         limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
         telemetry.msTransmissionInterval = 11
         limelight.pipelineSwitch(1)

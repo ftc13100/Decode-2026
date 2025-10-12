@@ -1,26 +1,19 @@
 package org.firstinspires.ftc.teamcode.opModes.auto
 
-import com.pedropathing.follower.Follower
-import com.pedropathing.geometry.BezierCurve
 import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import dev.nextftc.bindings.BindingManager
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.groups.SequentialGroup
-import dev.nextftc.core.components.BindingsComponent
-import dev.nextftc.core.components.Component
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import org.firstinspires.ftc.teamcode.opModes.Subsystems.LimelightTest
+import org.firstinspires.ftc.teamcode.opModes.subsystems.LimelightTest
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants.createFollower
-
 
 
 @Autonomous(name = "blueBottom")
