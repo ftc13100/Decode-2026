@@ -1,14 +1,15 @@
-package org.firstinspires.ftc.teamcode.opModes.subsystems
+package org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight
+
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode
 
-object LimelightTest : Subsystem {
+object redLime : Subsystem {
 
     override fun initialize() {
         limelight = ActiveOpMode.hardwareMap.get(Limelight3A::class.java, "limelight")
 
-        limelight.pipelineSwitch(1)
+        limelight.pipelineSwitch(2)
 
         limelight.start()
     }
@@ -19,4 +20,4 @@ object LimelightTest : Subsystem {
 
 
 
-    }
+}

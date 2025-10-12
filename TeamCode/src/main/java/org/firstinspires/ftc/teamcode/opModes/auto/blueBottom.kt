@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opModes.auto
 import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
+import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.groups.SequentialGroup
@@ -12,7 +13,8 @@ import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import org.firstinspires.ftc.teamcode.opModes.subsystems.LimelightTest
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
+
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 
 
@@ -56,5 +58,22 @@ class blueBottom: NextFTCOpMode() {
     override fun onStartButtonPressed() {
         secondRoutine()
     }
+    override fun onUpdate() {
 
-}
+        val result: LLResult? = limelight.latestResult
+
+        // Common Telemetry
+        if (result != null && result.isValid) {
+            val botpose: Pose3D = result.botpose
+            telemetry.addData("tx (Horizontal Error)", "%.2f", result.tx)
+            telemetry.addData("ty (Vertical Error)", "%.2f", result.ty)
+            telemetry.addData("Botpose", botpose.toString())
+        } else {
+            telemetry.addData("Limelight", "Target not found")
+        }
+
+        telemetry.addData("Mode", "TeleOp Running")
+        telemetry.update()
+    }    }
+
+
