@@ -14,7 +14,7 @@ import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
-
+import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 
 
@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 class blueBottom: NextFTCOpMode() {
     init {
         addComponents(
-               SubsystemComponent(LimelightTest),
+               SubsystemComponent(MohitPatil),
                   BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
@@ -49,6 +49,7 @@ class blueBottom: NextFTCOpMode() {
             FollowPath(skib)
         )
 
+
     override fun onInit() {
         follower.setMaxPower(0.7)
         follower.setStartingPose(startPose)
@@ -56,7 +57,23 @@ class blueBottom: NextFTCOpMode() {
     }
 
     override fun onStartButtonPressed() {
-        secondRoutine()
+        val result: LLResult? = limelight.latestResult
+        if (result != null && result.isValid) {
+            val fiducials = result.fiducialResults
+
+            for (fiducial in fiducials) {
+                if (fiducial.fiducialId == 22) {
+                    telemetry.addData("Fiducial ID", fiducial.fiducialId)
+                    telemetry.msTransmissionInterval = 11
+                    telemetry.update()
+
+                }
+            }
+
+        }
+
+
+
     }
     override fun onUpdate() {
 
@@ -67,7 +84,7 @@ class blueBottom: NextFTCOpMode() {
             val botpose: Pose3D = result.botpose
             telemetry.addData("tx (Horizontal Error)", "%.2f", result.tx)
             telemetry.addData("ty (Vertical Error)", "%.2f", result.ty)
-            telemetry.addData("Botpose", botpose.toString())
+            telemetry.addData("Bot pose", botpose.toString())
         } else {
             telemetry.addData("Limelight", "Target not found")
         }

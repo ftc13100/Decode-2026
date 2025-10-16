@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
+import com.acmerobotics.dashboard.FtcDashboard
+import com.acmerobotics.dashboard.config.Config
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
@@ -17,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
 import com.pedropathing.follower.Follower
 import com.pedropathing.geometry.Pose
 
+@Config
 @TeleOp(name = "LimeLight with more Telemetry")
 class LimeLightTelemetry : NextFTCOpMode() {
 
@@ -45,6 +49,8 @@ class LimeLightTelemetry : NextFTCOpMode() {
     private lateinit var follower: Follower
 
     override fun onInit() {
+        telemetry = MultipleTelemetry(FtcDashboard.getInstance().telemetry, telemetry)
+
         frontLeftMotor = MotorEx(frontLeftName).reversed()
         frontRightMotor = MotorEx(frontRightName)
         backLeftMotor = MotorEx(backLeftName).reversed()
@@ -116,7 +122,7 @@ class LimeLightTelemetry : NextFTCOpMode() {
             val botpose: Pose3D = result.botpose
             telemetry.addData("LL_tx", result.tx)
             telemetry.addData("LL_ty", result.ty)
-            telemetry.addData("LL_Botpose", botpose.toString())
+            telemetry.addData("LL_Botpose", botpose)
         }
 
         // --- Robot Position Data (Odometry) ---
