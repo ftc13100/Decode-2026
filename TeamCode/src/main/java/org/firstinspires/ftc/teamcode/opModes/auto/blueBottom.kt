@@ -102,20 +102,27 @@ class blueBottom: NextFTCOpMode() {
         get() = SequentialGroup(
 
             FollowPath(PPGfirst),
-                         FollowPath(PPGsecond)
+                         FollowPath(PPGsecond),
+                         FollowPath(HumanPlayer),
+                         FollowPath(ShootAgain)
+
 
         )
 
     val PGP: Command
         get() = SequentialGroup(
             FollowPath(PGPfirst),
-                         FollowPath(PGPsecond)
+                         FollowPath(PGPsecond),
+                         FollowPath(HumanPlayer),
+                         FollowPath(ShootAgain)
 
         )
     val GPP: Command
         get() = SequentialGroup(
             FollowPath(GPPfirst),
-                         FollowPath(GPPsecond)
+                         FollowPath(GPPsecond),
+                         FollowPath(HumanPlayer),
+                         FollowPath(ShootAgain)
 
         )
 
