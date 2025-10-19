@@ -6,13 +6,13 @@ import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.robot.Robot
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
-import dev.nextftc.ftc.ActiveOpMode.telemetry
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
@@ -42,8 +42,7 @@ class blueBottom: NextFTCOpMode() {
             //path to pick up GPP motif
         private val pickUpGPP = Pose(127.7, 59.0, Math.toRadians(0.0))
         private val pickUpGPPcontrol= Pose(82.5, 39.3, Math.toRadians(0.0))
-            //path to pick up from the human player
-    private val pickUPhp= Pose(140.0,8.2,Math.toRadians(0.0))
+        private val pickUPhp= Pose(140.0,8.2,Math.toRadians(0.0))
 
     //PPG path chains
     private lateinit var PPGfirst: PathChain
@@ -65,6 +64,7 @@ class blueBottom: NextFTCOpMode() {
              PPGfirst = follower.pathBuilder()
             .addPath(BezierCurve(shootPose, pickUpPPGcontrol,pickUpPPG))
             .setConstantHeadingInterpolation(0.0)
+
             .build()
             PPGsecond = follower.pathBuilder()
             .addPath(BezierLine(pickUpPPG, shootPose))
