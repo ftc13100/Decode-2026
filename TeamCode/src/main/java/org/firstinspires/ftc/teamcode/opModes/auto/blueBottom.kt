@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes.auto
 
+import com.pedropathing.geometry.BezierCurve
 import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
@@ -29,31 +30,98 @@ class blueBottom: NextFTCOpMode() {
         )
     }
 
+        //starting position and the pose that we will be shooting
+    private val shootPose = Pose(88.0, 8.0, Math.toRadians(90.0))
+            //path to pick up PPG motif
+        private val pickUpPPG = Pose(127.7, 83.0, Math.toRadians(0.0))
+        private val pickUpPPGcontrol= Pose(76.6, 91.0, Math.toRadians(0.0))
+            //path to pick up PGP motif
+        private val pickUpPGP = Pose(127.7, 59.0, Math.toRadians(0.0))
+        private val pickUpPGPcontrol= Pose(79.29, 64.7, Math.toRadians(0.0))
+            //path to pick up GPP motif
+        private val pickUpGPP = Pose(127.7, 59.0, Math.toRadians(0.0))
+        private val pickUpGPPcontrol= Pose(82.5, 39.3, Math.toRadians(0.0))
+            //path to pick up from the human player
+    private val pickUPhp= Pose(140.0,8.2,Math.toRadians(0.0))
 
-    //starting position
-    private val startPose = Pose(85.5, 8.3, Math.toRadians(90.0))
-    private val depositPose = Pose(84.3, 61.9, Math.toRadians(0.0))
+    //PPG path chains
+    private lateinit var PPGfirst: PathChain
+    private lateinit var PPGsecond: PathChain
+    //PGP path chains
+    private lateinit var PGPfirst: PathChain
+    private lateinit var PGPsecond: PathChain
 
-    private val curvePoint = Pose(138.2, 48.1)
+    //GPP path chains
+    private lateinit var GPPfirst: PathChain
+    private lateinit var GPPsecond: PathChain
 
-    private lateinit var skib: PathChain
+    //Universal path chains
+    private lateinit var HumanPlayer: PathChain
+    private lateinit var ShootAgain: PathChain
 
     private fun buildPaths() {
-        skib = follower.pathBuilder()
-            .addPath(BezierLine(startPose, depositPose))
-            .setLinearHeadingInterpolation(startPose.heading, depositPose.heading)
+        //PGP paths
+             PPGfirst = follower.pathBuilder()
+            .addPath(BezierCurve(shootPose, pickUpPPGcontrol,pickUpPPG))
+            .setConstantHeadingInterpolation(0.0)
+            .build()
+            PPGsecond = follower.pathBuilder()
+            .addPath(BezierLine(pickUpPPG, shootPose))
+            .setConstantHeadingInterpolation(0.0)
+            .build()
+        //PPG paths
+            PGPfirst = follower.pathBuilder()
+            .addPath(BezierCurve(shootPose, pickUpPGPcontrol,pickUpPGP))
+            .setConstantHeadingInterpolation(0.0)
+            .build()
+             PGPsecond = follower.pathBuilder()
+            .addPath(BezierLine(pickUpPGP, shootPose))
+            .setConstantHeadingInterpolation(0.0)
+            .build()
+        //GPP paths
+            GPPfirst = follower.pathBuilder()
+            .addPath(BezierCurve(shootPose, pickUpGPPcontrol,pickUpGPP))
+            .setConstantHeadingInterpolation(0.0)
+            .build()
+            GPPsecond = follower.pathBuilder()
+            .addPath(BezierLine(pickUpGPP, shootPose))
+            .setConstantHeadingInterpolation(0.0)
+            .build()
+        //Universal paths
+             HumanPlayer= follower.pathBuilder()
+            .addPath(BezierLine(shootPose, pickUPhp))
+            .setConstantHeadingInterpolation(0.0)
+            .build()
+             ShootAgain= follower.pathBuilder()
+            .addPath(BezierLine(pickUPhp,shootPose))
+            .setConstantHeadingInterpolation(0.0)
             .build()
     }
 
-    val secondRoutine: Command
+    val PPG: Command
         get() = SequentialGroup(
-            FollowPath(skib)
+
+            FollowPath(PPGfirst),
+                         FollowPath(PPGsecond)
+
         )
 
+    val PGP: Command
+        get() = SequentialGroup(
+            FollowPath(PGPfirst),
+                         FollowPath(PGPsecond)
+
+        )
+    val GPP: Command
+        get() = SequentialGroup(
+            FollowPath(GPPfirst),
+                         FollowPath(GPPsecond)
+
+        )
 
     override fun onInit() {
         follower.setMaxPower(0.7)
-        follower.setStartingPose(startPose)
+        follower.setStartingPose(shootPose)
         buildPaths()
     }
 
@@ -61,12 +129,14 @@ class blueBottom: NextFTCOpMode() {
         val result: LLResult? = limelight.latestResult
         if (result != null && result.isValid) {
             val fiducials = result.fiducialResults
-
             for (fiducial in fiducials) {
                 if (fiducial.fiducialId == 22) {
-                    telemetry.addData("Fiducial ID", fiducial.fiducialId)
-                    telemetry.msTransmissionInterval = 11
-                    telemetry.update()
+                    PGP()
+                    if (fiducial.fiducialId == 23) {
+                        PPG()
+                    } else if (fiducial.fiducialId == 21) {
+                        GPP()
+                    }
 
                 }
             }
