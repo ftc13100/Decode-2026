@@ -12,6 +12,7 @@ import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
+import dev.nextftc.ftc.ActiveOpMode.telemetry
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
@@ -31,7 +32,7 @@ class blueBottom: NextFTCOpMode() {
     }
 
         //starting position and the pose that we will be shooting
-    private val shootPose = Pose(88.0, 8.0, Math.toRadians(90.0))
+        private val shootPose = Pose(88.0, 8.0, Math.toRadians(0.0))
             //path to pick up PPG motif
         private val pickUpPPG = Pose(127.7, 83.0, Math.toRadians(0.0))
         private val pickUpPPGcontrol= Pose(76.6, 91.0, Math.toRadians(0.0))
@@ -138,10 +139,10 @@ class blueBottom: NextFTCOpMode() {
             val fiducials = result.fiducialResults
             for (fiducial in fiducials) {
                 if (fiducial.fiducialId == 22) {
-                    PGP()
-                    if (fiducial.fiducialId == 23) {
+                    PGP() }
+                    else if (fiducial.fiducialId == 23) {
                         PPG()
-                    } else if (fiducial.fiducialId == 21) {
+                    } else {
                         GPP()
                     }
 
@@ -152,7 +153,7 @@ class blueBottom: NextFTCOpMode() {
 
 
 
-    }
+
     override fun onUpdate() {
 
         val result: LLResult? = limelight.latestResult
@@ -169,6 +170,6 @@ class blueBottom: NextFTCOpMode() {
 
         telemetry.addData("Mode", "TeleOp Running")
         telemetry.update()
-    }    }
+    }   }
 
 
