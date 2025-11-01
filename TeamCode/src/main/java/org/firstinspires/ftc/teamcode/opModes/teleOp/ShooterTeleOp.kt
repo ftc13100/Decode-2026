@@ -18,6 +18,7 @@ class ShooterTeleOp : NextFTCOpMode() {
         BulkReadComponent
         BindingsComponent
     }
+
     val shooterCommand = PerpetualCommand(
         LambdaCommand()
             .setUpdate {
@@ -25,7 +26,8 @@ class ShooterTeleOp : NextFTCOpMode() {
             }
             .requires(Shooter)
     )
-    override fun onInit() {
 
+    override fun onInit() {
+        shooterCommand()
     }
 }
