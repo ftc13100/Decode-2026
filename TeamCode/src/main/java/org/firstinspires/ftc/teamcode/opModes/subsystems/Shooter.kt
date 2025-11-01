@@ -53,18 +53,18 @@ object Shooter: Subsystem {
             velocity = target
         )
 
-        val output = controller.calculate(
+        shooter.power = controller.calculate(
             KineticState(
                 velocity = shooter.velocity
             )
         )
 
+
+
         telemetry.addData("Measured Velocity", shooter.velocity)
         telemetry.addData("Target Velocity", target)
 
         telemetry.update()
-
-
     }
 
 }
