@@ -16,7 +16,7 @@ import kotlin.math.cos
 
 @Configurable
 object Shooter: Subsystem {
-    private val shooter = MotorEx("shooter")
+    val shooter = MotorEx("shooter")
     @JvmField
     var target = 0.0
 
