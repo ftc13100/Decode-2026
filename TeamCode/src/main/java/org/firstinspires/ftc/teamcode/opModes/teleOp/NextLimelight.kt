@@ -27,10 +27,10 @@ class NextLimelight : NextFTCOpMode() {
         )
     }
 
-    private val frontLeftName = "leftFront"
-    private val frontRightName = "rightFront"
-    private val backLeftName = "leftRear"
-    private val backRightName = "rightRear"
+    private val frontLeftName = "frontLeft"
+    private val frontRightName = "frontRight"
+    private val backLeftName = "backLeft"
+    private val backRightName = "backRight"
 
     private lateinit var frontLeftMotor: MotorEx
     private lateinit var frontRightMotor: MotorEx

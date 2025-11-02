@@ -32,7 +32,7 @@ class blueBottom: NextFTCOpMode() {
     }
 
         //starting position and the pose that we will be shooting
-        private val shootPose = Pose(88.0, 8.0, Math.toRadians(0.0))
+        private val shootPose = Pose(88.0, 8.0, Math.toRadians(90.0))
             //path to pick up PPG motif
         private val pickUpPPG = Pose(127.7, 83.0, Math.toRadians(0.0))
         private val pickUpPPGcontrol= Pose(76.6, 91.0, Math.toRadians(0.0))
@@ -63,39 +63,39 @@ class blueBottom: NextFTCOpMode() {
         //PGP paths
              PPGfirst = follower.pathBuilder()
             .addPath(BezierCurve(shootPose, pickUpPPGcontrol,pickUpPPG))
-            .setConstantHeadingInterpolation(0.0)
+            .setLinearHeadingInterpolation(shootPose.heading,pickUpPPG.heading)
 
             .build()
             PPGsecond = follower.pathBuilder()
             .addPath(BezierLine(pickUpPPG, shootPose))
-            .setConstantHeadingInterpolation(0.0)
+                .setLinearHeadingInterpolation(pickUpPPG.heading,shootPose.heading)
             .build()
         //PPG paths
             PGPfirst = follower.pathBuilder()
             .addPath(BezierCurve(shootPose, pickUpPGPcontrol,pickUpPGP))
-            .setConstantHeadingInterpolation(0.0)
+                .setLinearHeadingInterpolation(shootPose.heading,pickUpPGP.heading)
             .build()
              PGPsecond = follower.pathBuilder()
             .addPath(BezierLine(pickUpPGP, shootPose))
-            .setConstantHeadingInterpolation(0.0)
+                 .setLinearHeadingInterpolation(pickUpPGP.heading,shootPose.heading)
             .build()
         //GPP paths
             GPPfirst = follower.pathBuilder()
             .addPath(BezierCurve(shootPose, pickUpGPPcontrol,pickUpGPP))
-            .setConstantHeadingInterpolation(0.0)
+                .setLinearHeadingInterpolation(shootPose.heading,pickUpGPP.heading)
             .build()
             GPPsecond = follower.pathBuilder()
             .addPath(BezierLine(pickUpGPP, shootPose))
-            .setConstantHeadingInterpolation(0.0)
+                .setLinearHeadingInterpolation(pickUpGPP.heading,shootPose.heading)
             .build()
         //Universal paths
              HumanPlayer= follower.pathBuilder()
             .addPath(BezierLine(shootPose, pickUPhp))
-            .setConstantHeadingInterpolation(0.0)
+                 .setLinearHeadingInterpolation(shootPose.heading,pickUPhp.heading)
             .build()
              ShootAgain= follower.pathBuilder()
             .addPath(BezierLine(pickUPhp,shootPose))
-            .setConstantHeadingInterpolation(0.0)
+                 .setLinearHeadingInterpolation(pickUPhp.heading,shootPose.heading)
             .build()
     }
 

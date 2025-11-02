@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil.li
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 
 
-@Autonomous(name = "blueBottom")
+@Autonomous(name = "redBottom")
 class redBottom: NextFTCOpMode() {
     init {
         addComponents(
