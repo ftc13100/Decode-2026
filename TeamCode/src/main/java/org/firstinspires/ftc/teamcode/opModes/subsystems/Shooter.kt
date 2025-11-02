@@ -16,8 +16,7 @@ import kotlin.math.cos
 
 @Configurable
 object Shooter: Subsystem {
-    lateinit var shooter: MotorEx
-
+    private val shooter = MotorEx("shooter")
     @JvmField
     var target = 0.0
 
@@ -30,7 +29,6 @@ object Shooter: Subsystem {
 //    }
 
     override fun initialize() {
-        shooter = MotorEx("shooter")
         shooter.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
     }

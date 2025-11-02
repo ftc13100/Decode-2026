@@ -8,9 +8,11 @@ import dev.nextftc.core.components.SubsystemComponent
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Shooter
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import dev.nextftc.hardware.impl.MotorEx
 
 @TeleOp(name = "Shooter Test & Tune")
 class ShooterTeleOp : NextFTCOpMode() {
+
     init {
         SubsystemComponent(
             Shooter
