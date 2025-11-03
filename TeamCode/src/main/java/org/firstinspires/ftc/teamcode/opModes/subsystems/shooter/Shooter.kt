@@ -10,22 +10,14 @@ import dev.nextftc.ftc.ActiveOpMode
 import dev.nextftc.hardware.impl.MotorEx
 
 @Configurable
-object Shooter: Subsystem {
-    val shooter = MotorEx("shooter")
-    @JvmField
-    var target = 0.0
-
-    @JvmField
-    var velPIDCoefficients = PIDCoefficients(0.0, 0.0, 0.0)
-
-
-//    val controller = controlSystem {
-//        velPid(velPIDCoefficients)
-//    }
+object Shooter : Subsystem {
+    lateinit var shooter: MotorEx
+    @JvmField var target = 0.0
+    @JvmField var velPIDCoefficients = PIDCoefficients(0.0, 0.0, 0.0)
 
     override fun initialize() {
+        shooter = MotorEx("shooter")   // moved here
         shooter.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-
     }
 
     fun spin() {
@@ -36,28 +28,15 @@ object Shooter: Subsystem {
         shooter.power = 0.0
     }
 
-
     fun spinning() {
         val controller = controlSystem {
             velPid(velPIDCoefficients)
         }
 
-        controller.goal = KineticState(
-            velocity = target
-        )
+        controller.goal = KineticState(velocity = target)
 
         shooter.power = controller.calculate(
-            KineticState(
-                velocity = shooter.velocity
-            )
+            KineticState(velocity = shooter.velocity)
         )
-
-
-
-        ActiveOpMode.telemetry.addData("Measured Velocity", shooter.velocity)
-        ActiveOpMode.telemetry.addData("Target Velocity", target)
-
-        ActiveOpMode.telemetry.update()
     }
-
 }

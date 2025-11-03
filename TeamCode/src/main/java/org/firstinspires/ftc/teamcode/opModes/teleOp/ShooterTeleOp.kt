@@ -37,9 +37,14 @@ class ShooterTeleOp : NextFTCOpMode() {
     override fun onInit() {
         shooterCommand()
         timer.reset()
+        updateSignals()
     }
 
     override fun onUpdate() {
+        updateSignals()
+    }
+
+    private fun updateSignals() {
         panelsTelemetry.addData("velocity", velocity)
         panelsTelemetry.addData("target", target)
         panelsTelemetry.update(telemetry)
