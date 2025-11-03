@@ -25,8 +25,6 @@ class ShooterTeleOp : NextFTCOpMode() {
     }
     private val panelsTelemetry = PanelsTelemetry.telemetry
     private val timer = ElapsedTime()
-    private var velocity = Shooter.shooter.velocity
-    private var target = Shooter.target
     val shooterCommand = PerpetualCommand(
         LambdaCommand()
             .setUpdate {
@@ -45,8 +43,8 @@ class ShooterTeleOp : NextFTCOpMode() {
     }
 
     private fun updateSignals() {
-        panelsTelemetry.addData("velocity", velocity)
-        panelsTelemetry.addData("target", target)
+        panelsTelemetry.addData("velocity", Shooter.shooter.velocity)
+        panelsTelemetry.addData("target", Shooter.target)
         panelsTelemetry.update(telemetry)
     }
 }
