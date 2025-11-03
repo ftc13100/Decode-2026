@@ -11,22 +11,12 @@ import dev.nextftc.hardware.impl.MotorEx
 
 @Configurable
 object Shooter : Subsystem {
-    lateinit var shooter: MotorEx
     @JvmField var target = 0.0
-    @JvmField var velPIDCoefficients = PIDCoefficients(0.0, 0.0, 0.0)
+    @JvmField var velPIDCoefficients = PIDCoefficients(0.0375, 0.15, 0.2)
 
-    override fun initialize() {
-        shooter = MotorEx("shooter")   // moved here
-        shooter.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-    }
+    val shooter = MotorEx("shooter").brakeMode()
 
-    fun spin() {
-        shooter.power = 0.9
-    }
 
-    fun stop() {
-        shooter.power = 0.0
-    }
 
     fun spinning() {
         val controller = controlSystem {
