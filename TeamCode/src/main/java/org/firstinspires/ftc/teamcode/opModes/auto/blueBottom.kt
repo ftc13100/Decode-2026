@@ -135,21 +135,18 @@ class blueBottom: NextFTCOpMode() {
 
     override fun onStartButtonPressed() {
         val result: LLResult? = limelight.latestResult
+
         if (result != null && result.isValid) {
             val fiducials = result.fiducialResults
             for (fiducial in fiducials) {
-                if (fiducial.fiducialId == 22) {
-                    PGP() }
-                    else if (fiducial.fiducialId == 23) {
-                        PPG()
-                    } else {
-                        GPP()
-                    }
-
+                when (fiducial.fiducialId) {
+                    22 -> PGP()
+                    23 -> PPG()
+                    else -> GPP()
                 }
             }
-
         }
+    }
 
 
 

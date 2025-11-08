@@ -1,18 +1,15 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
+import com.bylazar.telemetry.PanelsTelemetry
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import dev.nextftc.core.commands.Command
+import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.core.commands.utility.LambdaCommand
 import dev.nextftc.core.commands.utility.PerpetualCommand
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import dev.nextftc.hardware.impl.MotorEx
-import com.bylazar.telemetry.PanelsTelemetry
-import kotlin.concurrent.timer
-import com.qualcomm.robotcore.util.ElapsedTime
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 
 @TeleOp(name = "Shooter Test & Tune")
 class ShooterTeleOp : NextFTCOpMode() {
