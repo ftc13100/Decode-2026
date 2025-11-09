@@ -14,6 +14,12 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime.lime
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.redLime
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.turret
+import com.qualcomm.hardware.limelightvision.Limelight3A
+import com.qualcomm.robotcore.hardware.DcMotor
+import dev.nextftc.bindings.BindingManager
+import dev.nextftc.bindings.button
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
+import kotlin.math.abs
 
 @TeleOp(name = "Tele")
 class Tele : NextFTCOpMode() {
@@ -24,15 +30,41 @@ class Tele : NextFTCOpMode() {
             BindingsComponent
         )
     }
-    // change the names and directions to suit your robot
-    private val frontLeftMotor = MotorEx("frontLeft").reversed()
-    private val frontRightMotor = MotorEx("frontRight")
-    private val backLeftMotor = MotorEx("backLeft").reversed()
-    private val backRightMotor = MotorEx("backRight")
 
+    private val frontLeftName = "frontLeft"
+    private val frontRightName = "frontRight"
+    private val backLeftName = "backLeft"
+    private val backRightName = "backRight"
+
+    private lateinit var frontLeftMotor: MotorEx
+    private lateinit var frontRightMotor: MotorEx
+    private lateinit var backLeftMotor: MotorEx
+    private lateinit var backRightMotor: MotorEx
+
+    private lateinit var driverControlled: MecanumDriverControlled
+
+    private lateinit var limelight: Limelight3A
+
+    override fun onInit() {
+        // Motors
+        frontLeftMotor = MotorEx(frontLeftName).reversed()
+        frontRightMotor = MotorEx(frontRightName)
+        backLeftMotor = MotorEx(backLeftName).reversed()
+        backRightMotor = MotorEx(backRightName)
+
+        listOf(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor).forEach {
+            it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        }
+
+        // Limelight init
+        limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
+        telemetry.msTransmissionInterval = 11
+        limelight.pipelineSwitch(1)
+        limelight.start()
+    }
 
     override fun onStartButtonPressed() {
-        val driverControlled = MecanumDriverControlled(
+        driverControlled = MecanumDriverControlled(
             frontLeftMotor,
             frontRightMotor,
             backLeftMotor,
@@ -41,29 +73,58 @@ class Tele : NextFTCOpMode() {
             Gamepads.gamepad1.leftStickX,
             Gamepads.gamepad1.rightStickX
         )
-        driverControlled()
+        driverControlled.scalar = 1.0
 
+        button { gamepad1.y }
+            .toggleOnBecomesTrue()
+            .whenBecomesTrue { driverControlled.scalar = 0.4 }
+            .whenBecomesFalse { driverControlled.scalar = 1.0 }
+
+        button { gamepad1.right_bumper }
+            .whenTrue {
+                turret.spinRight()
+            }
+            .whenFalse {
+                turret.stop()
+            }
+
+        button { gamepad1.left_bumper }
+            .whenTrue {
+                turret.spinLeft()
+            }
+            .whenFalse {
+                turret.stop()
+            }
     }
 
     override fun onUpdate() {
+        BindingManager.update()
+
         val result: LLResult? = limelight.latestResult
-        if (result == null) {
-            telemetry.addData("Limelight", "Target not found")
-        }
+
+        driverControlled.update()
+
         if (result != null && result.isValid) {
+            //val botpose: Pose3D = result.botpose
             telemetry.addData("tx (Horizontal Error)", "%.2f", result.tx)
             telemetry.addData("ty (Vertical Error)", "%.2f", result.ty)
-            telemetry.update()
+            //telemetry.addData("Botpose", botpose.toString())
+
+//            if ( -4.0 < result.tx && result.tx < 4.0) {
+//                turret.stop()
+//            } else if (-4.0 > result.tx){
+//                turret.spinLeft()
+//            } else if (result.tx > 4.0) {
+//                turret.spinRight()
+//            }
+
+        } else {
+            telemetry.addData("Limelight", "Target not found")
+           // turret.stop()
         }
 
-        if (result!= null && result.isValid && result.tx > 3) {
-            turret.spinRight()
-            } else if (result!= null && result.isValid && result.tx < -3) {
-                turret.spinLeft()
-            } else if (result == null) {
-                turret.stop()
-                telemetry.addData("not tracking",null)
-                telemetry.update()
-            }
-        }
+        telemetry.addData("Mode", "TeleOp Running")
+        telemetry.update()
+
     }
+}

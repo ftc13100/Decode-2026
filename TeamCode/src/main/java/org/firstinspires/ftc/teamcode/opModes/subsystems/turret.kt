@@ -17,11 +17,11 @@ object turret : Subsystem {
     val turret = MotorEx("turret").brakeMode()
 
     fun spinRight() {
-        turret.power = 0.3
+        turret.power = 0.7
     }
 
     fun spinLeft() {
-        turret.power = -0.3
+        turret.power = -0.7
     }
 
     fun stop () {
