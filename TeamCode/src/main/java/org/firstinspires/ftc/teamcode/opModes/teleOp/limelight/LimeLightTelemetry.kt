@@ -1,12 +1,15 @@
-package org.firstinspires.ftc.teamcode.opModes.teleOp
+package org.firstinspires.ftc.teamcode.opModes.teleOp.limelight
 
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
+import com.pedropathing.follower.Follower
+import com.pedropathing.geometry.Pose
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.HardwareMap
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
 import dev.nextftc.core.components.BindingsComponent
@@ -17,8 +20,6 @@ import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
-import com.pedropathing.follower.Follower
-import com.pedropathing.geometry.Pose
 
 @Config
 @TeleOp(name = "LimeLight with more Telemetry")
@@ -32,10 +33,10 @@ class LimeLightTelemetry : NextFTCOpMode() {
         )
     }
 
-    private val frontLeftName = "leftFront"
-    private val frontRightName = "rightFront"
-    private val backLeftName = "leftRear"
-    private val backRightName = "rightRear"
+    private val frontLeftName = "frontLeft"
+    private val frontRightName = "frontRight"
+    private val backLeftName = "backLeft"
+    private val backRightName = "backRight"
 
     private lateinit var frontLeftMotor: MotorEx
     private lateinit var frontRightMotor: MotorEx
@@ -73,7 +74,7 @@ class LimeLightTelemetry : NextFTCOpMode() {
         try {
             // Assuming you have a Constants object with a createFollower method
             val constantsClass = Class.forName("org.firstinspires.ftc.teamcode.pedroPathing.Constants")
-            val createFollowerMethod = constantsClass.getMethod("createFollower", com.qualcomm.robotcore.hardware.HardwareMap::class.java)
+            val createFollowerMethod = constantsClass.getMethod("createFollower", HardwareMap::class.java)
             follower = createFollowerMethod.invoke(null, hardwareMap) as Follower
         } catch (e: Exception) {
             // Fallback initialization or error handling if Constants.createFollower is not available

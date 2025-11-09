@@ -1,6 +1,5 @@
-package org.firstinspires.ftc.teamcode.opModes.teleOp
+package org.firstinspires.ftc.teamcode.opModes.teleOp.limelight
 
-import androidx.core.util.plus
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
@@ -15,8 +14,10 @@ import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.turret
+import kotlin.math.abs
 
-@TeleOp(name = "NextLimelight_ToggleAlign")
+@TeleOp(name = "NextLimelight")
 class NextLimelight : NextFTCOpMode() {
 
     init {
@@ -104,7 +105,7 @@ class NextLimelight : NextFTCOpMode() {
             val tx: Double = result.tx
             var turnPower: Double = 0.0
 
-            if (kotlin.math.abs(tx) > ALIGNMENT_TOLERANCE) {
+            if (abs(tx) > ALIGNMENT_TOLERANCE) {
                 // Target is outside the tolerance window, apply fixed power to turn
                 turnPower = if (tx > 0) {
                     ALIGNMENT_POWER
@@ -152,12 +153,14 @@ class NextLimelight : NextFTCOpMode() {
             telemetry.addData("tx (Horizontal Error)", "%.2f", result.tx)
             telemetry.addData("ty (Vertical Error)", "%.2f", result.ty)
             telemetry.addData("Botpose", botpose.toString())
+
         } else {
             telemetry.addData("Limelight", "Target not found")
         }
 
         telemetry.addData("Mode", "TeleOp Running")
         telemetry.update()
+
     }
 
     override fun onStop() {
