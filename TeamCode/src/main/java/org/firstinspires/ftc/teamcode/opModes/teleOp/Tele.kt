@@ -110,13 +110,14 @@ class Tele : NextFTCOpMode() {
             telemetry.addData("ty (Vertical Error)", "%.2f", result.ty)
             //telemetry.addData("Botpose", botpose.toString())
 
-//            if ( -4.0 < result.tx && result.tx < 4.0) {
-//                turret.stop()
-//            } else if (-4.0 > result.tx){
-//                turret.spinLeft()
-//            } else if (result.tx > 4.0) {
-//                turret.spinRight()
-//            }
+        if ( -4.0 < result.tx && result.tx < 4.0) {
+                turret.stop()
+           } else if (-4.0 > result.tx){
+               turret.spinLeft()
+           } else if (result.tx > 4.0) {
+               turret.spinLeft()
+        }
+//
 
         } else {
             telemetry.addData("Limelight", "Target not found")

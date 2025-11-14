@@ -7,6 +7,7 @@ import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode
+import dev.nextftc.hardware.controllable.RunToVelocity
 import dev.nextftc.hardware.impl.MotorEx
 
 @Configurable
@@ -15,7 +16,6 @@ object Shooter : Subsystem {
     @JvmField var velPIDCoefficients = PIDCoefficients(0.0375, 0.15, 0.2)
 
     val shooter = MotorEx("shooter").brakeMode()
-
 
 
     fun spinning() {
