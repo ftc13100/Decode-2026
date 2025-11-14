@@ -82,18 +82,18 @@ class Tele : NextFTCOpMode() {
 
         button { gamepad1.right_bumper }
             .whenTrue {
-                turret.spinRight()
+                turret.toRight()
             }
             .whenFalse {
-                turret.stop()
+                turret.spinZero()
             }
 
         button { gamepad1.left_bumper }
             .whenTrue {
-                turret.spinLeft()
+                turret.toLeft()
             }
             .whenFalse {
-                turret.stop()
+                turret.spinZero()
             }
     }
 
@@ -111,11 +111,11 @@ class Tele : NextFTCOpMode() {
             //telemetry.addData("Botpose", botpose.toString())
 
         if ( -4.0 < result.tx && result.tx < 4.0) {
-                turret.stop()
+                turret.spinZero()
            } else if (-4.0 > result.tx){
                turret.spinLeft()
            } else if (result.tx > 4.0) {
-               turret.spinLeft()
+               turret.spinRight()
         }
 //
 
