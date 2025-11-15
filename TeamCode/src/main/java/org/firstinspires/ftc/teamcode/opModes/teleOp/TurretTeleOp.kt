@@ -1,28 +1,15 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import dev.nextftc.core.commands.Command
-import dev.nextftc.core.commands.utility.LambdaCommand
-import dev.nextftc.core.commands.utility.PerpetualCommand
-import dev.nextftc.core.components.BindingsComponent
-import dev.nextftc.core.components.SubsystemComponent
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
-import dev.nextftc.ftc.NextFTCOpMode
-import dev.nextftc.ftc.components.BulkReadComponent
-import dev.nextftc.hardware.impl.MotorEx
-import com.bylazar.telemetry.PanelsTelemetry
-import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.hardware.limelightvision.Limelight3A
-import com.qualcomm.robotcore.hardware.DcMotor
-import kotlin.concurrent.timer
-import com.qualcomm.robotcore.util.ElapsedTime
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
-import dev.nextftc.core.commands.CommandManager
-import dev.nextftc.ftc.Gamepads
+import dev.nextftc.core.components.BindingsComponent
+import dev.nextftc.core.components.SubsystemComponent
+import dev.nextftc.ftc.NextFTCOpMode
+import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.turret
-import kotlin.math.abs
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 
 @TeleOp(name = "Turret Test & Tune")
 class TurretTeleOp : NextFTCOpMode() {
@@ -30,7 +17,7 @@ class TurretTeleOp : NextFTCOpMode() {
     init {
         addComponents(
         SubsystemComponent(
-            turret, blueLime
+            Turret, blueLime
         ),
         BulkReadComponent,
         BindingsComponent
@@ -38,48 +25,39 @@ class TurretTeleOp : NextFTCOpMode() {
     }
 
     private lateinit var limelight: Limelight3A
-    private var previous_tx = 0.0
 
     override fun onInit() {
         limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
         telemetry.msTransmissionInterval = 11
         limelight.pipelineSwitch(1)
         limelight.start()
-        turret.toMiddle
-
     }
 
     override fun onStartButtonPressed() {
         button { gamepad1.right_bumper }
             .whenTrue {
-                turret.toRight()
+                Turret.toRight()
             }
             .whenFalse {
-                turret.spinZero()
+                Turret.spinZero()
             }
 
         button { gamepad1.left_bumper }
             .whenTrue {
-                turret.toLeft()
+                Turret.toLeft()
             }
             .whenFalse {
-                turret.spinZero()
+                Turret.spinZero()
             }
 
     }
 
     override fun onUpdate() {
         BindingManager.update()
-        val result: LLResult? = limelight.latestResult
+        val result = limelight.latestResult
         if (result != null && result.isValid) {
             telemetry.addData("tx (Horizontal Error)", "%.2f", result.tx)
             telemetry.addData("ty (Vertical Error)", "%.2f", result.ty)
-            if (abs(result.tx - previous_tx) > 4.0) {
-                CommandManager.scheduleCommand(
-                    turret.moveToTag(result.tx)
-                )
-            }
-            previous_tx = result.tx
         } else {
             telemetry.addData("Limelight", "Target not found")
             // turret.stop()

@@ -10,16 +10,12 @@ import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime
-import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime.limelight
-import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.redLime
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.turret
+import org.firstinspires.ftc.teamcode.opModes.subsystems.turret
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
-import kotlin.math.abs
 
 @TeleOp(name = "Tele")
 class Tele : NextFTCOpMode() {

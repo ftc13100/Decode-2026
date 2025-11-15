@@ -1,27 +1,27 @@
-package org.firstinspires.ftc.teamcode.opModes.subsystems.shooter
+package org.firstinspires.ftc.teamcode.opModes.subsystems
 
 import com.bylazar.configurables.annotations.Configurable
-import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.hardware.limelightvision.Limelight3A
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
-import dev.nextftc.control.feedback.PIDCoefficients
-import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode
 import dev.nextftc.hardware.controllable.RunToPosition
-import dev.nextftc.hardware.controllable.RunToVelocity
+import dev.nextftc.hardware.delegates.LazyHardware
 import dev.nextftc.hardware.impl.MotorEx
-import dev.nextftc.hardware.powerable.SetPower
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter.shooter
-
-//import dev.nextftc.hardware.powerable.SetPower
-
 
 @Configurable
-object turret : Subsystem {
+object Turret : Subsystem {
     private val turret = MotorEx("turret")
         .brakeMode()
+    private lateinit var limelight: Limelight3A
+
+    override fun initialize() {
+        limelight = ActiveOpMode.hardwareMap.get(
+            Limelight3A::class.java, "limelight"
+        )
+    }
 
     private val controlSystem = controlSystem {
         posPid(0.03, 0.01, 5.0)
@@ -53,6 +53,11 @@ object turret : Subsystem {
         }
 
     override fun periodic() {
-        turret.power = controlSystem.calculate(turret.state)
+        val result = limelight.latestResult
+        if (result != null && result.isValid) {
+            turret.power = controlSystem.calculate(
+                KineticState(result.tx)
+            )
+        }
     }
 }
