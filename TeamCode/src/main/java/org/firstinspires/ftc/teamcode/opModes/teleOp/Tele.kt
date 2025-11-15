@@ -11,7 +11,7 @@ import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
-import org.firstinspires.ftc.teamcode.opModes.subsystems.turret
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
@@ -21,7 +21,7 @@ import dev.nextftc.bindings.button
 class Tele : NextFTCOpMode() {
     init {
         addComponents(
-            SubsystemComponent(turret, Shooter, blueLime),
+            SubsystemComponent(Turret, Shooter, blueLime),
             BulkReadComponent,
             BindingsComponent
         )
@@ -76,21 +76,21 @@ class Tele : NextFTCOpMode() {
             .whenBecomesTrue { driverControlled.scalar = 0.4 }
             .whenBecomesFalse { driverControlled.scalar = 1.0 }
 
-        button { gamepad1.right_bumper }
-            .whenTrue {
-                turret.toRight()
-            }
-            .whenFalse {
-                turret.spinZero()
-            }
-
-        button { gamepad1.left_bumper }
-            .whenTrue {
-                turret.toLeft()
-            }
-            .whenFalse {
-                turret.spinZero()
-            }
+//        button { gamepad1.right_bumper }
+//            .whenTrue {
+//                Turret.toRight()
+//            }
+//            .whenFalse {
+//                Turret.spinZero()
+//            }
+//
+//        button { gamepad1.left_bumper }
+//            .whenTrue {
+//                Turret.toLeft()
+//            }
+//            .whenFalse {
+//                Turret.spinZero()
+//            }
     }
 
     override fun onUpdate() {
@@ -107,17 +107,17 @@ class Tele : NextFTCOpMode() {
             //telemetry.addData("Botpose", botpose.toString())
 
         if ( -4.0 < result.tx && result.tx < 4.0) {
-                turret.spinZero()
+                Turret.spinZero()
            } else if (-4.0 > result.tx){
-               turret.spinLeft()
+               Turret.spinLeft()
            } else if (result.tx > 4.0) {
-               turret.spinRight()
+               Turret.spinRight()
         }
 //
 
         } else {
             telemetry.addData("Limelight", "Target not found")
-           // turret.stop()
+           // Turret.stop()
         }
 
         telemetry.addData("Mode", "TeleOp Running")

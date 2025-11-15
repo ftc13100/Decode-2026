@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
+import com.bylazar.telemetry.PanelsTelemetry
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
+import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.ftc.NextFTCOpMode
@@ -13,7 +16,6 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 
 @TeleOp(name = "Turret Test & Tune")
 class TurretTeleOp : NextFTCOpMode() {
-
     init {
         addComponents(
         SubsystemComponent(
@@ -23,7 +25,8 @@ class TurretTeleOp : NextFTCOpMode() {
         BindingsComponent
         )
     }
-
+    private val panelsTelemetry = PanelsTelemetry.telemetry
+    private val timer = ElapsedTime()
     private lateinit var limelight: Limelight3A
 
     override fun onInit() {
@@ -31,24 +34,29 @@ class TurretTeleOp : NextFTCOpMode() {
         telemetry.msTransmissionInterval = 11
         limelight.pipelineSwitch(1)
         limelight.start()
+        timer.reset()
     }
 
     override fun onStartButtonPressed() {
-        button { gamepad1.right_bumper }
-            .whenTrue {
-                Turret.toRight()
-            }
-            .whenFalse {
-                Turret.spinZero()
-            }
+        CommandManager.scheduleCommand(
+            Turret.toMiddle.perpetually()
+        )
 
-        button { gamepad1.left_bumper }
-            .whenTrue {
-                Turret.toLeft()
-            }
-            .whenFalse {
-                Turret.spinZero()
-            }
+//        button { gamepad1.right_bumper }
+//            .whenTrue {
+//                Turret.toRight()
+//            }
+//            .whenFalse {
+//                Turret.spinZero()
+//            }
+//
+//        button { gamepad1.left_bumper }
+//            .whenTrue {
+//                Turret.toLeft()
+//            }
+//            .whenFalse {
+//                Turret.spinZero()
+//            }
 
     }
 
@@ -64,6 +72,13 @@ class TurretTeleOp : NextFTCOpMode() {
         }
         telemetry.addData("Mode", "TeleOp Running")
         telemetry.update()
+        updateSignals()
+    }
+
+    private fun updateSignals() {
+        panelsTelemetry.addData("velocity", Turret.turret.velocity)
+        panelsTelemetry.addData("target tx", limelight.latestResult.tx)
+        panelsTelemetry.update(telemetry)
     }
 }
 
