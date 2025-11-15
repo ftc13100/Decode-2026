@@ -18,9 +18,11 @@ import kotlin.concurrent.timer
 import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
+import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.ftc.Gamepads
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.turret
+import kotlin.math.abs
 
 @TeleOp(name = "Turret Test & Tune")
 class TurretTeleOp : NextFTCOpMode() {
@@ -36,7 +38,7 @@ class TurretTeleOp : NextFTCOpMode() {
     }
 
     private lateinit var limelight: Limelight3A
-
+    private var previous_tx = 0.0
 
     override fun onInit() {
         limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
@@ -72,18 +74,18 @@ class TurretTeleOp : NextFTCOpMode() {
         if (result != null && result.isValid) {
             telemetry.addData("tx (Horizontal Error)", "%.2f", result.tx)
             telemetry.addData("ty (Vertical Error)", "%.2f", result.ty)
-            if ( -4.0 < result.tx && result.tx < 4.0) {
-                turret.spinZero()
-            } else if (-4.0 > result.tx){
-                turret.spinLeft()
-            } else if (result.tx > 4.0) {
-                turret.spinRight()
+            if (abs(result.tx - previous_tx) > 4.0) {
+                CommandManager.scheduleCommand(
+                    turret.moveToTag(result.tx)
+                )
             }
+            previous_tx = result.tx
         } else {
             telemetry.addData("Limelight", "Target not found")
             // turret.stop()
         }
         telemetry.addData("Mode", "TeleOp Running")
         telemetry.update()
-    }}
+    }
+}
 
