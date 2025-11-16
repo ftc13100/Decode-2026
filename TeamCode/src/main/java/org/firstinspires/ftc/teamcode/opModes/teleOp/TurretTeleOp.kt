@@ -14,6 +14,7 @@ import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import dev.nextftc.hardware.controllable.RunToPosition
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
@@ -55,8 +56,9 @@ class TurretTeleOp : NextFTCOpMode() {
 
         button { gamepad1.a }
             .whenTrue {
-                follower.pose.x
-                follower.pose.y
+                val turnCommand = Turret.computeAngle(follower.pose)
+
+                turnCommand()
             }
 
 //        button { gamepad1.right_bumper }

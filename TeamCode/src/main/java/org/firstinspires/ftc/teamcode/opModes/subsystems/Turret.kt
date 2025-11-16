@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.opModes.subsystems
 
 import com.bylazar.configurables.annotations.Configurable
+import com.pedropathing.geometry.Pose
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
+import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode
@@ -12,6 +14,8 @@ import dev.nextftc.hardware.controllable.RunToPosition
 import dev.nextftc.hardware.delegates.LazyHardware
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter.velPIDCoefficients
+import kotlin.math.acos
+import kotlin.math.pow
 
 @Configurable
 object Turret : Subsystem {
@@ -40,6 +44,24 @@ object Turret : Subsystem {
 
     fun spinZero() {
         turret.power = 0.0
+    }
+
+    fun computeAngle (botPose: Pose): Command {
+        val basketPose = Pose(12.0, 135.5)
+        val diff = basketPose - botPose
+
+        val c = basketPose.distanceFrom(botPose)
+        val a = diff.x
+        val b = diff.y
+
+        val cosine = (a.pow(2) - b.pow(2) - c.pow(2)) / (-2 * b * c)
+
+        val angle = acos(cosine)
+
+        // Convert angles to ticks
+        val ticks = 0.0 // Compute conversion
+
+        return RunToPosition(controlSystem, ticks).requires(this)
     }
 
 //    val toRight = RunToPosition(controlSystem, 300.0).requires(this)
