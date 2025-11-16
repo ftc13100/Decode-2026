@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
 import com.bylazar.telemetry.PanelsTelemetry
+import com.pedropathing.geometry.Pose
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.util.ElapsedTime
@@ -9,20 +10,25 @@ import dev.nextftc.bindings.button
 import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
+import dev.nextftc.extensions.pedro.PedroComponent
+import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants.createFollower
 
 @TeleOp(name = "Turret Test & Tune")
 class TurretTeleOp : NextFTCOpMode() {
     init {
         addComponents(
-        SubsystemComponent(
-            Turret, blueLime
-        ),
-        BulkReadComponent,
-        BindingsComponent
+            SubsystemComponent(
+                Turret, blueLime
+            ),
+            BulkReadComponent,
+            BindingsComponent,
+            PedroComponent(Constants::createFollower)
         )
     }
     private val panelsTelemetry = PanelsTelemetry.telemetry
@@ -34,6 +40,11 @@ class TurretTeleOp : NextFTCOpMode() {
         telemetry.msTransmissionInterval = 11
         limelight.pipelineSwitch(1)
         limelight.start()
+
+        follower.setStartingPose(
+            Pose(0.0, 0.0, 0.0)
+        )
+
         timer.reset()
     }
 
@@ -41,6 +52,12 @@ class TurretTeleOp : NextFTCOpMode() {
         CommandManager.scheduleCommand(
             Turret.toMiddle.perpetually()
         )
+
+        button { gamepad1.a }
+            .whenTrue {
+                follower.pose.x
+                follower.pose.y
+            }
 
 //        button { gamepad1.right_bumper }
 //            .whenTrue {
