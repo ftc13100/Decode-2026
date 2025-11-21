@@ -8,8 +8,6 @@ data class ShotParameters(val velocity: Int, val angle: Double)
 
 class ShooterController {
 
-    private val MAX_DISTANCE_SQ = 144.0
-
     private val shooterLookupTable: Map<Pair<Double, Double>, ShotParameters> = mapOf(
         Pair(24.0, 120.0) to ShotParameters(-950, 0.2),
         Pair(48.0, 96.0) to ShotParameters(-1100, 0.1),
@@ -25,24 +23,23 @@ class ShooterController {
     )
 
     fun getShot(x: Double, y: Double): ShotParameters? {
-        val closestKey = shooterLookupTable.keys.minByOrNull { (keyX, keyY) ->
-            val dx = x - keyX
-            val dy = y - keyY
-            (dx * dx) + (dy * dy)
+        var bestKey: Pair<Double, Double>? = null
+
+        for ((keyX, keyY) in shooterLookupTable.keys) {
+            val dx = kotlin.math.abs(x - keyX)
+            val dy = kotlin.math.abs(y - keyY)
+
+            if (dx <= 3.0 && dy <= 3.0) {
+                bestKey = Pair(keyX, keyY)
+                break
+            }
         }
 
-        if (closestKey == null) return null
-
-        val (closestX, closestY) = closestKey
-        val dx = x - closestX
-        val dy = y - closestY
-        val distanceSq = (dx * dx) + (dy * dy)
-
-        return if (distanceSq <= MAX_DISTANCE_SQ) {
-            telemetry.addData("Found shot for nearby key" , "",closestX, closestY)
-            shooterLookupTable[closestKey]
+        return if (bestKey != null) {
+            telemetry.addData("Found shot near", "${bestKey.first}, ${bestKey.second}")
+            shooterLookupTable[bestKey]
         } else {
-            telemetry.addData("No shot found","","")
+            telemetry.addData("No shot found", "")
             null
         }
     }

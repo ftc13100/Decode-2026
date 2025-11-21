@@ -101,9 +101,7 @@ class MainTeleop : NextFTCOpMode() {
 
         button { gamepad1.a }
             .whenBecomesTrue {
-                val result = limelight.latestResult
 
-                if (result != null && result.isValid) {
                     val x = follower.pose.x
                     val y = follower.pose.y
 
@@ -113,11 +111,8 @@ class MainTeleop : NextFTCOpMode() {
                     } else {
                         telemetry.log().add("Shot not found for ($x, $y)")
                     }
-                } else {
-                    telemetry.log().add("Limelight target not valid")
                 }
             }
-    }
 
     override fun onUpdate() {
         BindingManager.update()
