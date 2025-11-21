@@ -1,0 +1,55 @@
+package org.firstinspires.ftc.teamcode.opModes.teleOp
+
+import dev.nextftc.ftc.ActiveOpMode.telemetry
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
+
+data class ShotParameters(val velocity: Int, val angle: Double)
+
+class ShooterController {
+
+    private val MAX_DISTANCE_SQ = 144.0
+
+    private val shooterLookupTable: Map<Pair<Double, Double>, ShotParameters> = mapOf(
+        Pair(24.0, 120.0) to ShotParameters(-950, 0.2),
+        Pair(48.0, 96.0) to ShotParameters(-1100, 0.1),
+        Pair(72.0, 72.0) to ShotParameters(-1350, 0.0),
+        Pair(48.0, 120.0) to ShotParameters(-1000, 0.1),
+        Pair(72.0, 120.0) to ShotParameters(-1200, 0.1),
+        Pair(72.0, 96.0) to ShotParameters(-1200, 0.1),
+        Pair(72.0, 24.0) to ShotParameters(-1700, 0.0),
+        Pair(96.0, 96.0) to ShotParameters(-1300, 0.1),
+        Pair(120.0, 120.0) to ShotParameters(-1600, 0.0),
+        Pair(96.0, 120.0) to ShotParameters(-1450, 0.0),
+        Pair(88.5, 8.25) to ShotParameters(-1650, 0.0)
+    )
+
+    fun getShot(x: Double, y: Double): ShotParameters? {
+        val closestKey = shooterLookupTable.keys.minByOrNull { (keyX, keyY) ->
+            val dx = x - keyX
+            val dy = y - keyY
+            (dx * dx) + (dy * dy)
+        }
+
+        if (closestKey == null) return null
+
+        val (closestX, closestY) = closestKey
+        val dx = x - closestX
+        val dy = y - closestY
+        val distanceSq = (dx * dx) + (dy * dy)
+
+        return if (distanceSq <= MAX_DISTANCE_SQ) {
+            telemetry.addData("Found shot for nearby key" , "",closestX, closestY)
+            shooterLookupTable[closestKey]
+        } else {
+            telemetry.addData("No shot found","","")
+            null
+        }
+    }
+
+    fun applyShot(params: ShotParameters) {
+        Shooter.target = params.velocity.toDouble()
+        ShooterAngle.targetPosition = params.angle
+        telemetry.log().add("Applying shot: V=${params.velocity}, A=${params.angle}")
+    }
+}

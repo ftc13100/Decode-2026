@@ -1,8 +1,5 @@
-package org.firstinspires.ftc.teamcode.opModes.teleOp.limelight
+package org.firstinspires.ftc.teamcode.opModes.teleOp
 
-import com.acmerobotics.dashboard.FtcDashboard
-import com.acmerobotics.dashboard.config.Config
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
@@ -11,23 +8,30 @@ import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
+import dev.nextftc.extensions.pedro.PedroComponent
+import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
+import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.turret
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants
+import org.firstinspires.ftc.teamcode.pedroPathing.Tuning
 import kotlin.math.abs
 
-@Config
-@TeleOp(name = "LimeLightTelemetry")
-class LimeLightTelemetryClean : NextFTCOpMode() {
-
+@TeleOp(name = "MainTeleop")
+class MainTeleop : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(),
-            BindingsComponent,
             BulkReadComponent,
+            BindingsComponent,
+            PedroComponent(Constants::createFollower)
         )
     }
 
@@ -35,6 +39,8 @@ class LimeLightTelemetryClean : NextFTCOpMode() {
     private val frontRightName = "frontRight"
     private val backLeftName = "backLeft"
     private val backRightName = "backRight"
+
+    private val shooterController = ShooterController()
 
     private lateinit var frontLeftMotor: MotorEx
     private lateinit var frontRightMotor: MotorEx
@@ -45,14 +51,7 @@ class LimeLightTelemetryClean : NextFTCOpMode() {
 
     private lateinit var limelight: Limelight3A
 
-    // Optional: simple alignment state if you want to add later
-    private var isAlignmentModeActive = false
-    private val ALIGNMENT_POWER = 0.10
-    private val ALIGNMENT_TOLERANCE = 0.9
-
     override fun onInit() {
-        telemetry = MultipleTelemetry(FtcDashboard.getInstance().telemetry, telemetry)
-
         frontLeftMotor = MotorEx(frontLeftName).reversed()
         frontRightMotor = MotorEx(frontRightName)
         backLeftMotor = MotorEx(backLeftName).reversed()
@@ -67,9 +66,8 @@ class LimeLightTelemetryClean : NextFTCOpMode() {
         limelight.pipelineSwitch(1)
         limelight.start()
 
-        // NOTE: Pedro Pathing follower removed from this TeleOp to avoid motor conflicts.
-        // If you want odometry from Pedro Pathing, re-integrate a localizer-only object
-        // or call the follower in a read-only way that does not write motor outputs.
+       // follower.startTeleopDrive()
+        follower.update()
     }
 
     override fun onStartButtonPressed() {
@@ -84,70 +82,69 @@ class LimeLightTelemetryClean : NextFTCOpMode() {
         )
         driverControlled.scalar = 1.0
 
+        // This drive code is for Pedro, but it seems you are using MecanumDriverControlled.
+        // If follower.update() in onUpdate() correctly tracks pose with MecanumDriverControlled,
+        // you can leave this commented. If your pose (x, y) doesn't update,
+        // you may need to use this drive method instead of MecanumDriverControlled.
+
+//        follower.setTeleOpDrive(
+//            -gamepad1.left_stick_y.toDouble(),
+//            -gamepad1.left_stick_x.toDouble(),
+//            -gamepad1.right_stick_x.toDouble(),
+//            true
+//        )
+
         button { gamepad1.y }
             .toggleOnBecomesTrue()
             .whenBecomesTrue { driverControlled.scalar = 0.4 }
             .whenBecomesFalse { driverControlled.scalar = 1.0 }
 
-        // Example: use gamepad1.b to toggle a very simple Limelight alignment mode.
-        button { gamepad1.b }
+        button { gamepad1.a }
             .whenBecomesTrue {
-                isAlignmentModeActive = !isAlignmentModeActive
+                val result = limelight.latestResult
+
+                if (result != null && result.isValid) {
+                    val x = follower.pose.x
+                    val y = follower.pose.y
+
+                    val params = shooterController.getShot(x, y)
+                    if (params != null) {
+                        shooterController.applyShot(params)
+                    } else {
+                        telemetry.log().add("Shot not found for ($x, $y)")
+                    }
+                } else {
+                    telemetry.log().add("Limelight target not valid")
+                }
             }
     }
 
     override fun onUpdate() {
         BindingManager.update()
 
+        driverControlled.update()
+
+        follower.update()
+        Shooter.spinning()
+        ShooterAngle.update()
+
+        telemetry.addData("x:", "%.2f", follower.pose.x)
+        telemetry.addData("y:", "%.2f", follower.pose.y)
+        telemetry.addData("heading:", "%.2f", follower.pose.heading)
+
         val result: LLResult? = limelight.latestResult
-
-        if (isAlignmentModeActive && result != null && result.isValid) {
-            // simple bang-bang turning (keeps drive/strafe from sticks)
-            val tx = result.tx
-            var turnPower = 0.0
-            if (abs(tx) > ALIGNMENT_TOLERANCE) {
-                turnPower = if (tx > 0) ALIGNMENT_POWER else -ALIGNMENT_POWER
-            } else {
-                isAlignmentModeActive = false
-                turnPower = 0.0
-            }
-
-            // keep driver-controlled inputs but add turnPower
-            val drivePower = Gamepads.gamepad1.leftStickY.get()
-            val strafePower = Gamepads.gamepad1.leftStickX.get()
-
-            frontLeftMotor.power = drivePower + strafePower + turnPower
-            frontRightMotor.power = drivePower - strafePower - turnPower
-            backLeftMotor.power = drivePower - strafePower + turnPower
-            backRightMotor.power = drivePower + strafePower - turnPower
-
-            telemetry.addData("Align Mode", "ACTIVE")
-            telemetry.addData("tx Error", "%.2f", tx)
-            telemetry.addData("Turn Power", "%.2f", turnPower)
-        } else {
-            // Normal manual driving via NextFTC MecanumDriverControlled
-            driverControlled.update()
-
-            if (isAlignmentModeActive && (result == null || !result.isValid)) {
-                telemetry.addData("Align Mode", "ACTIVE - NO TARGET")
-                // optionally stop motors if you want to hold position while searching
-                // frontLeftMotor.power = 0.0 ; frontRightMotor.power = 0.0 ; backLeftMotor.power = 0.0 ; backRightMotor.power = 0.0
-            } else {
-                telemetry.addData("Align Mode", "Manual")
-            }
-        }
-
-        // Limelight telemetry
         if (result != null && result.isValid) {
             val botpose: Pose3D = result.botpose
             telemetry.addData("tx (Horizontal Error)", "%.2f", result.tx)
             telemetry.addData("ty (Vertical Error)", "%.2f", result.ty)
-            telemetry.addData("Botpose", botpose.toString())
         } else {
             telemetry.addData("Limelight", "Target not found")
         }
 
-        telemetry.addData("Mode", "TeleOp Running")
+        telemetry.addData("Shooter Target Vel", Shooter.target)
+        telemetry.addData("Shooter Actual Vel", "%.2f", Shooter.shooter.velocity)
+        telemetry.addData("Angle Target Pos", ShooterAngle.targetPosition)
+
         telemetry.update()
     }
 

@@ -106,8 +106,6 @@ class blueBottom: NextFTCOpMode() {
                          FollowPath(PPGsecond),
                          FollowPath(HumanPlayer),
                          FollowPath(ShootAgain)
-
-
         )
 
     val PGP: Command

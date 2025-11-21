@@ -17,7 +17,6 @@ object Shooter : Subsystem {
 
     val shooter = MotorEx("shooter").brakeMode()
 
-
     fun spinning() {
         val controller = controlSystem {
             velPid(velPIDCoefficients)
