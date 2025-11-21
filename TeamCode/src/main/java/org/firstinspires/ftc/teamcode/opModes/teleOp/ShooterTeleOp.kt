@@ -13,15 +13,19 @@ import dev.nextftc.hardware.impl.MotorEx
 import com.bylazar.telemetry.PanelsTelemetry
 import kotlin.concurrent.timer
 import com.qualcomm.robotcore.util.ElapsedTime
+import dev.nextftc.extensions.pedro.PedroComponent
+import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants.createFollower
 
 @TeleOp(name = "Shooter Test & Tune")
 class ShooterTeleOp : NextFTCOpMode() {
     init {
-        SubsystemComponent(
-            Shooter
+        addComponents(
+            SubsystemComponent(Shooter),
+            BulkReadComponent,
+            PedroComponent(Constants::createFollower)
         )
-        BulkReadComponent
-        BindingsComponent
     }
     private val panelsTelemetry = PanelsTelemetry.telemetry
     private val timer = ElapsedTime()
