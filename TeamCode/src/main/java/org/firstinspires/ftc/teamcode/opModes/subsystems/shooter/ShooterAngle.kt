@@ -8,8 +8,10 @@ import dev.nextftc.hardware.impl.ServoEx
 import dev.nextftc.hardware.positionable.SetPosition
 
 object ShooterAngle: Subsystem {
-    private val servo =
-        ActiveOpMode.hardwareMap.get(Servo::class.java, "angle")
+    private lateinit var servo : Servo
+    override fun initialize() {
+        servo = ActiveOpMode.hardwareMap.get(Servo::class.java, "angle")
+    }
 
     var targetPosition: Double = 0.0
 

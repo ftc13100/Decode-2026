@@ -28,7 +28,9 @@ import kotlin.math.abs
 class MainTeleop : NextFTCOpMode() {
     init {
         addComponents(
-            SubsystemComponent(),
+            SubsystemComponent(
+                ShooterAngle, Shooter
+            ),
             BulkReadComponent,
             BindingsComponent,
             PedroComponent(Constants::createFollower)
@@ -112,20 +114,14 @@ class MainTeleop : NextFTCOpMode() {
             }
 
         button { gamepad1.x }
-            .whenBecomesTrue {
-                ShooterAngle.angle_up
-            }
-            .whenBecomesFalse {
-                ShooterAngle.angle_down
-            }
-
+            .toggleOnBecomesTrue()
+            .whenBecomesTrue { ShooterAngle.angle_up() }
+            .whenBecomesFalse { ShooterAngle.angle_down() }
     }
 
     override fun onUpdate() {
         BindingManager.update()
-
         driverControlled.update()
-
         follower.update()
         //Shooter.spinning()
         //ShooterAngle.update()
@@ -146,7 +142,6 @@ class MainTeleop : NextFTCOpMode() {
         telemetry.addData("Shooter Target Vel", Shooter.target)
         telemetry.addData("Shooter Actual Vel", "%.2f", Shooter.shooter.velocity)
         telemetry.addData("Angle Target Pos", ShooterAngle.targetPosition)
-
         telemetry.update()
     }
 
