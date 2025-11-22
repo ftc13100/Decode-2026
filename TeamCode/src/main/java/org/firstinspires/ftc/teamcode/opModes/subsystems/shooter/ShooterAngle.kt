@@ -13,11 +13,11 @@ object ShooterAngle: Subsystem {
         servo = ActiveOpMode.hardwareMap.get(Servo::class.java, "angle")
     }
 
-    var targetPosition: Double = 0.0
+    var targetPosition = 0.0
 
-    fun update() {
+    fun update() : InstantCommand {
         // Set the servo position directly
-        servo.position = targetPosition
+        return InstantCommand { servo.position = targetPosition }
     }
 
 

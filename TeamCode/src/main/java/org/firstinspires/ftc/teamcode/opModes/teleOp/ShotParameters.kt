@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
+import dev.nextftc.core.commands.Command
+import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.ftc.ActiveOpMode.telemetry
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
@@ -48,7 +50,11 @@ class ShooterController {
         Shooter.target = params.velocity.toDouble()
         ShooterAngle.targetPosition = params.angle
         Shooter.spinning()
-        ShooterAngle.update()
+
+        CommandManager.scheduleCommand(
+            ShooterAngle.update()
+        )
+
         telemetry.log().add("Applying shot: V=${params.velocity}, A=${params.angle}")
     }
 }
