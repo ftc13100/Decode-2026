@@ -47,6 +47,8 @@ class ShooterController {
     fun applyShot(params: ShotParameters) {
         Shooter.target = params.velocity.toDouble()
         ShooterAngle.targetPosition = params.angle
+        Shooter.spinning()
+        ShooterAngle.update()
         telemetry.log().add("Applying shot: V=${params.velocity}, A=${params.angle}")
     }
 }

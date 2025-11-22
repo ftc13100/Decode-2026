@@ -101,18 +101,25 @@ class MainTeleop : NextFTCOpMode() {
 
         button { gamepad1.a }
             .whenBecomesTrue {
-
-                    val x = follower.pose.x
-                    val y = follower.pose.y
-
-                    val params = shooterController.getShot(x, y)
-                    if (params != null) {
-                        shooterController.applyShot(params)
-                    } else {
-                        telemetry.log().add("Shot not found for ($x, $y)")
-                    }
+                val x = follower.pose.x
+                val y = follower.pose.y
+                val params = shooterController.getShot(x, y)
+                if (params != null) {
+                    shooterController.applyShot(params)
+                } else {
+                    telemetry.log().add("Shot not found for ($x, $y)")
                 }
             }
+
+        button { gamepad1.x }
+            .whenBecomesTrue {
+                ShooterAngle.angle_up
+            }
+            .whenBecomesFalse {
+                ShooterAngle.angle_down
+            }
+
+    }
 
     override fun onUpdate() {
         BindingManager.update()
@@ -120,8 +127,8 @@ class MainTeleop : NextFTCOpMode() {
         driverControlled.update()
 
         follower.update()
-        Shooter.spinning()
-        ShooterAngle.update()
+        //Shooter.spinning()
+        //ShooterAngle.update()
 
         telemetry.addData("x:", "%.2f", follower.pose.x)
         telemetry.addData("y:", "%.2f", follower.pose.y)
@@ -129,7 +136,7 @@ class MainTeleop : NextFTCOpMode() {
 
         val result: LLResult? = limelight.latestResult
         if (result != null && result.isValid) {
-            val botpose: Pose3D = result.botpose
+//            val botpose: Pose3D = result.botpose
             telemetry.addData("tx (Horizontal Error)", "%.2f", result.tx)
             telemetry.addData("ty (Vertical Error)", "%.2f", result.ty)
         } else {
