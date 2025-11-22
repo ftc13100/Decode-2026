@@ -15,10 +15,7 @@ object ShooterAngle: Subsystem {
 
     var targetPosition = 0.0
 
-    fun update() : InstantCommand {
-        // Set the servo position directly
-        return InstantCommand { servo.position = targetPosition }
-    }
+    fun update() = InstantCommand { servo.position = targetPosition }
 
 
     val angle_up = InstantCommand {
