@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode.opModes.subsystems.shooter
 
+import com.qualcomm.robotcore.hardware.Servo
+import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
+import dev.nextftc.ftc.ActiveOpMode
 import dev.nextftc.hardware.impl.ServoEx
 import dev.nextftc.hardware.positionable.SetPosition
 
 object ShooterAngle: Subsystem {
-
-    private val servo = ServoEx("angle")
+    private val servo =
+        ActiveOpMode.hardwareMap.get(Servo::class.java, "angle")
 
     var targetPosition: Double = 0.0
 
@@ -16,9 +19,15 @@ object ShooterAngle: Subsystem {
     }
 
 
-    val angle_up = SetPosition(servo, 0.0).requires(this)
+    val angle_up = InstantCommand {
+        servo.position = 0.0
+    }
 
-    val angle_middle = SetPosition(servo, 0.1).requires(this)
+    val angle_middle = InstantCommand {
+        servo.position = 0.1
+    }
 
-    val angle_down = SetPosition(servo, 0.2).requires(this)
+    val angle_down = InstantCommand {
+        servo.position = 0.2
+    }
 }
