@@ -114,7 +114,6 @@ class MainTeleop : NextFTCOpMode() {
             }
 
         button { gamepad1.x }
-            .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 CommandManager.scheduleCommand(
                     ShooterAngle.angle_up
