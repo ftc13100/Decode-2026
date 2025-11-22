@@ -113,10 +113,10 @@ class MainTeleop : NextFTCOpMode() {
                 }
             }
 
-        button { gamepad1.x }
-            .toggleOnBecomesTrue()
-            .whenBecomesTrue { ShooterAngle.angle_up() }
-            .whenBecomesFalse { ShooterAngle.angle_down() }
+//        button { gamepad1.x }
+//            .toggleOnBecomesTrue()
+//            .whenBecomesTrue { ShooterAngle.angle_up() }
+//            .whenBecomesFalse { ShooterAngle.angle_down() }
     }
 
     override fun onUpdate() {
@@ -124,7 +124,6 @@ class MainTeleop : NextFTCOpMode() {
         driverControlled.update()
         follower.update()
         //Shooter.spinning()
-        //ShooterAngle.update()
 
         telemetry.addData("x:", "%.2f", follower.pose.x)
         telemetry.addData("y:", "%.2f", follower.pose.y)

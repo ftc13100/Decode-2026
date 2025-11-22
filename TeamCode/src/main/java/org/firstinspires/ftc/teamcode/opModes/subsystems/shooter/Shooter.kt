@@ -17,11 +17,20 @@ object Shooter : Subsystem {
 
     val shooter = MotorEx("shooter").brakeMode()
 
-    fun spinning() {
-        val controller = controlSystem {
-            velPid(velPIDCoefficients)
-        }
+    val controller = controlSystem {
+        velPid(velPIDCoefficients)
+    }
 
+    fun spinAtSpeed(speed: Double) =
+        RunToVelocity(controller,speed).requires(this)
+
+    override fun periodic() {
+        shooter.power = controller.calculate(
+            shooter.state
+        )
+    }
+
+    fun spinning() {
         controller.goal = KineticState(velocity = target)
 
         shooter.power = controller.calculate(
