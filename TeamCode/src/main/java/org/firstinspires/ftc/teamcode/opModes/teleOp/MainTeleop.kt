@@ -4,8 +4,10 @@ import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.sun.tools.doclint.HtmlTag
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
+import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.PedroComponent
@@ -112,11 +114,16 @@ class MainTeleop : NextFTCOpMode() {
             }
 
         button { gamepad1.x }
+            .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                ShooterAngle.angle_up
+                CommandManager.scheduleCommand(
+                    ShooterAngle.angle_up
+                )
             }
             .whenBecomesFalse {
-                ShooterAngle.angle_down
+                CommandManager.scheduleCommand(
+                    ShooterAngle.angle_down
+                )
             }
 
     }
