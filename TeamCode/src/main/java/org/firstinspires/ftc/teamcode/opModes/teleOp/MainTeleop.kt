@@ -52,9 +52,9 @@ class MainTeleop : NextFTCOpMode() {
     private lateinit var limelight: Limelight3A
 
     override fun onInit() {
-        frontLeftMotor = MotorEx(frontLeftName).reversed()
+        frontLeftMotor = MotorEx(frontLeftName)
         frontRightMotor = MotorEx(frontRightName)
-        backLeftMotor = MotorEx(backLeftName).reversed()
+        backLeftMotor = MotorEx(backLeftName)
         backRightMotor = MotorEx(backRightName)
 
         listOf(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor).forEach {
