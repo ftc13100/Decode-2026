@@ -114,6 +114,7 @@ class MainTeleop : NextFTCOpMode() {
             }
 
         button { gamepad1.x }
+            .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 CommandManager.scheduleCommand(
                     ShooterAngle.angle_up
@@ -129,31 +130,31 @@ class MainTeleop : NextFTCOpMode() {
 
     override fun onUpdate() {
         BindingManager.update()
-
+//
         driverControlled.update()
-
-        follower.update()
-        //Shooter.spinning()
-        //ShooterAngle.update()
-
-        telemetry.addData("x:", "%.2f", follower.pose.x)
-        telemetry.addData("y:", "%.2f", follower.pose.y)
-        telemetry.addData("heading:", "%.2f", follower.pose.heading)
-
-        val result: LLResult? = limelight.latestResult
-        if (result != null && result.isValid) {
-//            val botpose: Pose3D = result.botpose
-            telemetry.addData("tx (Horizontal Error)", "%.2f", result.tx)
-            telemetry.addData("ty (Vertical Error)", "%.2f", result.ty)
-        } else {
-            telemetry.addData("Limelight", "Target not found")
-        }
-
-        telemetry.addData("Shooter Target Vel", Shooter.target)
-        telemetry.addData("Shooter Actual Vel", "%.2f", Shooter.shooter.velocity)
-        telemetry.addData("Angle Target Pos", ShooterAngle.targetPosition)
-
-        telemetry.update()
+//
+//        follower.update()
+//        //Shooter.spinning()
+//        //ShooterAngle.update()
+//
+//        telemetry.addData("x:", "%.2f", follower.pose.x)
+//        telemetry.addData("y:", "%.2f", follower.pose.y)
+//        telemetry.addData("heading:", "%.2f", follower.pose.heading)
+//
+//        val result: LLResult? = limelight.latestResult
+//        if (result != null && result.isValid) {
+////            val botpose: Pose3D = result.botpose
+//            telemetry.addData("tx (Horizontal Error)", "%.2f", result.tx)
+//            telemetry.addData("ty (Vertical Error)", "%.2f", result.ty)
+//        } else {
+//            telemetry.addData("Limelight", "Target not found")
+//        }
+//
+//        telemetry.addData("Shooter Target Vel", Shooter.target)
+//        telemetry.addData("Shooter Actual Vel", "%.2f", Shooter.shooter.velocity)
+//        telemetry.addData("Angle Target Pos", ShooterAngle.targetPosition)
+//
+//        telemetry.update()
     }
 
     override fun onStop() {
