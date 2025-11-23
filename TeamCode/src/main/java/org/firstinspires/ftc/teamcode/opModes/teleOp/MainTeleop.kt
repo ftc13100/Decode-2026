@@ -16,6 +16,7 @@ import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
@@ -111,6 +112,14 @@ class MainTeleop : NextFTCOpMode() {
                 } else {
                     telemetry.log().add("Shot not found for ($x, $y)")
                 }
+            }
+
+        button { gamepad1.x }
+            .whenBecomesTrue {
+                intake.power = 0.7
+            }
+            .whenBecomesFalse {
+                intake.power = 0.0
             }
 
 //        button { gamepad1.x }

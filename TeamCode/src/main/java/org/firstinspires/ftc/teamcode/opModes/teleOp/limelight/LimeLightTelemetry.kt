@@ -17,6 +17,8 @@ import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.spinSlowSpeed
 import kotlin.math.abs
 
 @Config
@@ -94,6 +96,15 @@ class LimeLightTelemetryClean : NextFTCOpMode() {
             .whenBecomesTrue {
                 isAlignmentModeActive = !isAlignmentModeActive
             }
+
+        button { gamepad1.x }
+            .whenBecomesTrue {
+                intake.power = 0.7
+            }
+            .whenBecomesFalse {
+                intake.power = 0.0
+            }
+
     }
 
     override fun onUpdate() {

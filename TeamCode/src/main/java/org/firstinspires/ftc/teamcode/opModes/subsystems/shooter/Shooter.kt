@@ -7,6 +7,7 @@ import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode
+import dev.nextftc.ftc.ActiveOpMode.telemetry
 import dev.nextftc.hardware.controllable.RunToVelocity
 import dev.nextftc.hardware.impl.MotorEx
 
@@ -28,6 +29,8 @@ object Shooter : Subsystem {
         shooter.power = controller.calculate(
             shooter.state
         )
+        telemetry.addData("Controller goal", controller.goal)
+        telemetry.addData("state", shooter.state)
     }
 
     fun spinning() {
