@@ -104,14 +104,17 @@ class MainTeleop : NextFTCOpMode() {
 
         button { gamepad1.a }
             .whenBecomesTrue {
-                val x = follower.pose.x
-                val y = follower.pose.y
+                val x = abs(follower.pose.x)
+                val y = abs(follower.pose.y)
                 val params = shooterController.getShot(x, y)
                 if (params != null) {
                     shooterController.applyShot(params)
                 } else {
                     telemetry.log().add("Shot not found for ($x, $y)")
                 }
+            }
+            .whenBecomesFalse {
+                Shooter.shooter.power=0.0
             }
 
         button { gamepad1.x }

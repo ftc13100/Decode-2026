@@ -22,6 +22,8 @@ class ShooterController {
 //        Pair(120.0, 120.0) to ShotParameters(-1600.0, 0.0),
 //        Pair(96.0, 120.0) to ShotParameters(-1450.0, 0.0),
 //        Pair(88.5, 8.25) to ShotParameters(-1650.0, 0.0),
+//test pair 0.0
+        Pair(0.0,0.0) to ShotParameters(-1600.0,0.1),
         Pair(120.0, 24.0) to ShotParameters(-950.0, 0.2),
         Pair(96.0, 48.0) to ShotParameters(-1100.0, 0.1),
         Pair(72.0, 72.0) to ShotParameters(-1350.0, 0.0),
@@ -43,7 +45,7 @@ class ShooterController {
             val dx = kotlin.math.abs(x - keyX)
             val dy = kotlin.math.abs(y - keyY)
 
-            if (dx <= 3.0 && dy <= 3.0) {
+            if (dx <= 5.0 && dy <= 5.0) {
                 bestKey = Pair(keyX, keyY)
                 break
             }
