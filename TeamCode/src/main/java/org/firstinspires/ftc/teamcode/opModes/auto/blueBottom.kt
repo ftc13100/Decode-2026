@@ -126,7 +126,7 @@ class blueBottom: NextFTCOpMode() {
         )
 
     override fun onInit() {
-        follower.setMaxPower(0.7)
+        follower.setMaxPower(0.8)
         follower.setStartingPose(shootPose)
         buildPaths()
     }
