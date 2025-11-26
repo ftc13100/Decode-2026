@@ -125,10 +125,10 @@ class MainTeleop : NextFTCOpMode() {
                 intake.power = 0.0
             }
 
-//        button { gamepad1.x }
-//            .toggleOnBecomesTrue()
-//            .whenBecomesTrue { ShooterAngle.angle_up() }
-//            .whenBecomesFalse { ShooterAngle.angle_down() }
+        button { gamepad1.b }
+            .toggleOnBecomesTrue()
+            .whenBecomesTrue { ShooterAngle.angle_up() }
+            .whenBecomesFalse { ShooterAngle.angle_down() }
     }
 
     override fun onUpdate() {
