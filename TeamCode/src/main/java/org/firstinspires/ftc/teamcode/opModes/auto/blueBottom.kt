@@ -8,6 +8,7 @@ import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.robot.Robot
 import dev.nextftc.core.commands.Command
+import dev.nextftc.core.commands.delays.Delay
 import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
@@ -18,14 +19,17 @@ import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil.limelight
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
+import kotlin.time.Duration.Companion.seconds
 
 
 @Autonomous(name = "blueBottom")
 class blueBottom: NextFTCOpMode() {
     init {
         addComponents(
-               SubsystemComponent(MohitPatil),
+               SubsystemComponent(MohitPatil, Shooter, ShooterAngle),
                   BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
@@ -42,7 +46,6 @@ class blueBottom: NextFTCOpMode() {
             //path to pick up GPP motif
         private val pickUpGPP = Pose(127.7, 59.0, Math.toRadians(0.0))
         private val pickUpGPPcontrol= Pose(82.5, 39.3, Math.toRadians(0.0))
-        private val pickUPhp= Pose(140.0,8.2,Math.toRadians(0.0))
 
     //PPG path chains
     private lateinit var PPGfirst: PathChain
@@ -55,9 +58,6 @@ class blueBottom: NextFTCOpMode() {
     private lateinit var GPPfirst: PathChain
     private lateinit var GPPsecond: PathChain
 
-    //Universal path chains
-    private lateinit var HumanPlayer: PathChain
-    private lateinit var ShootAgain: PathChain
 
     private fun buildPaths() {
         //PGP paths
@@ -88,41 +88,73 @@ class blueBottom: NextFTCOpMode() {
             .addPath(BezierLine(pickUpGPP, shootPose))
                 .setLinearHeadingInterpolation(pickUpGPP.heading,shootPose.heading)
             .build()
-        //Universal paths
-             HumanPlayer= follower.pathBuilder()
-            .addPath(BezierLine(shootPose, pickUPhp))
-                 .setLinearHeadingInterpolation(shootPose.heading,pickUPhp.heading)
-            .build()
-             ShootAgain= follower.pathBuilder()
-            .addPath(BezierLine(pickUPhp,shootPose))
-                 .setLinearHeadingInterpolation(pickUPhp.heading,shootPose.heading)
-            .build()
+
     }
 
     val PPG: Command
         get() = SequentialGroup(
-
+            //shoots the preload
+            ShooterAngle.angle_up,
+                         Shooter.spinAtSpeed(-1650.0),
+                         Delay(2.seconds),
+            //picks up motif
             FollowPath(PPGfirst),
-                         FollowPath(PPGsecond),
-                         FollowPath(HumanPlayer),
-                         FollowPath(ShootAgain)
+            FollowPath(PPGsecond),
+            //shoots the motif
+                         ShooterAngle.angle_up,
+                         Shooter.spinAtSpeed(-1650.0),
+                         Delay(2.seconds),
+            //picks up the non-motif
+            FollowPath(PGPfirst),
+            FollowPath(PGPsecond),
+            //shoots the non-motif
+                         ShooterAngle.angle_up,
+                         Shooter.spinAtSpeed(-1650.0),
+                         Delay(2.seconds),
         )
 
     val PGP: Command
         get() = SequentialGroup(
+            //shoots the preload
+            ShooterAngle.angle_up,
+                         Shooter.spinAtSpeed(-1650.0),
+                         Delay(2.seconds),
+            //picks up motif
             FollowPath(PGPfirst),
-                         FollowPath(PGPsecond),
-                         FollowPath(HumanPlayer),
-                         FollowPath(ShootAgain)
+            FollowPath(PGPsecond),
+            //shoots the motif
+                         ShooterAngle.angle_up,
+                         Shooter.spinAtSpeed(-1650.0),
+                         Delay(2.seconds),
+            //picks up the non-motif
+            FollowPath(GPPfirst),
+            FollowPath(GPPsecond),
+            //shoots the non-motif
+                         ShooterAngle.angle_up,
+                         Shooter.spinAtSpeed(-1650.0),
+                         Delay(2.seconds),
 
         )
     val GPP: Command
         get() = SequentialGroup(
+            //shoots the preload
+            ShooterAngle.angle_up,
+                         Shooter.spinAtSpeed(-1650.0),
+                         Delay(2.seconds),
+            //picks up motif
             FollowPath(GPPfirst),
-                         FollowPath(GPPsecond),
-                         FollowPath(HumanPlayer),
-                         FollowPath(ShootAgain)
-
+            FollowPath(GPPsecond),
+            //shoots the motif
+                         ShooterAngle.angle_up,
+                         Shooter.spinAtSpeed(-1650.0),
+                         Delay(2.seconds),
+            //picks up the non-motif
+            FollowPath(PGPfirst),
+            FollowPath(PGPsecond),
+            //shoots the non-motif
+                         ShooterAngle.angle_up,
+                         Shooter.spinAtSpeed(-1650.0),
+                         Delay(2.seconds),
         )
 
     override fun onInit() {
