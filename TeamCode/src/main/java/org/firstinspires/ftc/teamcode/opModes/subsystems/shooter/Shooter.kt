@@ -24,7 +24,7 @@ object Shooter : Subsystem {
 
     fun spinAtSpeed(speed: Double) =
 
-        RunToVelocity(controller,speed).requires(this)
+        RunToVelocity(controller,speed, 10.0).requires(this)
 
 
     override fun periodic() {

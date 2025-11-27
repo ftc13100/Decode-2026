@@ -31,7 +31,7 @@ import kotlin.time.Duration.Companion.seconds
 class blueBottom: NextFTCOpMode() {
     init {
         addComponents(
-               SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake),
+               SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake, Gate),
                   BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
@@ -41,7 +41,7 @@ class blueBottom: NextFTCOpMode() {
 
         private val startPose = Pose(88.0, 6.0, Math.toRadians(90.0))
 
-        private val shootPose = Pose(88.0, 8.0, Math.toRadians(90.0))
+        private val shootPose = Pose(88.0, 8.0, Math.toRadians(120.0))
             //path to pick up PPG motif
         private val pickUpPPG = Pose(124.7, 79.0, Math.toRadians(0.0))
         private val pickUpPPGcontrol= Pose(76.6, 87.0, Math.toRadians(0.0))
@@ -99,7 +99,7 @@ class blueBottom: NextFTCOpMode() {
         //Move a bit
             MoveAbit = follower.pathBuilder()
             .addPath(BezierLine(startPose,shootPose))
-                .setConstantHeadingInterpolation(startPose.heading)
+                .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
             .build()
 
 
@@ -111,9 +111,10 @@ class blueBottom: NextFTCOpMode() {
             //shoots the preload
                          ShooterAngle.angle_up,
                          Shooter.spinAtSpeed(-1650.0),
-                         Intake.spinSlowSpeed(),
                          Gate.gate_up,
-                         Intake.stop(),
+                         Intake.autoFast,
+                         Delay(2.seconds),
+                         Intake.autoStop,
                          Shooter.spinAtSpeed(0.0),
             //picks up motif
             FollowPath(PPGfirst),
@@ -180,7 +181,7 @@ class blueBottom: NextFTCOpMode() {
 
     override fun onInit() {
         follower.setMaxPower(1.0)
-        Gate.gate_down
+        Gate.gate_down()
         follower.setStartingPose(startPose)
         buildPaths()
     }

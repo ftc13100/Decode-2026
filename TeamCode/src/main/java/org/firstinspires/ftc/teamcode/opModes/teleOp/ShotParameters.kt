@@ -23,18 +23,18 @@ class ShooterController {
 //        Pair(96.0, 120.0) to ShotParameters(-1450.0, 0.0),
 //        Pair(88.5, 8.25) to ShotParameters(-1650.0, 0.0),
 //test pair 0.0
-        Pair(0.0,0.0) to ShotParameters(-1600.0,0.1),
-        Pair(120.0, 24.0) to ShotParameters(-950.0, 0.2),
-        Pair(96.0, 48.0) to ShotParameters(-1100.0, 0.1),
-        Pair(72.0, 72.0) to ShotParameters(-1350.0, 0.0),
-        Pair(120.0, 48.0) to ShotParameters(-1000.0, 0.1),
-        Pair(120.0, 72.0) to ShotParameters(-1200.0, 0.1),
-        Pair(96.0, 72.0) to ShotParameters(-1200.0, 0.1),
-        Pair(24.0, 72.0) to ShotParameters(-1700.0, 0.0),
-        Pair(96.0, 96.0) to ShotParameters(-1300.0, 0.1),
-        Pair(120.0, 120.0) to ShotParameters(-1600.0, 0.0),
-        Pair(120.0, 96.0) to ShotParameters(-1450.0, 0.0),
-        Pair(8.25, 88.5) to ShotParameters(-1650.0, 0.0)
+        Pair(0.0,0.0) to ShotParameters(-1600.0,0.6),
+        Pair(120.0, 24.0) to ShotParameters(-950.0, 0.7),
+        Pair(96.0, 48.0) to ShotParameters(-1100.0, 0.6),
+        Pair(72.0, 72.0) to ShotParameters(-1350.0, 0.5),
+        Pair(120.0, 48.0) to ShotParameters(-1000.0, 0.6),
+        Pair(120.0, 72.0) to ShotParameters(-1200.0, 0.6),
+        Pair(96.0, 72.0) to ShotParameters(-1200.0, 0.6),
+        Pair(24.0, 72.0) to ShotParameters(-1700.0, 0.5),
+        Pair(96.0, 96.0) to ShotParameters(-1300.0, 0.6),
+        Pair(120.0, 120.0) to ShotParameters(-1600.0, 0.5),
+        Pair(120.0, 96.0) to ShotParameters(-1450.0, 0.5),
+        Pair(8.25, 88.5) to ShotParameters(-1650.0, 0.5)
 
     )
 

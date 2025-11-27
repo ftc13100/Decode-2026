@@ -22,14 +22,14 @@ object ShooterAngle: Subsystem {
 
 
     val angle_up = InstantCommand {
-        servo.position = 0.0
+        servo.position = 0.5
     }
 
     val angle_middle = InstantCommand {
-        servo.position = 0.1
+        servo.position = 0.6
     }
 
     val angle_down = InstantCommand {
-        servo.position = 0.2
+        servo.position = 0.7
     }
 }

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
+import com.pedropathing.geometry.Pose
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
@@ -53,8 +54,13 @@ class MainTeleop : NextFTCOpMode() {
     private lateinit var driverControlled: MecanumDriverControlled
 
     private lateinit var limelight: Limelight3A
+    private val startPose = Pose(120.0, 48.0, Math.toRadians(90.0))
+
 
     override fun onInit() {
+        button { gamepad1.a}
+        follower.setStartingPose(startPose)
+
         frontLeftMotor = MotorEx(frontLeftName)
         frontRightMotor = MotorEx(frontRightName)
         backLeftMotor = MotorEx(backLeftName)
@@ -103,6 +109,7 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesFalse { driverControlled.scalar = 1.0 }
 
         button { gamepad1.a }
+            .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 val x = abs(follower.pose.x)
                 val y = abs(follower.pose.y)
@@ -114,7 +121,7 @@ class MainTeleop : NextFTCOpMode() {
                 }
             }
             .whenBecomesFalse {
-                Shooter.shooter.power=0.0
+                shooterController.applyShot(0.0, 0.0)
             }
 
         button { gamepad1.x }

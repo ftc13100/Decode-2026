@@ -46,8 +46,8 @@ class NextLimelight : NextFTCOpMode() {
     private var isAlignmentModeActive: Boolean = false
 
     // Simple Control constants for turning
-    private val ALIGNMENT_POWER: Double = 0.1
-    private val ALIGNMENT_TOLERANCE: Double = 0.9
+    private val ALIGNMENT_POWER: Double = 0.4
+    private val ALIGNMENT_TOLERANCE: Double = 1.0
 
     override fun onInit() {
         // Motors
