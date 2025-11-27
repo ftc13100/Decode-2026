@@ -14,7 +14,7 @@ import dev.nextftc.hardware.impl.MotorEx
 @Configurable
 object Shooter : Subsystem {
     @JvmField var target = 0.0
-    @JvmField var velPIDCoefficients = PIDCoefficients(0.0375, 0.15, 0.2)
+    @JvmField var velPIDCoefficients = PIDCoefficients(0.05, 0.9, 0.4)
 
     val shooter = MotorEx("shooter").brakeMode()
 
@@ -23,7 +23,9 @@ object Shooter : Subsystem {
     }
 
     fun spinAtSpeed(speed: Double) =
+
         RunToVelocity(controller,speed).requires(this)
+
 
     override fun periodic() {
         shooter.power = controller.calculate(
@@ -34,6 +36,7 @@ object Shooter : Subsystem {
     }
 
     fun spinning() {
+
         controller.goal = KineticState(velocity = target)
 
         shooter.power = controller.calculate(
