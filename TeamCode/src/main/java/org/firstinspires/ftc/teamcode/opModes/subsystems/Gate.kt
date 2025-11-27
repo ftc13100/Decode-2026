@@ -14,11 +14,11 @@ object Gate : Subsystem {
         servo = ActiveOpMode.hardwareMap.get(Servo::class.java, "gate")
     }
 
-    val gate_up = InstantCommand {
+    val gate_open = InstantCommand {
         servo.position = 1.0
     }
 
-    val gate_down = InstantCommand {
+    val gate_close = InstantCommand {
         servo.position = 0.8
     }
 

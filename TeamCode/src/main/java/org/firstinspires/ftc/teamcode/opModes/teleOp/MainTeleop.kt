@@ -17,6 +17,7 @@ import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
@@ -121,7 +122,7 @@ class MainTeleop : NextFTCOpMode() {
                 }
             }
             .whenBecomesFalse {
-                shooterController.applyShot(0.0, 0.0)
+                Shooter.spinAtSpeed(0.0)
             }
 
         button { gamepad1.x }
@@ -133,10 +134,15 @@ class MainTeleop : NextFTCOpMode() {
             }
 
         button { gamepad1.b }
-            .toggleOnBecomesTrue()
-            .whenBecomesTrue { ShooterAngle.angle_up() }
-            .whenBecomesFalse { ShooterAngle.angle_down() }
+            .toggleOnBecomesTrue() //make this a button command that only opens when held // default command?
+            .whenBecomesTrue { Gate.gate_open }
+            .whenBecomesFalse { Gate.gate_close }
     }
+//        button { gamepad1.b }
+//            .toggleOnBecomesTrue()
+//            .whenBecomesTrue { ShooterAngle.angle_up() }
+//            .whenBecomesFalse { ShooterAngle.angle_down() }
+//    }
 
     override fun onUpdate() {
         BindingManager.update()
