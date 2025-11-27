@@ -89,20 +89,18 @@ class NextLimelight : NextFTCOpMode() {
         // If want B to stop alignment when it becomes false (released), use a separate binding but here its the toggle
     }
 
-
-
     override fun onUpdate() {
         BindingManager.update()
 
         val result: LLResult? = limelight.latestResult
 
         if (isAlignmentModeActive && result != null && result.isValid) {
-            // **Limelight Simple Turning Alignment Logic (Bang-Bang)**
+            // Limelight Turning Alignment Logic Bang-Bang
             val tx: Double = result.tx
             var turnPower: Double = 0.0
 
             if (abs(tx) > ALIGNMENT_TOLERANCE) {
-                // Target is outside the tolerance window, apply fixed power to turn
+                // Target is outside the tolerance, apply fixed power to turn
                 turnPower = if (tx > 0) {
                     ALIGNMENT_POWER
                 } else {
@@ -131,7 +129,7 @@ class NextLimelight : NextFTCOpMode() {
             // Manual Control
             driverControlled.update()
 
-            // If the flag is active but we lost the target, stop the motors
+            // If active but lost the target stop the motors
             if (isAlignmentModeActive) {
                 frontLeftMotor.power = 0.0
                 frontRightMotor.power = 0.0
@@ -143,17 +141,14 @@ class NextLimelight : NextFTCOpMode() {
             }
         }
 
-        // Common Telemetry
         if (result != null && result.isValid) {
             val botpose: Pose3D = result.botpose
             telemetry.addData("tx (Horizontal Error)", "%.2f", result.tx)
             telemetry.addData("ty (Vertical Error)", "%.2f", result.ty)
             telemetry.addData("Botpose", botpose.toString())
-
         } else {
             telemetry.addData("Limelight", "Target not found")
         }
-
         telemetry.addData("Mode", "TeleOp Running")
         telemetry.update()
 
