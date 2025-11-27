@@ -42,11 +42,10 @@ class NextLimelight : NextFTCOpMode() {
 
     private lateinit var limelight: Limelight3A
 
-    // 🎯 NEW: State flag to track alignment mode
     private var isAlignmentModeActive: Boolean = false
 
-    // Simple Control constants for turning
     private val ALIGNMENT_POWER: Double = 0.2
+
     private val ALIGNMENT_TOLERANCE: Double = 1.5
 
     override fun onInit() {
@@ -60,7 +59,6 @@ class NextLimelight : NextFTCOpMode() {
             it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
 
-        // Limelight init
         limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
         telemetry.msTransmissionInterval = 11
         limelight.pipelineSwitch(1)
@@ -84,13 +82,11 @@ class NextLimelight : NextFTCOpMode() {
             .whenBecomesTrue { driverControlled.scalar = 0.4 }
             .whenBecomesFalse { driverControlled.scalar = 1.0 }
 
-        // 🎯 B Button binding: Toggle the state flag ON when pressed.
         button { gamepad1.b }
             .whenBecomesTrue {
-                isAlignmentModeActive = !isAlignmentModeActive // Toggle the flag
+                isAlignmentModeActive = !isAlignmentModeActive
             }
-        // Note: If you want B to stop alignment when it becomes false (released),
-        // you'd use a separate binding, but here we honor the 'toggle' style.
+        // If want B to stop alignment when it becomes false (released), use a separate binding but here its the toggle
     }
 
 
