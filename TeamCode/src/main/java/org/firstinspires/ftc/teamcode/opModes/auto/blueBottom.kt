@@ -111,7 +111,7 @@ class blueBottom: NextFTCOpMode() {
             //shoots the preload
                          ShooterAngle.angle_up,
                          Shooter.spinAtSpeed(-1650.0),
-                         Gate.gate_up,
+                         Gate.gate_open,
                          Intake.autoFast,
                          Delay(2.seconds),
                          Intake.autoStop,
@@ -181,7 +181,7 @@ class blueBottom: NextFTCOpMode() {
 
     override fun onInit() {
         follower.setMaxPower(1.0)
-        Gate.gate_down()
+        Gate.gate_close()
         follower.setStartingPose(startPose)
         buildPaths()
     }
