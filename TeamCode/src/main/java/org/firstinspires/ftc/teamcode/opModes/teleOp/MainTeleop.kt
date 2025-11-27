@@ -127,11 +127,11 @@ class MainTeleop : NextFTCOpMode() {
                 if (turnError > 180) turnError -= 360
                 if (turnError < -180) turnError += 360
 
-                val TOLERANCE = 2.0
+                val tolerance = 2.0
 
                 val kP = 0.01  // tune
 
-                val turnPower = if (abs(turnError) > TOLERANCE) kP * turnError else 0.0
+                val turnPower = if (abs(turnError) > tolerance) kP * turnError else 0.0
 
                 frontLeftMotor.power = turnPower
                 frontRightMotor.power = -turnPower
