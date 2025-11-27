@@ -26,6 +26,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.turret
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.teamcode.pedroPathing.Tuning
 import kotlin.math.abs
+import kotlin.math.atan2
 
 @TeleOp(name = "MainTeleop")
 class MainTeleop : NextFTCOpMode() {
@@ -108,6 +109,39 @@ class MainTeleop : NextFTCOpMode() {
             .toggleOnBecomesTrue()
             .whenBecomesTrue { driverControlled.scalar = 0.4 }
             .whenBecomesFalse { driverControlled.scalar = 1.0 }
+
+        button {gamepad1.right_bumper}
+            .whenTrue {
+                val x = abs(follower.pose.x)
+                val y = abs(follower.pose.y)
+                val heading = follower.heading
+
+                val dx = 16-x
+                val dy = 132-y
+
+                val targetAngle = 90.0 + Math.toDegrees((atan2(dy, dx)))  // opp over adj
+
+                var turnError = targetAngle - heading
+
+                // Wrap
+                if (turnError > 180) turnError -= 360
+                if (turnError < -180) turnError += 360
+
+                val TOLERANCE = 2.0
+
+                val kP = 0.01  // tune
+
+                val turnPower = if (abs(turnError) > TOLERANCE) kP * turnError else 0.0
+
+                frontLeftMotor.power = turnPower
+                frontRightMotor.power = -turnPower
+                backLeftMotor.power = turnPower
+                backRightMotor.power = -turnPower
+
+                telemetry.addData("Turn Error", "%.2f", turnError)
+                telemetry.addData("Turn Power", "%.2f", turnPower)
+                telemetry.update()
+            }
 
         button { gamepad1.a }
             .toggleOnBecomesTrue()
