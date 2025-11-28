@@ -8,6 +8,10 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
 import dev.nextftc.core.commands.Command
+import dev.nextftc.core.commands.CommandManager
+import dev.nextftc.core.commands.delays.Delay
+import dev.nextftc.core.commands.groups.SequentialGroup
+import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.core.units.Angle
@@ -30,10 +34,13 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.turret
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.teamcode.pedroPathing.Tuning
+import java.lang.Compiler.command
 import kotlin.concurrent.schedule
 import kotlin.concurrent.timer
 import kotlin.math.abs
 import kotlin.math.atan2
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @TeleOp(name = "MainTeleop")
 class MainTeleop : NextFTCOpMode() {
@@ -125,11 +132,14 @@ class MainTeleop : NextFTCOpMode() {
 
                 val targetAngle = Math.PI - atan2(abs(diff.y), abs(diff.x)) // opp over adj
 
-                val turn : Command =
-                    TurnTo(targetAngle.rad)
-                turn()
-                driverControlled()
-            }
+                CommandManager.scheduleCommand(
+                    TurnTo(
+                        Angle.fromRad(targetAngle)
+                    ).then(
+                        driverControlled
+                    )
+                )}
+
 
 //pid version
 //        button {gamepad1.right_bumper}
