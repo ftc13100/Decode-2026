@@ -7,11 +7,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
+import dev.nextftc.core.commands.Command
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.core.units.Angle
+import dev.nextftc.core.units.rad
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
+import dev.nextftc.extensions.pedro.TurnBy
 import dev.nextftc.extensions.pedro.TurnTo
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
@@ -27,6 +30,8 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.turret
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.teamcode.pedroPathing.Tuning
+import kotlin.concurrent.schedule
+import kotlin.concurrent.timer
 import kotlin.math.abs
 import kotlin.math.atan2
 
@@ -49,6 +54,8 @@ class MainTeleop : NextFTCOpMode() {
     private val backRightName = "backRight"
 
     private val shooterController = ShooterController()
+
+
 
     private lateinit var frontLeftMotor: MotorEx
     private lateinit var frontRightMotor: MotorEx
@@ -113,16 +120,45 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesFalse { driverControlled.scalar = 1.0 }
 
         button {gamepad1.right_bumper}
-            .whenTrue {
-                val goal = Pose(16.0, 132.0)
+            .whenBecomesTrue {
+                val goal = Pose(16.0, 132.0)  // 120,48
                 val diff = goal - follower.pose
+                val heading = follower.heading
 
-                val targetAngle = Math.toRadians(90.0) + atan2(diff.y, diff.x)  // opp over adj
+                val targetAngle = Math.PI - atan2(abs(diff.y), abs(diff.x)) // opp over adj
 
-                TurnTo(
-                    Angle.fromRad(targetAngle)
-                )
+                val turn : Command =
+                    TurnTo(targetAngle.rad)
+                turn()
             }
+            .whenBecomesFalse {
+            }
+
+//                var turnError = targetAngle - heading
+//
+//                                // Wrap
+//                if (turnError > Math.PI) turnError = (2*(Math.PI)) - turnError
+//
+//                val tolerance = Math.toRadians(2.0)
+//
+//                val kP = 0.5  // tune
+//
+//                val turnPower = if (abs(turnError) > tolerance) kP * turnError else 0.0
+//
+//                frontLeftMotor.power = turnPower
+//                frontRightMotor.power = -turnPower
+//                backLeftMotor.power = turnPower
+//                backRightMotor.power = -turnPower
+//
+//                telemetry.addData("Turn Error", "%.2f", turnError)
+//                telemetry.addData("Turn Power", "%.2f", turnPower)
+//                telemetry.update()
+//
+//                telemetry.addData("target angle", Math.toDegrees(targetAngle))
+//
+//
+////                TurnTo(targetAngle.rad)
+//
 
 //        button {gamepad1.right_bumper}
 //            .whenTrue {
@@ -200,7 +236,7 @@ class MainTeleop : NextFTCOpMode() {
 
         telemetry.addData("x:", "%.2f", follower.pose.x)
         telemetry.addData("y:", "%.2f", follower.pose.y)
-        telemetry.addData("heading:", "%.2f", follower.pose.heading)
+        telemetry.addData("heading:", "%.2f", Math.toDegrees(follower.pose.heading))
 
         val result: LLResult? = limelight.latestResult
         if (result != null && result.isValid) {
