@@ -107,6 +107,8 @@ class MainTeleop : NextFTCOpMode() {
         )
         driverControlled.scalar = 1.0
 
+
+
         // This drive code is for Pedro, but it seems you are using MecanumDriverControlled.
         // If follower.update() in onUpdate() correctly tracks pose with MecanumDriverControlled,
         // you can leave this commented. If your pose (x, y) doesn't update,
@@ -124,6 +126,7 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesTrue { driverControlled.scalar = 0.4 }
             .whenBecomesFalse { driverControlled.scalar = 1.0 }
 
+
         button {gamepad1.right_bumper}
             .whenBecomesTrue {
                 val goal = Pose(16.0, 132.0)  // 120,48
@@ -131,14 +134,18 @@ class MainTeleop : NextFTCOpMode() {
                 val heading = follower.heading
 
                 val targetAngle = Math.PI - atan2(abs(diff.y), abs(diff.x)) // opp over adj
+                val turn : Command =
+                    TurnTo(targetAngle.rad)
+                turn()
+            }
+        button {gamepad1.left_bumper}
+            .whenBecomesTrue(
+                InstantCommand(follower::breakFollowing) .then(driverControlled)
+            )
 
-                CommandManager.scheduleCommand(
-                    TurnTo(
-                        Angle.fromRad(targetAngle)
-                    ).then(
-                        driverControlled
-                    )
-                )}
+
+
+
 
 
 //pid version
@@ -217,7 +224,7 @@ class MainTeleop : NextFTCOpMode() {
                 }
             }
             .whenBecomesFalse {
-                Shooter.spinAtSpeed(0.0)
+                Shooter.zero()
             }
 
         button { gamepad1.x }
@@ -260,7 +267,7 @@ class MainTeleop : NextFTCOpMode() {
 
         telemetry.addData("Shooter Target Vel", Shooter.target)
         telemetry.addData("Shooter Actual Vel", "%.2f", Shooter.shooter.velocity)
-        telemetry.addData("Angle Target Pos", ShooterAngle.targetPosition)
+        telemetry.addData("Angle 3Target Pos", ShooterAngle.targetPosition)
         telemetry.update()
     }
 

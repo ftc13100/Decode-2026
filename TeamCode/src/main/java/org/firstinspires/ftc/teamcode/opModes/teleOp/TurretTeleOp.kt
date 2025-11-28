@@ -30,7 +30,7 @@ class TurretTeleOp : NextFTCOpMode() {
     init {
         addComponents(
         SubsystemComponent(
-            turret, blueLime
+            turret, blueLime, Shooter
         ),
         BulkReadComponent,
         BindingsComponent
@@ -50,25 +50,28 @@ class TurretTeleOp : NextFTCOpMode() {
     }
 
     override fun onStartButtonPressed() {
-        button { gamepad1.right_bumper }
-            .whenTrue {
-                turret.toRight()
+        button { gamepad1.a }
+            .whenBecomesTrue {
+                Shooter.full()
             }
-            .whenFalse {
-                turret.spinZero()
+        button { gamepad1.b }
+            .whenBecomesTrue {
+                Shooter.half()
             }
-
-        button { gamepad1.left_bumper }
-            .whenTrue {
-                turret.toLeft()
+        button { gamepad1.x }
+            .whenBecomesTrue {
+                Shooter.quarter()
             }
-            .whenFalse {
-                turret.spinZero()
+        button { gamepad1.y }
+            .whenBecomesTrue {
+                Shooter.zero()
             }
-
     }
 
+
     override fun onUpdate() {
+        telemetry.addData("Shooter velocity", Shooter.shooter.velocity)
+
         BindingManager.update()
         val result: LLResult? = limelight.latestResult
         if (result != null && result.isValid) {

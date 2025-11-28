@@ -10,6 +10,7 @@ import dev.nextftc.ftc.ActiveOpMode
 import dev.nextftc.ftc.ActiveOpMode.telemetry
 import dev.nextftc.hardware.controllable.RunToVelocity
 import dev.nextftc.hardware.impl.MotorEx
+import dev.nextftc.hardware.powerable.SetPower
 
 @Configurable
 object Shooter : Subsystem {
@@ -34,6 +35,19 @@ object Shooter : Subsystem {
         telemetry.addData("Controller goal", controller.goal)
         telemetry.addData("state", shooter.state)
     }
+
+    val zero  =
+        SetPower(shooter, 0.0)
+
+    val half  =
+        SetPower(shooter, 0.5)
+
+    val quarter  =
+        SetPower(shooter, 0.25)
+
+    val full  =
+        SetPower(shooter, 1.0)
+
 
     fun spinning() {
 
