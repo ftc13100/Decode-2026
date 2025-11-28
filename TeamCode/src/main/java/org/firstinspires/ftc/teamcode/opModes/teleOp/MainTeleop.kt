@@ -9,8 +9,10 @@ import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
+import dev.nextftc.core.units.Angle
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
+import dev.nextftc.extensions.pedro.TurnTo
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
@@ -112,36 +114,48 @@ class MainTeleop : NextFTCOpMode() {
 
         button {gamepad1.right_bumper}
             .whenTrue {
-                val x = abs(follower.pose.x)
-                val y = abs(follower.pose.y)
-                val heading = follower.heading
+                val goal = Pose(16.0, 132.0)
+                val diff = goal - follower.pose
 
-                val dx = 16-x
-                val dy = 132-y
+                val targetAngle = Math.toRadians(90.0) + atan2(diff.y, diff.x)  // opp over adj
 
-                val targetAngle = 90.0 + Math.toDegrees((atan2(dy, dx)))  // opp over adj
-
-                var turnError = targetAngle - heading
-
-                // Wrap
-                if (turnError > 180) turnError -= 360
-                if (turnError < -180) turnError += 360
-
-                val tolerance = 2.0
-
-                val kP = 0.01  // tune
-
-                val turnPower = if (abs(turnError) > tolerance) kP * turnError else 0.0
-
-                frontLeftMotor.power = turnPower
-                frontRightMotor.power = -turnPower
-                backLeftMotor.power = turnPower
-                backRightMotor.power = -turnPower
-
-                telemetry.addData("Turn Error", "%.2f", turnError)
-                telemetry.addData("Turn Power", "%.2f", turnPower)
-                telemetry.update()
+                TurnTo(
+                    Angle.fromRad(targetAngle)
+                )
             }
+
+//        button {gamepad1.right_bumper}
+//            .whenTrue {
+//                val x = abs(follower.pose.x)
+//                val y = abs(follower.pose.y)
+//                val heading = follower.heading
+//
+//                val dx = 16-x
+//                val dy = 132-y
+//
+//                val targetAngle = 90.0 + Math.toDegrees((atan2(dy, dx)))  // opp over adj
+//
+//                var turnError = targetAngle - heading
+//
+//                // Wrap
+//                if (turnError > 180) turnError -= 360
+//                if (turnError < -180) turnError += 360
+//
+//                val tolerance = 2.0
+//
+//                val kP = 0.01  // tune
+//
+//                val turnPower = if (abs(turnError) > tolerance) kP * turnError else 0.0
+//
+//                frontLeftMotor.power = turnPower
+//                frontRightMotor.power = -turnPower
+//                backLeftMotor.power = turnPower
+//                backRightMotor.power = -turnPower
+//
+//                telemetry.addData("Turn Error", "%.2f", turnError)
+//                telemetry.addData("Turn Power", "%.2f", turnPower)
+//                telemetry.update()
+//            }
 
         button { gamepad1.a }
             .toggleOnBecomesTrue()
