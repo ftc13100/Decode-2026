@@ -110,7 +110,7 @@ class blueBottom: NextFTCOpMode() {
             FollowPath(MoveAbit),
             //shoots the preload
                          ShooterAngle.angle_up,
-                         Shooter.spinAtSpeed(-1650.0),
+                         Shooter.spinAtSpeed(-1900.0),
                          Gate.gate_open,
                          Intake.autoFast,
                          Delay(2.seconds),

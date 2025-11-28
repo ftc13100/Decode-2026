@@ -37,16 +37,16 @@ object Shooter : Subsystem {
     }
 
     val zero  =
-        SetPower(shooter, 0.0)
+        SetPower(shooter, -0.0)
 
     val half  =
-        SetPower(shooter, 0.5)
+        SetPower(shooter, -0.5)
 
     val quarter  =
-        SetPower(shooter, 0.25)
+        SetPower(shooter, -0.25)
 
     val full  =
-        SetPower(shooter, 1.0)
+        SetPower(shooter, -1.0)
 
 
     fun spinning() {

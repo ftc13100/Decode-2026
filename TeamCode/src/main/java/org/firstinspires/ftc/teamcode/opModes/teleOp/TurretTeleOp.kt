@@ -20,6 +20,9 @@ import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
 import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.ftc.Gamepads
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.turret
 import kotlin.math.abs
@@ -30,7 +33,7 @@ class TurretTeleOp : NextFTCOpMode() {
     init {
         addComponents(
         SubsystemComponent(
-            turret, blueLime, Shooter
+             blueLime, Shooter, Gate, Intake
         ),
         BulkReadComponent,
         BindingsComponent
@@ -45,7 +48,6 @@ class TurretTeleOp : NextFTCOpMode() {
         telemetry.msTransmissionInterval = 11
         limelight.pipelineSwitch(1)
         limelight.start()
-        turret.toMiddle
 
     }
 
@@ -66,6 +68,22 @@ class TurretTeleOp : NextFTCOpMode() {
             .whenBecomesTrue {
                 Shooter.zero()
             }
+        button { gamepad1.right_bumper }
+            .whenBecomesTrue {
+                intake.power = 0.7
+            }
+            .whenBecomesFalse {
+                intake.power = 0.0
+            }
+        button { gamepad1.dpad_up }
+            .whenBecomesTrue {
+                Gate.gate_open()
+            }
+        button { gamepad1.dpad_down }
+            .whenBecomesTrue {
+                Gate.gate_close()
+            }
+
     }
 
 

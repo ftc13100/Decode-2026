@@ -47,7 +47,7 @@ class MainTeleop : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                ShooterAngle, Shooter
+                ShooterAngle, Shooter, Gate
             ),
             BulkReadComponent,
             BindingsComponent,
@@ -71,7 +71,7 @@ class MainTeleop : NextFTCOpMode() {
 
     private lateinit var limelight: Limelight3A
 
-    private val startPose = Pose(120.0, 48.0, Math.toRadians(90.0))
+    private val startPose = Pose(88.0,8.0, Math.toRadians(90.0))
 
     override fun onInit() {
         button { gamepad1.a}
@@ -90,8 +90,7 @@ class MainTeleop : NextFTCOpMode() {
         telemetry.msTransmissionInterval = 11
         limelight.pipelineSwitch(1)
         limelight.start()
-
-       // follower.startTeleopDrive()
+        follower.startTeleopDrive()
         follower.update()
     }
 
@@ -106,6 +105,7 @@ class MainTeleop : NextFTCOpMode() {
             Gamepads.gamepad1.rightStickX
         )
         driverControlled.scalar = 1.0
+        driverControlled()
 
 
 
@@ -237,8 +237,8 @@ class MainTeleop : NextFTCOpMode() {
 
         button { gamepad1.b }
             .toggleOnBecomesTrue() //make this a button command that only opens when held // default command?
-            .whenBecomesTrue { Gate.gate_open }
-            .whenBecomesFalse { Gate.gate_close }
+            .whenBecomesTrue { Gate.gate_open() }
+            .whenBecomesFalse { Gate.gate_close() }
     }
 //        button { gamepad1.b }
 //            .toggleOnBecomesTrue()
@@ -248,7 +248,6 @@ class MainTeleop : NextFTCOpMode() {
 
     override fun onUpdate() {
         BindingManager.update()
-        driverControlled.update()
         follower.update()
         //Shooter.spinning()
 
