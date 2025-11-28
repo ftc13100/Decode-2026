@@ -55,8 +55,6 @@ class MainTeleop : NextFTCOpMode() {
 
     private val shooterController = ShooterController()
 
-
-
     private lateinit var frontLeftMotor: MotorEx
     private lateinit var frontRightMotor: MotorEx
     private lateinit var backLeftMotor: MotorEx
@@ -65,8 +63,8 @@ class MainTeleop : NextFTCOpMode() {
     private lateinit var driverControlled: MecanumDriverControlled
 
     private lateinit var limelight: Limelight3A
-    private val startPose = Pose(120.0, 48.0, Math.toRadians(90.0))
 
+    private val startPose = Pose(120.0, 48.0, Math.toRadians(90.0))
 
     override fun onInit() {
         button { gamepad1.a}
@@ -130,35 +128,38 @@ class MainTeleop : NextFTCOpMode() {
                 val turn : Command =
                     TurnTo(targetAngle.rad)
                 turn()
-            }
-            .whenBecomesFalse {
+                driverControlled()
             }
 
+//pid version
+//        button {gamepad1.right_bumper}
+//            .whenTrue {
+//                val goal = Pose(16.0, 132.0)  // 120,48
+//                val diff = goal - follower.pose
+//                val heading = follower.heading
+//                val targetAngle = Math.PI - atan2(abs(diff.y), abs(diff.x)) // opp over adj
+//
 //                var turnError = targetAngle - heading
 //
-//                                // Wrap
-//                if (turnError > Math.PI) turnError = (2*(Math.PI)) - turnError
+//                // Wrap
+//                if (turnError > Math.PI) turnError = (2 * (Math.PI)) - turnError
 //
 //                val tolerance = Math.toRadians(2.0)
 //
-//                val kP = 0.5  // tune
+//                val kP = 0.5 // tune
 //
 //                val turnPower = if (abs(turnError) > tolerance) kP * turnError else 0.0
 //
-//                frontLeftMotor.power = turnPower
-//                frontRightMotor.power = -turnPower
-//                backLeftMotor.power = turnPower
-//                backRightMotor.power = -turnPower
+//                frontLeftMotor.power = -turnPower
+//                frontRightMotor.power = turnPower
+//                backLeftMotor.power = -turnPower
+//                backRightMotor.power = turnPower
 //
 //                telemetry.addData("Turn Error", "%.2f", turnError)
 //                telemetry.addData("Turn Power", "%.2f", turnPower)
-//                telemetry.update()
-//
 //                telemetry.addData("target angle", Math.toDegrees(targetAngle))
-//
-//
-////                TurnTo(targetAngle.rad)
-//
+//                telemetry.update()
+//            }
 
 //        button {gamepad1.right_bumper}
 //            .whenTrue {
