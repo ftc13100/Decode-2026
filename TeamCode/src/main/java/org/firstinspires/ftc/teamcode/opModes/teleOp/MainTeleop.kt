@@ -133,6 +133,19 @@ class MainTeleop : NextFTCOpMode() {
                 intake.power = 0.0
             }
 
+        button {gamepad1.right_bumper}
+            .whenBecomesTrue {
+                val x = follower.pose.x
+                val y = follower.pose.y
+                val params = shooterController.getShot(x, y)
+                if (params != null) {
+                    shooterController.applyShot(params)
+                } else {
+                    telemetry.log().add("Shot not found for ($x, $y)")
+                }
+            }
+
+
         button { gamepad1.b }
             .toggleOnBecomesTrue() //make this a button command that only opens when held // default command?
             .whenBecomesTrue { Gate.gate_open() } // allow to check if gate is open on controller for comp

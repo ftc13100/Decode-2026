@@ -49,11 +49,11 @@ class ShooterController {
         ShooterAngle.targetPosition = params.angle
 
         CommandManager.scheduleCommand(
-        Shooter.spinAtSpeed(params.velocity)
+            ShooterAngle.update()
         )
 
         CommandManager.scheduleCommand(
-            ShooterAngle.update()
+        Shooter.spinAtSpeed(params.velocity)
         )
 
         telemetry.log().add("Applying shot: V=${params.velocity}, A=${params.angle}")

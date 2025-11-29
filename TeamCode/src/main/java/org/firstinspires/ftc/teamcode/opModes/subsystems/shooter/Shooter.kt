@@ -28,13 +28,13 @@ object Shooter : Subsystem {
         RunToVelocity(controller,speed, 0.0).requires(this)
 
 
-//    override fun periodic() {
-//        shooter.power = controller.calculate(
-//            shooter.state
-//        )
-//        telemetry.addData("Controller goal", controller.goal)
-//        telemetry.addData("state", shooter.state)
-//    }
+    override fun periodic() {
+        shooter.power = controller.calculate(
+            shooter.state
+        )
+        telemetry.addData("Controller goal", controller.goal)
+        telemetry.addData("state", shooter.state)
+    }
 
     val zero  =
         SetPower(shooter, -0.0)
