@@ -52,22 +52,7 @@ class TurretTeleOp : NextFTCOpMode() {
     }
 
     override fun onStartButtonPressed() {
-        button { gamepad1.a }
-            .whenBecomesTrue {
-                Shooter.full()
-            }
-        button { gamepad1.b }
-            .whenBecomesTrue {
-                Shooter.half()
-            }
-        button { gamepad1.x }
-            .whenBecomesTrue {
-                Shooter.quarter()
-            }
-        button { gamepad1.y }
-            .whenBecomesTrue {
-                Shooter.zero()
-            }
+
         button { gamepad1.right_bumper }
             .whenBecomesTrue {
                 intake.power = 0.7

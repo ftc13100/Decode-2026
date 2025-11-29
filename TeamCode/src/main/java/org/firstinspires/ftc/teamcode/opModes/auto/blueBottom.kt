@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.robot.Robot
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
+import dev.nextftc.core.commands.groups.ParallelGroup
 import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
@@ -114,8 +115,9 @@ class blueBottom: NextFTCOpMode() {
                          Gate.gate_open,
                          Intake.autoFast,
                          Delay(2.seconds),
-                         Intake.autoStop,
-                         Shooter.spinAtSpeed(0.0),
+        ParallelGroup(
+            Intake.autoStop,
+                         Gate.gate_close),
             //picks up motif
             FollowPath(PPGfirst),
             FollowPath(PPGsecond),

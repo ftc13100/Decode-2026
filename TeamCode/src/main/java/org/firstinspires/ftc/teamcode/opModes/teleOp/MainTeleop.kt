@@ -144,6 +144,11 @@ class MainTeleop : NextFTCOpMode() {
                     telemetry.log().add("Shot not found for ($x, $y)")
                 }
             }
+        button {gamepad1.left_bumper}
+            .whenBecomesTrue {
+                InstantCommand(Shooter::stopShooter
+                ).requires(Shooter)
+            }
 
 
         button { gamepad1.b }
@@ -209,15 +214,23 @@ class MainTeleop : NextFTCOpMode() {
             // Manual Control
             driverControlled.update()
         } // end tracking goal
-        telemetry.addData("X:", "%.2f", follower.pose.x)
-        telemetry.addData("Y:", "%.2f", follower.pose.y)
-        telemetry.addData("Heading:", "%.2f", Math.toDegrees(follower.pose.heading))
-        telemetry.addData("Target: ", "%.2f", Math.toDegrees(targetAngle))
-        telemetry.addData("Error: ", "%.2f", Math.toDegrees(headingError))
 
-        telemetry.addData("Shooter Target Vel", Shooter.target)
-        telemetry.addData("Shooter Actual Vel", "%.2f", Shooter.shooter.velocity)
-        telemetry.addData("Angle 3Target Pos", ShooterAngle.targetPosition)
+        val shotParams = shooterController.getShot(x, y)
+        if (shotParams != null) {
+            telemetry.addData("Shot", "%.0f, %.2f", shotParams.velocity,shotParams.angle)
+
+        } else {
+            telemetry.addData("Shot", "%.0f, %.2f", 0.0,0.0)
+        }
+        telemetry.addData("X", "%.2f", follower.pose.x)
+        telemetry.addData("Y", "%.2f", follower.pose.y)
+        telemetry.addData("Heading", "%.2f", Math.toDegrees(follower.pose.heading))
+        telemetry.addData("Target", "%.2f", Math.toDegrees(targetAngle))
+        telemetry.addData("Error", "%.2f", Math.toDegrees(headingError))
+        telemetry.addData("Shooter", "%b, %b", Shooter.shooterActive, Shooter.shooterReady)
+        telemetry.addData("Shooter Target", Shooter.target)
+        telemetry.addData("Shooter Actual", "%.2f", Shooter.shooter.velocity)
+        telemetry.addData("Angle Target Pos", ShooterAngle.targetPosition)
         telemetry.update()
     }
 
