@@ -15,7 +15,7 @@ import dev.nextftc.hardware.powerable.SetPower
 @Configurable
 object Shooter : Subsystem {
     @JvmField var target = 0.0
-    @JvmField var velPIDCoefficients = PIDCoefficients(0.05, 0.9, 0.4)
+    @JvmField var velPIDCoefficients = PIDCoefficients(0.05, 0.0, 0.4)
 
     val shooter = MotorEx("shooter").brakeMode()
 
@@ -25,16 +25,16 @@ object Shooter : Subsystem {
 
     fun spinAtSpeed(speed: Double) =
 
-        RunToVelocity(controller,speed, 10.0).requires(this)
+        RunToVelocity(controller,speed, 0.0).requires(this)
 
 
-    override fun periodic() {
-        shooter.power = controller.calculate(
-            shooter.state
-        )
-        telemetry.addData("Controller goal", controller.goal)
-        telemetry.addData("state", shooter.state)
-    }
+//    override fun periodic() {
+//        shooter.power = controller.calculate(
+//            shooter.state
+//        )
+//        telemetry.addData("Controller goal", controller.goal)
+//        telemetry.addData("state", shooter.state)
+//    }
 
     val zero  =
         SetPower(shooter, -0.0)

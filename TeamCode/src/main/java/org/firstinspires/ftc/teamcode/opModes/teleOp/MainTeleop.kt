@@ -49,8 +49,8 @@ class MainTeleop : NextFTCOpMode() {
             SubsystemComponent(
                 ShooterAngle, Shooter, Gate
             ),
-            BulkReadComponent,
             BindingsComponent,
+            BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
     }
@@ -71,10 +71,21 @@ class MainTeleop : NextFTCOpMode() {
 
     private lateinit var limelight: Limelight3A
 
-    private val startPose = Pose(88.0,8.0, Math.toRadians(90.0))
+    private val startPose = Pose(72.0,72.0, Math.toRadians(90.0))
+
+    private var targetTrackingActive: Boolean = false
+    private var targetTrackingCountdown: Int = 0
+    private val ALIGNMENT_POWER_COARSE: Double = 0.5
+    private val ALIGNMENT_POWER_FINE: Double = 0.25
+    private val HEADING_TOLERANCE_FINE: Double = Math.toRadians(10.0)
+    private val HEADING_TOLERANCE: Double = Math.toRadians(1.0)
+
+    private var loopCounter: Int = 0
+    private var courseCount: Int = 0
+    private var fineCount: Int = 0
 
     override fun onInit() {
-        button { gamepad1.a}
+
         follower.setStartingPose(startPose)
 
         frontLeftMotor = MotorEx(frontLeftName)
@@ -90,7 +101,6 @@ class MainTeleop : NextFTCOpMode() {
         telemetry.msTransmissionInterval = 11
         limelight.pipelineSwitch(1)
         limelight.start()
-        follower.startTeleopDrive()
         follower.update()
     }
 
@@ -105,129 +115,25 @@ class MainTeleop : NextFTCOpMode() {
             Gamepads.gamepad1.rightStickX
         )
         driverControlled.scalar = 1.0
-        driverControlled()
-
-
-
-        // This drive code is for Pedro, but it seems you are using MecanumDriverControlled.
-        // If follower.update() in onUpdate() correctly tracks pose with MecanumDriverControlled,
-        // you can leave this commented. If your pose (x, y) doesn't update,
-        // you may need to use this drive method instead of MecanumDriverControlled.
-
-//        follower.setTeleOpDrive(
-//            -gamepad1.left_stick_y.toDouble(),
-//            -gamepad1.left_stick_x.toDouble(),
-//            -gamepad1.right_stick_x.toDouble(),
-//            true
-//        )
+        //driverControlled()
 
         button { gamepad1.y }
             .toggleOnBecomesTrue()
             .whenBecomesTrue { driverControlled.scalar = 0.4 }
             .whenBecomesFalse { driverControlled.scalar = 1.0 }
 
-
-        button {gamepad1.right_bumper}
-            .whenBecomesTrue {
-                val goal = Pose(16.0, 132.0)  // 120,48
-                val diff = goal - follower.pose
-                val heading = follower.heading
-
-                val targetAngle = Math.PI - atan2(abs(diff.y), abs(diff.x)) // opp over adj
-                val turn : Command =
-                    TurnTo(targetAngle.rad)
-                turn()
-            }
-        button {gamepad1.left_bumper}
-            .whenBecomesTrue(
-                InstantCommand(follower::breakFollowing) .then(driverControlled)
-            )
-
-
-
-
-
-
-//pid version
-//        button {gamepad1.right_bumper}
-//            .whenTrue {
-//                val goal = Pose(16.0, 132.0)  // 120,48
-//                val diff = goal - follower.pose
-//                val heading = follower.heading
-//                val targetAngle = Math.PI - atan2(abs(diff.y), abs(diff.x)) // opp over adj
-//
-//                var turnError = targetAngle - heading
-//
-//                // Wrap
-//                if (turnError > Math.PI) turnError = (2 * (Math.PI)) - turnError
-//
-//                val tolerance = Math.toRadians(2.0)
-//
-//                val kP = 0.5 // tune
-//
-//                val turnPower = if (abs(turnError) > tolerance) kP * turnError else 0.0
-//
-//                frontLeftMotor.power = -turnPower
-//                frontRightMotor.power = turnPower
-//                backLeftMotor.power = -turnPower
-//                backRightMotor.power = turnPower
-//
-//                telemetry.addData("Turn Error", "%.2f", turnError)
-//                telemetry.addData("Turn Power", "%.2f", turnPower)
-//                telemetry.addData("target angle", Math.toDegrees(targetAngle))
-//                telemetry.update()
-//            }
-
-//        button {gamepad1.right_bumper}
-//            .whenTrue {
-//                val x = abs(follower.pose.x)
-//                val y = abs(follower.pose.y)
-//                val heading = follower.heading
-//
-//                val dx = 16-x
-//                val dy = 132-y
-//
-//                val targetAngle = 90.0 + Math.toDegrees((atan2(dy, dx)))  // opp over adj
-//
-//                var turnError = targetAngle - heading
-//
-//                // Wrap
-//                if (turnError > 180) turnError -= 360
-//                if (turnError < -180) turnError += 360
-//
-//                val tolerance = 2.0
-//
-//                val kP = 0.01  // tune
-//
-//                val turnPower = if (abs(turnError) > tolerance) kP * turnError else 0.0
-//
-//                frontLeftMotor.power = turnPower
-//                frontRightMotor.power = -turnPower
-//                backLeftMotor.power = turnPower
-//                backRightMotor.power = -turnPower
-//
-//                telemetry.addData("Turn Error", "%.2f", turnError)
-//                telemetry.addData("Turn Power", "%.2f", turnPower)
-//                telemetry.update()
-//            }
-
         button { gamepad1.a }
-            .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                val x = abs(follower.pose.x)
-                val y = abs(follower.pose.y)
-                val params = shooterController.getShot(x, y)
-                if (params != null) {
-                    shooterController.applyShot(params)
-                } else {
-                    telemetry.log().add("Shot not found for ($x, $y)")
-                }
-            }
-            .whenBecomesFalse {
-                Shooter.zero()
+                targetTrackingActive = !targetTrackingActive
+                targetTrackingCountdown = 8
+
+                loopCounter = 0
+                courseCount = 0
+                fineCount = 0
             }
 
         button { gamepad1.x }
+            .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 intake.power = 0.7
             }
@@ -237,7 +143,7 @@ class MainTeleop : NextFTCOpMode() {
 
         button { gamepad1.b }
             .toggleOnBecomesTrue() //make this a button command that only opens when held // default command?
-            .whenBecomesTrue { Gate.gate_open() }
+            .whenBecomesTrue { Gate.gate_open() } // allow to check if gate is open on controller for comp
             .whenBecomesFalse { Gate.gate_close() }
     }
 //        button { gamepad1.b }
@@ -249,20 +155,69 @@ class MainTeleop : NextFTCOpMode() {
     override fun onUpdate() {
         BindingManager.update()
         follower.update()
-        //Shooter.spinning()
+//        driverControlled.update()
 
-        telemetry.addData("x:", "%.2f", follower.pose.x)
-        telemetry.addData("y:", "%.2f", follower.pose.y)
-        telemetry.addData("heading:", "%.2f", Math.toDegrees(follower.pose.heading))
+       //start tracking goal
+        val goal = Pose(16.0, 132.0)
+        val x = abs(follower.pose.x)
+        val y = abs(follower.pose.y)
+        val diff = goal - follower.pose
+        val heading = follower.heading
 
-        val result: LLResult? = limelight.latestResult
-        if (result != null && result.isValid) {
-//            val botpose: Pose3D = result.botpose
-            telemetry.addData("tx (Horizontal Error)", "%.2f", result.tx)
-            telemetry.addData("ty (Vertical Error)", "%.2f", result.ty)
+        val targetAngle = Math.PI - atan2(abs(diff.y), abs(diff.x))
+
+        var headingError = targetAngle-heading
+        if (headingError > Math.PI) headingError = headingError - (2 * (Math.PI))
+
+
+        if (targetTrackingActive) {
+            var turnPower: Double = 0.0
+            loopCounter += 1
+
+            if (abs(headingError) > HEADING_TOLERANCE_FINE) {
+                courseCount += 1
+                turnPower = if (headingError > 0) {
+                    -ALIGNMENT_POWER_COARSE
+                } else {
+                    ALIGNMENT_POWER_COARSE
+                }
+            } else if (abs(headingError) > HEADING_TOLERANCE) {
+                fineCount += 1
+                turnPower = if ( headingError > 0) {
+                    -ALIGNMENT_POWER_FINE
+                } else {
+                    ALIGNMENT_POWER_FINE
+                }
+            } else if (--targetTrackingCountdown > 0) {
+                turnPower = if ( headingError > 0) {
+                    -ALIGNMENT_POWER_FINE
+                } else {
+                    ALIGNMENT_POWER_FINE
+                }
+            } else {
+                targetTrackingActive = false
+            }
+
+            val drivePower = Gamepads.gamepad1.leftStickY.get()
+            val strafePower = Gamepads.gamepad1.leftStickX.get()
+
+            frontLeftMotor.power = drivePower + strafePower + turnPower
+            frontRightMotor.power = drivePower - strafePower - turnPower
+            backLeftMotor.power = drivePower - strafePower + turnPower
+            backRightMotor.power = drivePower + strafePower - turnPower
+
+            telemetry.addData("Turn Power", "%.2f", turnPower)
+
         } else {
-            telemetry.addData("Limelight", "Target not found")
-        }
+            // Manual Control
+            driverControlled.update()
+        } // end tracking goal
+        telemetry.addData("X:", "%.2f", follower.pose.x)
+        telemetry.addData("Y:", "%.2f", follower.pose.y)
+        telemetry.addData("Heading:", "%.2f", Math.toDegrees(follower.pose.heading))
+        telemetry.addData("Target: ", "%.2f", Math.toDegrees(targetAngle))
+        telemetry.addData("Error: ", "%.2f", Math.toDegrees(headingError))
+        telemetry.addData("counts: ", "%d, %d, %d", loopCounter,courseCount,fineCount)
 
         telemetry.addData("Shooter Target Vel", Shooter.target)
         telemetry.addData("Shooter Actual Vel", "%.2f", Shooter.shooter.velocity)
