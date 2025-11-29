@@ -80,10 +80,6 @@ class MainTeleop : NextFTCOpMode() {
     private val HEADING_TOLERANCE_FINE: Double = Math.toRadians(10.0)
     private val HEADING_TOLERANCE: Double = Math.toRadians(1.0)
 
-    private var loopCounter: Int = 0
-    private var courseCount: Int = 0
-    private var fineCount: Int = 0
-
     override fun onInit() {
 
         follower.setStartingPose(startPose)
@@ -126,10 +122,6 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesTrue {
                 targetTrackingActive = !targetTrackingActive
                 targetTrackingCountdown = 8
-
-                loopCounter = 0
-                courseCount = 0
-                fineCount = 0
             }
 
         button { gamepad1.x }
@@ -146,11 +138,6 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesTrue { Gate.gate_open() } // allow to check if gate is open on controller for comp
             .whenBecomesFalse { Gate.gate_close() }
     }
-//        button { gamepad1.b }
-//            .toggleOnBecomesTrue()
-//            .whenBecomesTrue { ShooterAngle.angle_up() }
-//            .whenBecomesFalse { ShooterAngle.angle_down() }
-//    }
 
     override fun onUpdate() {
         BindingManager.update()
@@ -172,17 +159,14 @@ class MainTeleop : NextFTCOpMode() {
 
         if (targetTrackingActive) {
             var turnPower: Double = 0.0
-            loopCounter += 1
 
             if (abs(headingError) > HEADING_TOLERANCE_FINE) {
-                courseCount += 1
                 turnPower = if (headingError > 0) {
                     -ALIGNMENT_POWER_COARSE
                 } else {
                     ALIGNMENT_POWER_COARSE
                 }
             } else if (abs(headingError) > HEADING_TOLERANCE) {
-                fineCount += 1
                 turnPower = if ( headingError > 0) {
                     -ALIGNMENT_POWER_FINE
                 } else {
@@ -217,7 +201,6 @@ class MainTeleop : NextFTCOpMode() {
         telemetry.addData("Heading:", "%.2f", Math.toDegrees(follower.pose.heading))
         telemetry.addData("Target: ", "%.2f", Math.toDegrees(targetAngle))
         telemetry.addData("Error: ", "%.2f", Math.toDegrees(headingError))
-        telemetry.addData("counts: ", "%d, %d, %d", loopCounter,courseCount,fineCount)
 
         telemetry.addData("Shooter Target Vel", Shooter.target)
         telemetry.addData("Shooter Actual Vel", "%.2f", Shooter.shooter.velocity)
