@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
+import dev.nextftc.control.feedforward.BasicFeedforwardParameters
+import dev.nextftc.control.feedforward.FeedforwardElement
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode
@@ -17,14 +19,16 @@ import java.time.Instant
 @Configurable
 object Shooter : Subsystem {
     @JvmField var target = 0.0
-    @JvmField var velPIDCoefficients = PIDCoefficients(0.05, 0.0, 0.4)
+    @JvmField var velPIDCoefficients = PIDCoefficients(0.00375, 0.0, 0.0)
+    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.00048, 0.0004, 0.000145)
 
-    val shooter = MotorEx("shooter").brakeMode()
+    val shooter = MotorEx("shooter").brakeMode().reversed()
     var shooterActive  = false
     var shooterReady  = false
 
     val controller = controlSystem {
         velPid(velPIDCoefficients)
+        basicFF(basicFFParameters)
     }
 
     override fun periodic() {
@@ -56,6 +60,7 @@ object Shooter : Subsystem {
 
 
     fun spinning() {
+        shooterActive = true
         controller.goal = KineticState(velocity = target)
         shooter.power = controller.calculate(
             KineticState(velocity = shooter.velocity)

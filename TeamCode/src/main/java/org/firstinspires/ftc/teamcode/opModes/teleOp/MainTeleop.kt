@@ -119,6 +119,7 @@ class MainTeleop : NextFTCOpMode() {
         driverControlled.scalar = 1.0
         //driverControlled()
 
+
         button { gamepad1.y }
             .toggleOnBecomesTrue()
             .whenBecomesTrue { driverControlled.scalar = 0.4 }
@@ -131,7 +132,7 @@ class MainTeleop : NextFTCOpMode() {
                 targetTrackingLoopCounter = 0
             }
 
-        button { gamepad1.x }
+        button { gamepad2.x }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 intake.power = 0.7
@@ -157,7 +158,7 @@ class MainTeleop : NextFTCOpMode() {
             }
 
 
-        button { gamepad1.b }
+        button { gamepad2.b }
             .toggleOnBecomesTrue() //make this a button command that only opens when held // default command?
             .whenBecomesTrue {
                 Gate.gate_open()
