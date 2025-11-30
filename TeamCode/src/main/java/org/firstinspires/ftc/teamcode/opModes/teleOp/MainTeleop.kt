@@ -74,6 +74,7 @@ class MainTeleop : NextFTCOpMode() {
     private val startPose = Pose(72.0,72.0, Math.toRadians(90.0))
 
     private var targetTrackingActive: Boolean = false
+    private var targetTrackingDone: Boolean = false
     private var targetTrackingLoopCounter: Int = 0
     private var targetTrackingCountdown: Int = 0
     // 0.5, 0.25, 10.0, 1.0, 8 --> 2 seconds max turning
@@ -128,17 +129,18 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad1.a }
             .whenBecomesTrue {
                 targetTrackingActive = !targetTrackingActive
+                targetTrackingDone = false
                 targetTrackingCountdown = TRACKING_COUNTDOWN
                 targetTrackingLoopCounter = 0
             }
 
         button { gamepad2.x }
-            .toggleOnBecomesTrue()
-            .whenBecomesTrue {
+            .whenTrue {
                 intake.power = 0.7
+                //also close gate
                 intakeStatus = true
             }
-            .whenBecomesFalse {
+            .whenFalse {
                 intake.power = 0.0
                 intakeStatus = false
             }
@@ -152,6 +154,9 @@ class MainTeleop : NextFTCOpMode() {
                     shooterController.applyShot(params)
                 }
             }
+
+        //parallel for shooter and point
+
         button {gamepad1.left_bumper}
             .whenBecomesTrue {
                 CommandManager.scheduleCommand(Shooter.stopShooter())
@@ -192,6 +197,7 @@ class MainTeleop : NextFTCOpMode() {
             ++targetTrackingLoopCounter
             var turnPower: Double = 0.0
             if (targetTrackingLoopCounter == 1 && abs(headingError) < HEADING_TOLERANCE) {
+                targetTrackingDone = true
                 targetTrackingActive = false
             } else if (abs(headingError) > HEADING_TOLERANCE_FINE) {
                 turnPower = if (headingError > 0) {
@@ -212,6 +218,7 @@ class MainTeleop : NextFTCOpMode() {
                     ALIGNMENT_POWER_FINE
                 }
             } else {
+                targetTrackingDone = true
                 targetTrackingActive = false
             }
 
@@ -237,7 +244,7 @@ class MainTeleop : NextFTCOpMode() {
         telemetry.addData("Y", "%.2f", follower.pose.y)
         telemetry.addData("Heading", "%.2f", Math.toDegrees(follower.pose.heading))
         telemetry.addData("Pointing Target", "%.2f", Math.toDegrees(targetAngle))
-        telemetry.addData("Pointing Error", "%.2f, %.2f", Math.toDegrees(headingError), llError)
+        telemetry.addData("Pointing Error", "%b, %b, %.2f, %.2f", targetTrackingDone, targetTrackingActive, Math.toDegrees(headingError), llError)
         if (shotParams != null) {
             telemetry.addData("Shot Params", "%.0f, %.0f, %.0f, %.2f", shotParams.x, shotParams.y, shotParams.velocity,shotParams.angle)
 

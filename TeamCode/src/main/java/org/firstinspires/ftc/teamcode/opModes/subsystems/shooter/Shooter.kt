@@ -47,7 +47,7 @@ object Shooter : Subsystem {
             shooterActive = true
             shooterReady = false
         }.then(
-            RunToVelocity(controller, speed, 0.0),
+            RunToVelocity(controller, speed, 11.0),
             InstantCommand { shooterReady = true }
         ).setInterruptible(true).requires(this)
 
