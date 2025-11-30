@@ -25,15 +25,6 @@ object Shooter : Subsystem {
         velPid(velPIDCoefficients)
     }
 
-    fun spinAtSpeed(speed: Double) =
-        InstantCommand{
-            shooterActive = true
-            shooterReady = false
-        }.then(
-                RunToVelocity(controller, speed, 5.0),
-                InstantCommand { shooterReady = true }
-            ).setInterruptible(true).requires(this)
-
     override fun periodic() {
         if (shooterActive){
         shooter.power = controller.calculate(
@@ -44,12 +35,21 @@ object Shooter : Subsystem {
         }
     }
 
+    fun spinAtSpeed(speed: Double) =
+        InstantCommand{
+            target = speed
+            shooterActive = true
+            shooterReady = false
+        }.then(
+            RunToVelocity(controller, speed, 0.0),
+            InstantCommand { shooterReady = true }
+        ).setInterruptible(true).requires(this)
+
     fun stopShooter() {
         shooterActive = false
         shooterReady = false
+        target = 0.0
     }
-
-
 
     fun spinning() {
         controller.goal = KineticState(velocity = target)

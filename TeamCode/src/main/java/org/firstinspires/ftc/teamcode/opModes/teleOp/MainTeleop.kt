@@ -74,11 +74,17 @@ class MainTeleop : NextFTCOpMode() {
     private val startPose = Pose(72.0,72.0, Math.toRadians(90.0))
 
     private var targetTrackingActive: Boolean = false
+    private var targetTrackingLoopCounter: Int = 0
     private var targetTrackingCountdown: Int = 0
-    private val ALIGNMENT_POWER_COARSE: Double = 0.5
-    private val ALIGNMENT_POWER_FINE: Double = 0.25
-    private val HEADING_TOLERANCE_FINE: Double = Math.toRadians(10.0)
+    // 0.5, 0.25, 10.0, 1.0, 8 --> 2 seconds max turning
+    private val ALIGNMENT_POWER_COARSE: Double = 0.6
+    private val ALIGNMENT_POWER_FINE: Double = 0.2
+    private val HEADING_TOLERANCE_FINE: Double = Math.toRadians(12.0)
     private val HEADING_TOLERANCE: Double = Math.toRadians(1.0)
+    private val TRACKING_COUNTDOWN: Int = 12
+
+    private var gateStatus: Boolean = false
+    private var intakeStatus: Boolean = false
 
     override fun onInit() {
 
@@ -121,16 +127,19 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad1.a }
             .whenBecomesTrue {
                 targetTrackingActive = !targetTrackingActive
-                targetTrackingCountdown = 8
+                targetTrackingCountdown = TRACKING_COUNTDOWN
+                targetTrackingLoopCounter = 0
             }
 
         button { gamepad1.x }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 intake.power = 0.7
+                intakeStatus = true
             }
             .whenBecomesFalse {
                 intake.power = 0.0
+                intakeStatus = false
             }
 
         button {gamepad1.right_bumper}
@@ -140,8 +149,6 @@ class MainTeleop : NextFTCOpMode() {
                 val params = shooterController.getShot(x, y)
                 if (params != null) {
                     shooterController.applyShot(params)
-                } else {
-                    telemetry.log().add("Shot not found for ($x, $y)")
                 }
             }
         button {gamepad1.left_bumper}
@@ -153,14 +160,21 @@ class MainTeleop : NextFTCOpMode() {
 
         button { gamepad1.b }
             .toggleOnBecomesTrue() //make this a button command that only opens when held // default command?
-            .whenBecomesTrue { Gate.gate_open() } // allow to check if gate is open on controller for comp
-            .whenBecomesFalse { Gate.gate_close() }
+            .whenBecomesTrue {
+                Gate.gate_open()
+                gateStatus = true
+            }
+            .whenBecomesFalse {
+                Gate.gate_close()
+                gateStatus = false
+            }
     }
 
     override fun onUpdate() {
         BindingManager.update()
         follower.update()
-//        driverControlled.update()
+        val llResult: LLResult? = limelight.latestResult
+        var llError: Double = 99.0
 
        //start tracking goal
         val goal = Pose(16.0, 132.0)
@@ -174,11 +188,12 @@ class MainTeleop : NextFTCOpMode() {
         var headingError = targetAngle-heading
         if (headingError > Math.PI) headingError = headingError - (2 * (Math.PI))
 
-
         if (targetTrackingActive) {
+            ++targetTrackingLoopCounter
             var turnPower: Double = 0.0
-
-            if (abs(headingError) > HEADING_TOLERANCE_FINE) {
+            if (targetTrackingLoopCounter == 1 && abs(headingError) < HEADING_TOLERANCE) {
+                targetTrackingActive = false
+            } else if (abs(headingError) > HEADING_TOLERANCE_FINE) {
                 turnPower = if (headingError > 0) {
                     -ALIGNMENT_POWER_COARSE
                 } else {
@@ -200,37 +215,40 @@ class MainTeleop : NextFTCOpMode() {
                 targetTrackingActive = false
             }
 
-            val drivePower = Gamepads.gamepad1.leftStickY.get()
-            val strafePower = Gamepads.gamepad1.leftStickX.get()
-
-            frontLeftMotor.power = drivePower + strafePower + turnPower
-            frontRightMotor.power = drivePower - strafePower - turnPower
-            backLeftMotor.power = drivePower - strafePower + turnPower
-            backRightMotor.power = drivePower + strafePower - turnPower
-
-            telemetry.addData("Turn Power", "%.2f", turnPower)
+            frontLeftMotor.power = turnPower
+            frontRightMotor.power = -turnPower
+            backLeftMotor.power = turnPower
+            backRightMotor.power = -turnPower
 
         } else {
             // Manual Control
             driverControlled.update()
         } // end tracking goal
 
-        val shotParams = shooterController.getShot(x, y)
-        if (shotParams != null) {
-            telemetry.addData("Shot", "%.0f, %.2f", shotParams.velocity,shotParams.angle)
-
+        llError = if (llResult != null && llResult.isValid) {
+            llResult.tx
         } else {
-            telemetry.addData("Shot", "%.0f, %.2f", 0.0,0.0)
+            99.0
         }
+
+        val shotParams = shooterController.getShot(x, y)
+
         telemetry.addData("X", "%.2f", follower.pose.x)
         telemetry.addData("Y", "%.2f", follower.pose.y)
         telemetry.addData("Heading", "%.2f", Math.toDegrees(follower.pose.heading))
-        telemetry.addData("Target", "%.2f", Math.toDegrees(targetAngle))
-        telemetry.addData("Error", "%.2f", Math.toDegrees(headingError))
-        telemetry.addData("Shooter", "%b, %b", Shooter.shooterActive, Shooter.shooterReady)
-        telemetry.addData("Shooter Target", Shooter.target)
-        telemetry.addData("Shooter Actual", "%.2f", Shooter.shooter.velocity)
-        telemetry.addData("Angle Target Pos", ShooterAngle.targetPosition)
+        telemetry.addData("Pointing Target", "%.2f", Math.toDegrees(targetAngle))
+        telemetry.addData("Pointing Error", "%.2f, %.2f", Math.toDegrees(headingError), llError)
+        if (shotParams != null) {
+            telemetry.addData("Shot Params", "%.0f, %.0f, %.0f, %.2f", shotParams.x, shotParams.y, shotParams.velocity,shotParams.angle)
+
+        } else {
+            telemetry.addData("Shot Params", "%.0f, %.0f, %.0f, %.2f", 0.0,0.0,0.0,0.0)
+        }
+        telemetry.addData("Shooter State", "%b, %b", Shooter.shooterActive, Shooter.shooterReady)
+        telemetry.addData("Shooter Target / Speed", "%.2f, %.2f", Shooter.target, Shooter.shooter.velocity)
+        telemetry.addData("Shooter Angle", ShooterAngle.targetPosition)
+        telemetry.addData("Intake Running", intakeStatus)
+        telemetry.addData("Gate Open", gateStatus)
         telemetry.update()
     }
 
