@@ -135,12 +135,12 @@ class MainTeleop : NextFTCOpMode() {
             }
 
         button { gamepad2.x }
-            .toggleOnBecomesTrue()
-            .whenBecomesTrue {
+            .whenTrue {
                 intake.power = 0.7
+                //also close gate
                 intakeStatus = true
             }
-            .whenBecomesFalse {
+            .whenFalse {
                 intake.power = 0.0
                 intakeStatus = false
             }
@@ -182,7 +182,7 @@ class MainTeleop : NextFTCOpMode() {
         var llError: Double = 99.0
 
        //start tracking goal
-        val goal = Pose(11.0, 138.0)
+        val goal = Pose(16.0, 132.0)
         val x = abs(follower.pose.x)
         val y = abs(follower.pose.y)
         val diff = goal - follower.pose
