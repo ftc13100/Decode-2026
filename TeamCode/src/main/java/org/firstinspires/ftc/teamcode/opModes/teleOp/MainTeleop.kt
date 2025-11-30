@@ -153,8 +153,7 @@ class MainTeleop : NextFTCOpMode() {
             }
         button {gamepad1.left_bumper}
             .whenBecomesTrue {
-                InstantCommand(Shooter::stopShooter
-                ).requires(Shooter)
+                CommandManager.scheduleCommand(Shooter.stopShooter())
             }
 
 

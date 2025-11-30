@@ -12,6 +12,8 @@ import dev.nextftc.ftc.ActiveOpMode.telemetry
 import dev.nextftc.hardware.controllable.RunToVelocity
 import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.hardware.powerable.SetPower
+import java.time.Instant
+
 @Configurable
 object Shooter : Subsystem {
     @JvmField var target = 0.0
@@ -45,11 +47,13 @@ object Shooter : Subsystem {
             InstantCommand { shooterReady = true }
         ).setInterruptible(true).requires(this)
 
-    fun stopShooter() {
-        shooterActive = false
-        shooterReady = false
-        target = 0.0
-    }
+    fun stopShooter() =
+        InstantCommand {
+            shooterActive = false
+            shooterReady = false
+            target = 0.0
+        }.requires(this)
+
 
     fun spinning() {
         controller.goal = KineticState(velocity = target)
