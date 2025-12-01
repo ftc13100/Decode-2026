@@ -84,6 +84,7 @@ class MainTeleop : NextFTCOpMode() {
     private val HEADING_TOLERANCE: Double = Math.toRadians(1.0)
     private val TRACKING_COUNTDOWN: Int = 12
 
+
     private var gateStatus: Boolean = false
     private var intakeStatus: Boolean = false
 
