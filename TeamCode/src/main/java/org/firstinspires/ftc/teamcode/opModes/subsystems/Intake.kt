@@ -12,23 +12,21 @@ object Intake : Subsystem {
     val intake = MotorEx("intake").brakeMode()
 
 
-    val autoFast =
+    val spinFast =
         SetPower(intake, 1.0)
 
-    val autoStop =
+    val spinStop =
         SetPower(intake, 0.0)
 
-    fun spinSlowSpeed() = InstantCommand {
-        intake.power = 0.7
-    }
+    val spinSlowSpeed =
+        SetPower(intake, 0.7,)
 
-    fun spinFastSpeed() = InstantCommand {
-        intake.power = 1.0
-    }
 
-    fun stop() = InstantCommand {
-        intake.power = 0.0
-    }
+
+    val spinReverse =
+        SetPower(intake, -0.7,)
+
+
 
 }
 

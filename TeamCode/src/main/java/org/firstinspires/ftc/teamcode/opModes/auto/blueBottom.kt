@@ -113,10 +113,10 @@ class blueBottom: NextFTCOpMode() {
                          ShooterAngle.angle_up,
                          Shooter.spinAtSpeed(-1900.0),
                          Gate.gate_open,
-                         Intake.autoFast,
+                         Intake.spinFast,
                          Delay(2.seconds),
         ParallelGroup(
-            Intake.autoStop,
+            Intake.spinStop,
                          Gate.gate_close),
             //picks up motif
             FollowPath(PPGfirst),

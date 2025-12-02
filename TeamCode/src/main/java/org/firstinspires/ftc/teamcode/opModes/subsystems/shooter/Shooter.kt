@@ -51,12 +51,13 @@ object Shooter : Subsystem {
             InstantCommand { shooterReady = true }
         ).setInterruptible(true).requires(this)
 
-    fun stopShooter() =
+    val stopShooter =
         InstantCommand {
             shooterActive = false
             shooterReady = false
             target = 0.0
         }.requires(this)
+
 
 
     fun spinning() {

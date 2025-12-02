@@ -9,7 +9,6 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 data class ShotParameters(val x: Double, val y: Double, val velocity: Double, val angle: Double)
 
 class ShooterController {
-
     private val shooterLookupTable: Map<Pair<Double, Double>, ShotParameters> = mapOf(
         //first = x, second = y
         //listing at 12 inch intervals, lookup written first match within 6 inches
@@ -94,15 +93,15 @@ class ShooterController {
         }
     }
 
-    fun applyShot(params: ShotParameters) {
-        ShooterAngle.targetPosition = params.angle
+    fun applyShot(velocity: Double, angle: Double) {
+        ShooterAngle.targetPosition = angle
 
         CommandManager.scheduleCommand(
             ShooterAngle.update()
         )
 
         CommandManager.scheduleCommand(
-        Shooter.spinAtSpeed(params.velocity)
+        Shooter.spinAtSpeed(velocity)
         )
     }
 }
