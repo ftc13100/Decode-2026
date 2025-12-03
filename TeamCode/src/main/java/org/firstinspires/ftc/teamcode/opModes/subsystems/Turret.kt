@@ -16,13 +16,13 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter.shooter
 @Configurable
 object Turret : Subsystem {
     @JvmField var target = 0.0
-    @JvmField var PIDCoefficients = PIDCoefficients(0.0, 0.0, 0.0)
+    @JvmField var posPIDCoefficients = PIDCoefficients(0.025, 0.0, 0.0)
 
 
     val turret = MotorEx("turret").brakeMode()
 
     val controlSystem = controlSystem {
-        posPid(0.025, 0.00, 0.0)
+        posPid(posPIDCoefficients)
     }
 
     fun spinRight(){
@@ -38,7 +38,9 @@ object Turret : Subsystem {
     }
 
     fun spinToPos(pos: Double) =
-        InstantCommand{ RunToPosition(controlSystem, pos) }
+        InstantCommand{
+            target = pos
+            RunToPosition(controlSystem, target) }
 
 
 //    val toRight = RunToPosition(controlSystem, 300.0).requires(this)
@@ -54,7 +56,7 @@ object Turret : Subsystem {
 //            }
 //        }
 //
-//    override fun periodic() {
-//        turret.power = controlSystem.calculate(turret.state)
-//    }
+    override fun periodic() {
+        turret.power = controlSystem.calculate(turret.state)
+    }
 }

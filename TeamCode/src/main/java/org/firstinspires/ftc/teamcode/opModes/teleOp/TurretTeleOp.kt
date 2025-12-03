@@ -70,14 +70,13 @@ class TurretTeleOp : NextFTCOpMode() {
             }
 
         button { gamepad1.y}
-            .whenTrue {
+            .toggleOnBecomesTrue()
+            .whenBecomesTrue {
                 Turret.spinToPos(100.0)
             }
-            .whenFalse {
+            .whenBecomesFalse {
                 Turret.spinToPos(0.0)
             }
-
-
     }
 
     override fun onUpdate() {

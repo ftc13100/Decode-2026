@@ -31,7 +31,7 @@ class MainTeleop : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                ShooterAngle, Shooter, Gate
+                ShooterAngle, Shooter, Gate, Intake
             ),
             BindingsComponent,
             BulkReadComponent,
