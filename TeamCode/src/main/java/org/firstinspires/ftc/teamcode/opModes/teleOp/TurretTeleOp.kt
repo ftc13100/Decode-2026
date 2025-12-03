@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.turret
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Turret
 import kotlin.math.abs
 
 @TeleOp(name = "Turret Test & Tune")
@@ -33,7 +33,7 @@ class TurretTeleOp : NextFTCOpMode() {
     init {
         addComponents(
         SubsystemComponent(
-             blueLime, Shooter, Gate, Intake
+             blueLime, Turret
         ),
         BulkReadComponent,
         BindingsComponent
@@ -42,55 +42,64 @@ class TurretTeleOp : NextFTCOpMode() {
 
     private lateinit var limelight: Limelight3A
     private var previous_tx = 0.0
+    private val panelsTelemetry = PanelsTelemetry.telemetry
 
     override fun onInit() {
         limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
         telemetry.msTransmissionInterval = 11
         limelight.pipelineSwitch(1)
         limelight.start()
-
     }
 
     override fun onStartButtonPressed() {
 
-        button { gamepad1.right_bumper }
-            .whenBecomesTrue {
-                intake.power = 0.7
-            }
-            .whenBecomesFalse {
-                intake.power = 0.0
-            }
         button { gamepad1.dpad_up }
-            .whenBecomesTrue {
-                Gate.gate_open()
+            .whenTrue {
+                Turret.spinRight()
             }
+            .whenFalse {
+                Turret.spinZero()
+            }
+
         button { gamepad1.dpad_down }
-            .whenBecomesTrue {
-                Gate.gate_close()
+            .whenTrue {
+                Turret.spinLeft()
             }
+            .whenFalse {
+                Turret.spinZero()
+            }
+
+        button { gamepad1.y}
+            .whenTrue {
+                Turret.spinToPos(100.0)
+            }
+            .whenFalse {
+                Turret.spinToPos(0.0)
+            }
+
 
     }
 
-
     override fun onUpdate() {
-        telemetry.addData("Shooter velocity", Shooter.shooter.velocity)
-
         BindingManager.update()
-        val result: LLResult? = limelight.latestResult
-        if (result != null && result.isValid) {
-            telemetry.addData("tx (Horizontal Error)", "%.2f", result.tx)
-            telemetry.addData("ty (Vertical Error)", "%.2f", result.ty)
-            if (abs(result.tx - previous_tx) > 4.0) {
-                CommandManager.scheduleCommand(
-                    turret.moveToTag(result.tx)
-                )
-            }
-            previous_tx = result.tx
-        } else {
-            telemetry.addData("Limelight", "Target not found")
-            // turret.stop()
-        }
-        telemetry.addData("Mode", "TeleOp Running")
+        telemetry.addData("Turret Position", Turret.turret.currentPosition)
+        panelsTelemetry.addData("Position", Turret.turret.currentPosition)
+        panelsTelemetry.update(telemetry)
+//        val result: LLResult? = limelight.latestResult
+//        if (result != null && result.isValid) {
+//            telemetry.addData("tx (Horizontal Error)", "%.2f", result.tx)
+//            telemetry.addData("ty (Vertical Error)", "%.2f", result.ty)
+//            if (abs(result.tx - previous_tx) > 4.0) {
+//                CommandManager.scheduleCommand(
+//                    Turret.moveToTag(result.tx)
+//                )
+//            }
+//            previous_tx = result.tx
+//        } else {
+//            telemetry.addData("Limelight", "Target not found")
+//            // turret.stop()
+//        }
+//        telemetry.addData("Mode", "TeleOp Running")
         telemetry.update()
     }
 }

@@ -111,20 +111,8 @@ class MainTeleop : NextFTCOpMode() {
         driverControlled.scalar = 1.0
         //driverControlled()
 
-
-        //Gate control
-        button { gamepad1.a }
-            .toggleOnBecomesTrue() //make this a button command that only opens when held // default command?
-            .whenBecomesTrue {
-                Gate.gate_open()
-                gateStatus = true
-            }
-            .whenBecomesFalse {
-                Gate.gate_close()
-                gateStatus = false
-            }
         //Intake artifact
-        button { gamepad1.x }
+        button { gamepad1.left_bumper }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 Gate.gate_close()
@@ -136,13 +124,9 @@ class MainTeleop : NextFTCOpMode() {
                 Intake.spinStop()
                 intakeStatus = false
             }
-        //Drivetrain Slow-fast speed
-        button { gamepad1.y }
-            .toggleOnBecomesTrue()
-            .whenBecomesTrue { driverControlled.scalar = 0.4 }
-            .whenBecomesFalse { driverControlled.scalar = 1.0 }
+
         //Outtake artifact
-        button { gamepad1.b }
+        button { gamepad1.right_bumper }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 Gate.gate_close()
@@ -155,8 +139,26 @@ class MainTeleop : NextFTCOpMode() {
                 intakeStatus = false
             }
 
+        //Gate control
+        button { gamepad1.a }
+            .toggleOnBecomesTrue() //make this a button command that only opens when held // default command?
+            .whenBecomesTrue {
+                Gate.gate_open()
+                gateStatus = true
+            }
+            .whenBecomesFalse {
+                Gate.gate_close()
+                gateStatus = false
+            }
+
+        //Drivetrain Slow-fast speed
+        button { gamepad1.y }
+            .toggleOnBecomesTrue()
+            .whenBecomesTrue { driverControlled.scalar = 0.4 }
+            .whenBecomesFalse { driverControlled.scalar = 1.0 }
 
         //Auto point and shoot artifact
+        //TO BE COMPLETED
         button { gamepad2.right_bumper }
             .whenBecomesTrue {
                 val x = follower.pose.x
@@ -205,7 +207,7 @@ class MainTeleop : NextFTCOpMode() {
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 Gate.gate_open()
-                Intake.spinSlowSpeed()
+                Intake.spinFast()
                 intakeStatus = true
                 gateStatus = true
             }
@@ -218,32 +220,49 @@ class MainTeleop : NextFTCOpMode() {
 
         button { gamepad2.dpad_up }
             .whenBecomesTrue {
-                currentShotVelocity += 10.0
+                if (currentShotVelocity < 1800 ) {
+                    currentShotVelocity += 10.0
+                }
             }
+
         button { gamepad2.dpad_down }
             .whenBecomesTrue {
-                currentShotVelocity -= 10.0
+                if (currentShotVelocity > 800 ) {
+                    currentShotVelocity -= 10.0
+                }
             }
         button { gamepad2.dpad_left }
             .whenBecomesTrue {
-                currentShotAngle -= 0.05
+                if (currentShotAngle >= 0.525 ) {
+                    currentShotAngle -= 0.025
+                    ShooterAngle.targetPosition = currentShotAngle
+                    CommandManager.scheduleCommand(
+                        ShooterAngle.update()
+                    )
+                }
             }
         button { gamepad2.dpad_right }
             .whenBecomesTrue {
-                currentShotAngle += 0.05
-
+                if (currentShotAngle <= 0.675 ) {
+                    currentShotAngle += 0.025
+                    ShooterAngle.targetPosition = currentShotAngle
+                    CommandManager.scheduleCommand(
+                        ShooterAngle.update()
+                    )
+                }
             }
         //REMOVE BEFORE THE COMPETITION
         button { gamepad2.left_stick_button }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 blueAlliance = true
+                limelight.pipelineSwitch(1)
             }
             .whenBecomesFalse {
                 blueAlliance = false
+                limelight.pipelineSwitch(2)
             }
     }
-
 
         override fun onUpdate() {
             BindingManager.update()
@@ -317,35 +336,10 @@ class MainTeleop : NextFTCOpMode() {
             telemetry.addData("Y", "%.2f", follower.pose.y)
             telemetry.addData("Heading", "%.2f", Math.toDegrees(follower.pose.heading))
             telemetry.addData("Pointing Target", "%.2f", Math.toDegrees(targetAngle))
-            telemetry.addData(
-                "Pointing Error",
-                "%b, %b, %.2f, %.2f",
-                targetTrackingDone,
-                targetTrackingActive,
-                Math.toDegrees(headingError),
-                llError
-            )
-                telemetry.addData(
-                    "Shot Params",
-                    "%.0f, %.0f, %.0f, %.2f",
-                    currentShotX,
-                    currentShotY,
-                    currentShotVelocity,
-                    currentShotAngle
-                )
-
-            telemetry.addData(
-                "Shooter State",
-                "%b, %b",
-                Shooter.shooterActive,
-                Shooter.shooterReady
-            )
-            telemetry.addData(
-                "Shooter Target / Speed",
-                "%.2f, %.2f",
-                Shooter.target,
-                Shooter.shooter.velocity
-            )
+            telemetry.addData("Pointing Error", "%b, %b, %.2f, %.2f", targetTrackingDone, targetTrackingActive, Math.toDegrees(headingError), llError)
+            telemetry.addData("Shot Params","%.0f, %.0f, %.0f, %.2f", currentShotX, currentShotY, currentShotVelocity, currentShotAngle)
+            telemetry.addData("Shooter State", "%b, %b", Shooter.shooterActive, Shooter.shooterReady)
+            telemetry.addData("Shooter Target / Speed", "%.2f, %.2f", Shooter.target, Shooter.shooter.velocity)
             telemetry.addData("Shooter Angle", ShooterAngle.targetPosition)
             telemetry.addData("Intake Running", intakeStatus)
             telemetry.addData("Gate Open", gateStatus)

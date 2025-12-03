@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime.limelight
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.redLime
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.turret
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Turret
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager

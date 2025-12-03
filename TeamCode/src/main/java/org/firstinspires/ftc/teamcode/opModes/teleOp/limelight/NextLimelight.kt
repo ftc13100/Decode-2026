@@ -14,7 +14,7 @@ import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.turret
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Turret
 import kotlin.math.abs
 
 @TeleOp(name = "NextLimelight")
