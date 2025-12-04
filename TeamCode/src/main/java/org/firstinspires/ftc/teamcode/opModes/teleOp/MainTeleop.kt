@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
 import dev.nextftc.core.commands.CommandManager
+import dev.nextftc.core.commands.delays.Delay
+import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.PedroComponent
@@ -22,16 +24,18 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Turret
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.math.abs
 import kotlin.math.atan2
+import kotlin.time.Duration.Companion.seconds
 
 @TeleOp(name = "MainTeleop")
 class MainTeleop : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                ShooterAngle, Shooter, Gate, Intake
+                ShooterAngle, Shooter, Gate, Intake, Turret
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -159,15 +163,15 @@ class MainTeleop : NextFTCOpMode() {
 
         //Auto point and shoot artifact
         //TO BE COMPLETED
-        button { gamepad2.right_bumper }
-            .whenBecomesTrue {
-                val x = follower.pose.x
-                val y = follower.pose.y
-                val params = shooterController.getShot(x, y)
-                if (params != null) {
-                    shooterController.applyShot(params.velocity, params.angle)
-                }
-            }
+//        button { gamepad2.right_bumper }
+//            .whenBecomesTrue {
+//                val x = follower.pose.x
+//                val y = follower.pose.y
+//                val params = shooterController.getShot(x, y)
+//                if (params != null) {
+//                    shooterController.applyShot(params.velocity, params.angle)
+//                }
+//            }
         //stop shooter and intake subsystem
         button { gamepad2.left_bumper }
             .whenBecomesTrue {
@@ -195,9 +199,49 @@ class MainTeleop : NextFTCOpMode() {
                     currentShotY = currentShot.y
                     currentShotVelocity = currentShot.velocity
                     currentShotAngle = currentShot.angle
+                    ShooterAngle.targetPosition = currentShotAngle
+                    CommandManager.scheduleCommand(
+                        ShooterAngle.update()
+                    )
                 }
             }
+        button {gamepad1.dpad_left}
+            .whenBecomesTrue {
+                val turretPos = Turret.target + 10.0
+                CommandManager.scheduleCommand(
+                    Turret.spinToPos(turretPos)
+                )
+            }
+        button {gamepad1.dpad_right}
+            .whenBecomesTrue {
+                val turretPos = Turret.target - 10.0
+                CommandManager.scheduleCommand(
+                    Turret.spinToPos(turretPos)
+                )
+            }
+        button {gamepad1.dpad_up}
+            .whenBecomesTrue {
+                val turretPos = Turret.target + 1.0
+                CommandManager.scheduleCommand(
+                    Turret.spinToPos(turretPos)
+                )
+            }
+        button {gamepad1.dpad_down}
+            .whenBecomesTrue {
+                val turretPos = Turret.target - 1.0
+                CommandManager.scheduleCommand(
+                    Turret.spinToPos(turretPos)
+                )
+            }
+        button {gamepad2.right_stick_button}
+            .whenBecomesTrue {
+            Turret.target = Turret.turret.currentPosition
+        }
+
+
+
         //start shooter
+
         button { gamepad2.y }
             .whenBecomesTrue {
                 shooterController.applyShot(currentShotVelocity, currentShotAngle)
@@ -207,9 +251,14 @@ class MainTeleop : NextFTCOpMode() {
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 Gate.gate_open()
+                gateStatus = true
                 Intake.spinFast()
                 intakeStatus = true
-                gateStatus = true
+                Delay(1.seconds)
+                Intake.spinStop()
+                Gate.gate_close()
+                intakeStatus = false
+                gateStatus = false
             }
             .whenBecomesFalse {
                 Gate.gate_close()
@@ -233,7 +282,7 @@ class MainTeleop : NextFTCOpMode() {
             }
         button { gamepad2.dpad_left }
             .whenBecomesTrue {
-                if (currentShotAngle >= 0.525 ) {
+                if (currentShotAngle > 0 && currentShotAngle >= 0.524 ) {
                     currentShotAngle -= 0.025
                     ShooterAngle.targetPosition = currentShotAngle
                     CommandManager.scheduleCommand(
@@ -243,7 +292,7 @@ class MainTeleop : NextFTCOpMode() {
             }
         button { gamepad2.dpad_right }
             .whenBecomesTrue {
-                if (currentShotAngle <= 0.675 ) {
+                if (currentShotAngle > 0 && currentShotAngle <= 0.676 ) {
                     currentShotAngle += 0.025
                     ShooterAngle.targetPosition = currentShotAngle
                     CommandManager.scheduleCommand(
@@ -343,10 +392,13 @@ class MainTeleop : NextFTCOpMode() {
             telemetry.addData("Shooter Angle", ShooterAngle.targetPosition)
             telemetry.addData("Intake Running", intakeStatus)
             telemetry.addData("Gate Open", gateStatus)
+            telemetry.addData("Turret Target", "%.0f, %.0f",  Turret.turret.currentPosition, Turret.target)
+            telemetry.addData("Turret Active", "%b", Turret.turretActive)
+
             telemetry.update()
         }
 
-        override fun onStop() {
-            BindingManager.reset()
-        }
+//        override fun onStop() {
+//            BindingManager.reset()
+//        }
     }

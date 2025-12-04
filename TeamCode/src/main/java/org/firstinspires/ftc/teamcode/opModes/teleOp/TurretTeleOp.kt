@@ -41,6 +41,7 @@ class TurretTeleOp : NextFTCOpMode() {
     }
 
     private lateinit var limelight: Limelight3A
+
     private var previous_tx = 0.0
     private val panelsTelemetry = PanelsTelemetry.telemetry
 
@@ -53,21 +54,6 @@ class TurretTeleOp : NextFTCOpMode() {
 
     override fun onStartButtonPressed() {
 
-        button { gamepad1.dpad_up }
-            .whenTrue {
-                Turret.spinRight()
-            }
-            .whenFalse {
-                Turret.spinZero()
-            }
-
-        button { gamepad1.dpad_down }
-            .whenTrue {
-                Turret.spinLeft()
-            }
-            .whenFalse {
-                Turret.spinZero()
-            }
 
         button { gamepad1.y}
             .toggleOnBecomesTrue()
