@@ -26,6 +26,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Turret
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
+import org.opencv.core.Mat
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.time.Duration.Companion.seconds
@@ -79,8 +80,8 @@ class MainTeleop : NextFTCOpMode() {
 
 
 
-    private var gateStatus: Boolean = false
-    private var intakeStatus: Boolean = false
+    private var gateOpen: Boolean = false
+    private var intakeRunning: Boolean = false
 
     override fun onInit() {
 
@@ -100,6 +101,14 @@ class MainTeleop : NextFTCOpMode() {
         limelight.pipelineSwitch(1)
         limelight.start()
         follower.update()
+
+        var turretCurPos:Double = Turret.turret.currentPosition
+        Turret.target = turretCurPos
+
+        CommandManager.scheduleCommand(
+            Turret.spinToPos(turretCurPos)
+        )
+        Gate.gate_close()
     }
 
     override fun onStartButtonPressed() {
@@ -121,12 +130,12 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesTrue {
                 Gate.gate_close()
                 Intake.spinSlowSpeed()
-                intakeStatus = true
-                gateStatus = false
+                intakeRunning = true
+                gateOpen = false
             }
             .whenBecomesFalse {
                 Intake.spinStop()
-                intakeStatus = false
+                intakeRunning = false
             }
 
         //Outtake artifact
@@ -135,12 +144,12 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesTrue {
                 Gate.gate_close()
                 Intake.spinReverse()
-                intakeStatus = true
-                gateStatus = false
+                intakeRunning = true
+                gateOpen = false
             }
             .whenBecomesFalse {
                 Intake.spinStop()
-                intakeStatus = false
+                intakeRunning = false
             }
 
         //Gate control
@@ -148,11 +157,11 @@ class MainTeleop : NextFTCOpMode() {
             .toggleOnBecomesTrue() //make this a button command that only opens when held // default command?
             .whenBecomesTrue {
                 Gate.gate_open()
-                gateStatus = true
+                gateOpen = true
             }
             .whenBecomesFalse {
                 Gate.gate_close()
-                gateStatus = false
+                gateOpen = false
             }
 
         //Drivetrain Slow-fast speed
@@ -160,6 +169,35 @@ class MainTeleop : NextFTCOpMode() {
             .toggleOnBecomesTrue()
             .whenBecomesTrue { driverControlled.scalar = 0.4 }
             .whenBecomesFalse { driverControlled.scalar = 1.0 }
+
+        button {gamepad1.dpad_left}
+            .whenBecomesTrue {
+                val turretPos = Turret.target + 10.0
+                CommandManager.scheduleCommand(
+                    Turret.spinToPos(turretPos)
+                )
+            }
+        button {gamepad1.dpad_right}
+            .whenBecomesTrue {
+                val turretPos = Turret.target - 10.0
+                CommandManager.scheduleCommand(
+                    Turret.spinToPos(turretPos)
+                )
+            }
+        button {gamepad1.dpad_up}
+            .whenBecomesTrue {
+                val turretPos = Turret.target + 1.0
+                CommandManager.scheduleCommand(
+                    Turret.spinToPos(turretPos)
+                )
+            }
+        button {gamepad1.dpad_down}
+            .whenBecomesTrue {
+                val turretPos = Turret.target - 1.0
+                CommandManager.scheduleCommand(
+                    Turret.spinToPos(turretPos)
+                )
+            }
 
         //Auto point and shoot artifact
         //TO BE COMPLETED
@@ -205,43 +243,8 @@ class MainTeleop : NextFTCOpMode() {
                     )
                 }
             }
-        button {gamepad1.dpad_left}
-            .whenBecomesTrue {
-                val turretPos = Turret.target + 10.0
-                CommandManager.scheduleCommand(
-                    Turret.spinToPos(turretPos)
-                )
-            }
-        button {gamepad1.dpad_right}
-            .whenBecomesTrue {
-                val turretPos = Turret.target - 10.0
-                CommandManager.scheduleCommand(
-                    Turret.spinToPos(turretPos)
-                )
-            }
-        button {gamepad1.dpad_up}
-            .whenBecomesTrue {
-                val turretPos = Turret.target + 1.0
-                CommandManager.scheduleCommand(
-                    Turret.spinToPos(turretPos)
-                )
-            }
-        button {gamepad1.dpad_down}
-            .whenBecomesTrue {
-                val turretPos = Turret.target - 1.0
-                CommandManager.scheduleCommand(
-                    Turret.spinToPos(turretPos)
-                )
-            }
-        button {gamepad2.right_stick_button}
-            .whenBecomesTrue {
-            Turret.target = Turret.turret.currentPosition
-        }
-
-
 
         //start shooter
-
         button { gamepad2.y }
             .whenBecomesTrue {
                 shooterController.applyShot(currentShotVelocity, currentShotAngle)
@@ -251,20 +254,20 @@ class MainTeleop : NextFTCOpMode() {
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 Gate.gate_open()
-                gateStatus = true
-                Intake.spinFast()
-                intakeStatus = true
-                Delay(1.seconds)
-                Intake.spinStop()
-                Gate.gate_close()
-                intakeStatus = false
-                gateStatus = false
+                Intake.spinSlowSpeed()
+                gateOpen = true
+                intakeRunning = true
+//                Delay(1.seconds)
+//                Intake.spinStop()
+//                Gate.gate_close()
+//                intakeRunning = false
+//                gateOpen = false
             }
             .whenBecomesFalse {
                 Gate.gate_close()
                 Intake.spinStop()
-                gateStatus = false
-                intakeStatus = false
+                gateOpen = false
+                intakeRunning = false
             }
 
         button { gamepad2.dpad_up }
@@ -282,7 +285,7 @@ class MainTeleop : NextFTCOpMode() {
             }
         button { gamepad2.dpad_left }
             .whenBecomesTrue {
-                if (currentShotAngle > 0 && currentShotAngle >= 0.524 ) {
+                if (currentShotAngle > 0.0 && currentShotAngle >= 0.524 ) {
                     currentShotAngle -= 0.025
                     ShooterAngle.targetPosition = currentShotAngle
                     CommandManager.scheduleCommand(
@@ -292,7 +295,7 @@ class MainTeleop : NextFTCOpMode() {
             }
         button { gamepad2.dpad_right }
             .whenBecomesTrue {
-                if (currentShotAngle > 0 && currentShotAngle <= 0.676 ) {
+                if (currentShotAngle > 0.0 && currentShotAngle <= 0.676 ) {
                     currentShotAngle += 0.025
                     ShooterAngle.targetPosition = currentShotAngle
                     CommandManager.scheduleCommand(
@@ -304,12 +307,12 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad2.left_stick_button }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                blueAlliance = true
-                limelight.pipelineSwitch(1)
-            }
-            .whenBecomesFalse {
                 blueAlliance = false
                 limelight.pipelineSwitch(2)
+            }
+            .whenBecomesFalse {
+                blueAlliance = true
+                limelight.pipelineSwitch(1)
             }
     }
 
@@ -380,20 +383,17 @@ class MainTeleop : NextFTCOpMode() {
                 99.0
             }
 
-            telemetry.addData("Blue Alliance","%b",blueAlliance )
-            telemetry.addData("X", "%.2f", follower.pose.x)
-            telemetry.addData("Y", "%.2f", follower.pose.y)
-            telemetry.addData("Heading", "%.2f", Math.toDegrees(follower.pose.heading))
-            telemetry.addData("Pointing Target", "%.2f", Math.toDegrees(targetAngle))
-            telemetry.addData("Pointing Error", "%b, %b, %.2f, %.2f", targetTrackingDone, targetTrackingActive, Math.toDegrees(headingError), llError)
-            telemetry.addData("Shot Params","%.0f, %.0f, %.0f, %.2f", currentShotX, currentShotY, currentShotVelocity, currentShotAngle)
-            telemetry.addData("Shooter State", "%b, %b", Shooter.shooterActive, Shooter.shooterReady)
-            telemetry.addData("Shooter Target / Speed", "%.2f, %.2f", Shooter.target, Shooter.shooter.velocity)
-            telemetry.addData("Shooter Angle", ShooterAngle.targetPosition)
-            telemetry.addData("Intake Running", intakeStatus)
-            telemetry.addData("Gate Open", gateStatus)
-            telemetry.addData("Turret Target", "%.0f, %.0f",  Turret.turret.currentPosition, Turret.target)
-            telemetry.addData("Turret Active", "%b", Turret.turretActive)
+            if(blueAlliance) { telemetry.addData("Alliance", "Blue") }
+            else {telemetry.addData("Alliance", "Red") }
+            telemetry.addData("", "X: %.0f, Y: %.0f, Heading: %.1f, Target: %.1f", follower.pose.x, follower.pose.y, Math.toDegrees(follower.pose.heading), Math.toDegrees(targetAngle))
+            telemetry.addData("Pointing Status", "Done: %b, Active: %b", targetTrackingDone , targetTrackingActive)
+            telemetry.addData("Pointing Error", "Heading: %.1f, Limelight: %.1f", Math.toDegrees(headingError), llError)
+            telemetry.addData("Turret Target", "Current: %.0f, Target: %.0f, Active: %b",  Turret.turret.currentPosition, Turret.target, Turret.turretActive)
+            telemetry.addData("Shot","X: %.0f, Y: %.0f, Vel: %.0f, Angle: %.3f", currentShotX, currentShotY, currentShotVelocity, currentShotAngle)
+            telemetry.addData("Shooter", "Ready: %b, Active: %b", Shooter.shooterReady, Shooter.shooterActive)
+            telemetry.addData("Shooter Speed", "Current: %.0f, Target: %.0f", Shooter.shooter.velocity, Shooter.target)
+            telemetry.addData("Intake Running", intakeRunning)
+            telemetry.addData("Gate Open", gateOpen)
 
             telemetry.update()
         }

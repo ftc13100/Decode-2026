@@ -22,14 +22,11 @@ object Turret : Subsystem {
     @JvmField
     var posPIDCoefficients = PIDCoefficients(0.025, 0.0, 0.0)
 
-
-    val turret = MotorEx("turret").brakeMode().zeroed()
-
-
+    val turret = MotorEx("turret").brakeMode()
 
 
     val resetPos = InstantCommand {
-     turret.zeroed()
+     turret.zero()
     }.requires(this)
 
 
