@@ -64,7 +64,7 @@ object Turret : Subsystem {
 //        }
 //
     override fun periodic() {
-        if (turretActive == true) {
+        if (turretActive) {
             turret.power = controlSystem.calculate(turret.state)
         } else {
             turret.power = 0.0

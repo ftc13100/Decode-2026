@@ -166,56 +166,27 @@ class MainTeleop : NextFTCOpMode() {
 
         //Drivetrain Slow-fast speed
         button { gamepad1.y }
-            .toggleOnBecomesTrue()
-            .whenBecomesTrue { driverControlled.scalar = 0.4 }
-            .whenBecomesFalse { driverControlled.scalar = 1.0 }
+            .whenTrue { driverControlled.scalar = 0.4 }
+            .whenFalse { driverControlled.scalar = 1.0 }
 
-        button {gamepad1.dpad_left}
+
+        //gamepad 2 operator controls below
+
+        button {gamepad2.right_bumper}
             .whenBecomesTrue {
-                val turretPos = Turret.target + 10.0
+                val turretPos = Turret.target - 3.0
                 CommandManager.scheduleCommand(
                     Turret.spinToPos(turretPos)
                 )
             }
-        button {gamepad1.dpad_right}
+        button {gamepad2.left_bumper}
             .whenBecomesTrue {
-                val turretPos = Turret.target - 10.0
-                CommandManager.scheduleCommand(
-                    Turret.spinToPos(turretPos)
-                )
-            }
-        button {gamepad1.dpad_up}
-            .whenBecomesTrue {
-                val turretPos = Turret.target + 1.0
-                CommandManager.scheduleCommand(
-                    Turret.spinToPos(turretPos)
-                )
-            }
-        button {gamepad1.dpad_down}
-            .whenBecomesTrue {
-                val turretPos = Turret.target - 1.0
+                val turretPos = Turret.target + 3.0
                 CommandManager.scheduleCommand(
                     Turret.spinToPos(turretPos)
                 )
             }
 
-        //Auto point and shoot artifact
-        //TO BE COMPLETED
-//        button { gamepad2.right_bumper }
-//            .whenBecomesTrue {
-//                val x = follower.pose.x
-//                val y = follower.pose.y
-//                val params = shooterController.getShot(x, y)
-//                if (params != null) {
-//                    shooterController.applyShot(params.velocity, params.angle)
-//                }
-//            }
-        //stop shooter and intake subsystem
-        button { gamepad2.left_bumper }
-            .whenBecomesTrue {
-                Shooter.stopShooter()
-                Intake.spinStop()
-            }
         //Point to target
         button { gamepad2.a }
             .whenBecomesTrue {
@@ -223,9 +194,18 @@ class MainTeleop : NextFTCOpMode() {
                 targetTrackingDone = false
                 targetTrackingCountdown = TRACKING_COUNTDOWN
                 targetTrackingLoopCounter = 0
+
             }
-        //lookup shot parameters from lookup table based on the current location
+
         button { gamepad2.x }
+            .whenBecomesTrue {
+                Gate.gate_open()
+                gateOpen = true
+            }
+
+        //lookup shot parameters from lookup table based on the current location
+        button { gamepad2.y }
+            .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 var x = follower.pose.x
                 val y = follower.pose.y
@@ -238,17 +218,13 @@ class MainTeleop : NextFTCOpMode() {
                     currentShotVelocity = currentShot.velocity
                     currentShotAngle = currentShot.angle
                     ShooterAngle.targetPosition = currentShotAngle
-                    CommandManager.scheduleCommand(
-                        ShooterAngle.update()
-                    )
+                    shooterController.applyShot(currentShotVelocity, currentShotAngle)
                 }
             }
-
-        //start shooter
-        button { gamepad2.y }
-            .whenBecomesTrue {
-                shooterController.applyShot(currentShotVelocity, currentShotAngle)
+            .whenBecomesFalse {
+                CommandManager.scheduleCommand ( Shooter.stopShooter)
             }
+
         //feed artifacts into shooter
         button { gamepad2.b }
             .toggleOnBecomesTrue()
@@ -257,11 +233,6 @@ class MainTeleop : NextFTCOpMode() {
                 Intake.spinSlowSpeed()
                 gateOpen = true
                 intakeRunning = true
-//                Delay(1.seconds)
-//                Intake.spinStop()
-//                Gate.gate_close()
-//                intakeRunning = false
-//                gateOpen = false
             }
             .whenBecomesFalse {
                 Gate.gate_close()
@@ -274,6 +245,7 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesTrue {
                 if (currentShotVelocity < 1800 ) {
                     currentShotVelocity += 10.0
+                    CommandManager.scheduleCommand(Shooter.spinAtSpeed(currentShotVelocity))
                 }
             }
 
@@ -281,12 +253,14 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesTrue {
                 if (currentShotVelocity > 800 ) {
                     currentShotVelocity -= 10.0
+                    CommandManager.scheduleCommand(Shooter.spinAtSpeed(currentShotVelocity))
                 }
             }
+
         button { gamepad2.dpad_left }
             .whenBecomesTrue {
-                if (currentShotAngle > 0.0 && currentShotAngle >= 0.524 ) {
-                    currentShotAngle -= 0.025
+                if (currentShotAngle > 0.0 && currentShotAngle >= 0.519 ) {
+                    currentShotAngle -= 0.02
                     ShooterAngle.targetPosition = currentShotAngle
                     CommandManager.scheduleCommand(
                         ShooterAngle.update()
@@ -295,8 +269,8 @@ class MainTeleop : NextFTCOpMode() {
             }
         button { gamepad2.dpad_right }
             .whenBecomesTrue {
-                if (currentShotAngle > 0.0 && currentShotAngle <= 0.676 ) {
-                    currentShotAngle += 0.025
+                if (currentShotAngle > 0.0 && currentShotAngle <= 0.681 ) {
+                    currentShotAngle += 0.02
                     ShooterAngle.targetPosition = currentShotAngle
                     CommandManager.scheduleCommand(
                         ShooterAngle.update()
