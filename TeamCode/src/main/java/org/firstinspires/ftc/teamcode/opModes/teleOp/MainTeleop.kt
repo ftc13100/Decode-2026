@@ -167,6 +167,15 @@ class MainTeleop : NextFTCOpMode() {
             .whenTrue { driverControlled.scalar = 0.4 }
             .whenFalse { driverControlled.scalar = 1.0 }
 
+        // Reset location and heading
+        button { gamepad1.b }
+            .whenBecomesTrue {
+                if (blueAlliance) {
+                    follower.setStartingPose(Pose(136.25, 8.5, -90.0))
+                } else {
+                    follower.setStartingPose(Pose(7.75, 8.5, -90.0))
+                }
+            }
 
         //gamepad 2 operator controls below
 
@@ -366,6 +375,16 @@ class MainTeleop : NextFTCOpMode() {
             telemetry.addData("Shooter Speed", "Current: %.0f, Target: %.0f", Shooter.shooter.velocity, Shooter.target)
             telemetry.addData("Intake Running", intakeRunning)
             telemetry.addData("Gate Open", gateOpen)
+            if(llResult != null) {
+                telemetry.addData(
+                    "From LL",
+                    "%s, X: %.0f, Y: %.0f, Z: %.1f",
+                    llResult.botpose.toString(),
+                    llResult.botpose.position.x,
+                    llResult.botpose.position.y,
+                    llResult.botpose.position.z
+                )
+            }
 
             telemetry.update()
         }
