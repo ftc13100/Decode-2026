@@ -42,7 +42,7 @@ object Shooter : Subsystem {
     }
 
     fun spinAtSpeed(speed: Double) =
-        InstantCommand{
+        InstantCommand {
             target = speed
             shooterActive = true
             shooterReady = false
