@@ -26,6 +26,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
+import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.opencv.core.Mat
 import kotlin.math.abs
@@ -37,7 +38,7 @@ class MainTeleop : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                ShooterAngle, Shooter, Gate, Intake, Turret
+                ShooterAngle, Shooter, Gate, Intake, Turret, PoseStorage
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -62,7 +63,7 @@ class MainTeleop : NextFTCOpMode() {
     private val imu = IMUEx("imu", Direction.LEFT, Direction.UP).zeroed()
 
     private lateinit var limelight: Limelight3A
-    private val startPose = Pose(72.0,72.0, Math.toRadians(90.0))
+    private val startPose = PoseStorage.poseEnd  //(72.0,72.0, Math.toRadians(90.0))
     private var targetTrackingActive: Boolean = false
     private var targetTrackingDone: Boolean = false
     private var targetTrackingLoopCounter: Int = 0
@@ -71,17 +72,14 @@ class MainTeleop : NextFTCOpMode() {
     private val ALIGNMENT_POWER_COARSE: Double = 0.6
     private val ALIGNMENT_POWER_FINE: Double = 0.2
     private val HEADING_TOLERANCE_FINE: Double = Math.toRadians(12.0)
+    private val HEADING_LIMELIGHT: Double = Math.toRadians(4.0)
     private val HEADING_TOLERANCE: Double = Math.toRadians(1.0)
     private val TRACKING_COUNTDOWN: Int = 12
 
     private var currentShotX: Double = 0.0
-    private var blueAlliance: Boolean = true
     private var currentShotY: Double = 0.0
     private var currentShotVelocity: Double = 0.0
     private var currentShotAngle: Double = 0.0
-
-
-
 
     private var gateOpen: Boolean = false
     private var intakeRunning: Boolean = false
@@ -127,7 +125,7 @@ class MainTeleop : NextFTCOpMode() {
         )
 
         driverControlled()
-        driverControlled.scalar = 1.0
+        driverControlled.scalar = 0.9
         //driverControlled()
 
         //Intake artifact
@@ -173,12 +171,12 @@ class MainTeleop : NextFTCOpMode() {
         //Drivetrain Slow-fast speed
         button { gamepad1.y }
             .whenTrue { driverControlled.scalar = 0.4 }
-            .whenFalse { driverControlled.scalar = 1.0 }
+            .whenFalse { driverControlled.scalar = 0.9 }
 
         // Reset location and heading
         button { gamepad1.b }
             .whenBecomesTrue {
-                if (blueAlliance) {
+                if (PoseStorage.blueAlliance) {
                     follower.setStartingPose(Pose(136.25, 8.5, -90.0))
                 } else {
                     follower.setStartingPose(Pose(7.75, 8.5, -90.0))
@@ -186,7 +184,6 @@ class MainTeleop : NextFTCOpMode() {
             }
 
         //gamepad 2 operator controls below
-
         button {gamepad2.right_bumper}
             .whenBecomesTrue {
                 val turretPos = Turret.target - 3.0
@@ -224,7 +221,7 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesTrue {
                 var x = follower.pose.x
                 val y = follower.pose.y
-                if (!blueAlliance){
+                if (!PoseStorage.blueAlliance){
                     x = 144 - x  }
                 val currentShot = shooterController.getShot(x, y)
                 if (currentShot != null) {
@@ -296,11 +293,11 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad2.left_stick_button }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                blueAlliance = false
+                PoseStorage.blueAlliance = false
                 limelight.pipelineSwitch(2)
             }
             .whenBecomesFalse {
-                blueAlliance = true
+                PoseStorage.blueAlliance = true
                 limelight.pipelineSwitch(1)
             }
     }
@@ -318,7 +315,7 @@ class MainTeleop : NextFTCOpMode() {
             val heading = follower.heading
 
             var targetAngle : Double
-            if(blueAlliance) {
+            if(PoseStorage.blueAlliance) {
                 targetAngle = Math.PI - atan2(abs(goal.y - y), abs(goal.x - x))
             }
             else {
@@ -372,7 +369,7 @@ class MainTeleop : NextFTCOpMode() {
                 99.0
             }
 
-            if(blueAlliance) { telemetry.addData("Alliance", "Blue") }
+            if(PoseStorage.blueAlliance) { telemetry.addData("Alliance", "Blue") }
             else {telemetry.addData("Alliance", "Red") }
             telemetry.addData("", "X: %.0f, Y: %.0f, Heading: %.1f, Target: %.1f", follower.pose.x, follower.pose.y, Math.toDegrees(follower.pose.heading), Math.toDegrees(targetAngle))
             telemetry.addData("Pointing Status", "Done: %b, Active: %b", targetTrackingDone , targetTrackingActive)

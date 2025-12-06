@@ -219,6 +219,9 @@ class blueBottom: NextFTCOpMode() {
     }
 
     override fun onStartButtonPressed() {
+        PoseStorage.blueAlliance = true
+        PoseStorage.redAlliance = false
+
         val result: LLResult? = limelight.latestResult
         if (result != null && result.isValid) {
             val fiducials = result.fiducialResults
