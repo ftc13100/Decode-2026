@@ -59,7 +59,7 @@ class MainTeleop : NextFTCOpMode() {
 
     private lateinit var driverControlled: MecanumDriverControlled
 
-    private val imu = IMUEx("imu", Direction.UP, Direction.FORWARD).zeroed()
+    private val imu = IMUEx("imu", Direction.LEFT, Direction.UP).zeroed()
 
     private lateinit var limelight: Limelight3A
     private val startPose = Pose(72.0,72.0, Math.toRadians(90.0))
