@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Turret
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import kotlin.math.abs
 
 @TeleOp(name = "Turret Test & Tune")

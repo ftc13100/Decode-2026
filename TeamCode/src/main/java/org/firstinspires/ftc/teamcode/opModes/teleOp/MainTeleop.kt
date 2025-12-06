@@ -16,13 +16,16 @@ import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import dev.nextftc.hardware.driving.FieldCentric
 import dev.nextftc.hardware.driving.MecanumDriverControlled
+import dev.nextftc.hardware.impl.Direction
+import dev.nextftc.hardware.impl.IMUEx
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Turret
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.opencv.core.Mat
 import kotlin.math.abs
@@ -55,6 +58,8 @@ class MainTeleop : NextFTCOpMode() {
     private lateinit var backRightMotor: MotorEx
 
     private lateinit var driverControlled: MecanumDriverControlled
+
+    private val imu = IMUEx("imu", Direction.UP, Direction.FORWARD).zeroed()
 
     private lateinit var limelight: Limelight3A
     private val startPose = Pose(72.0,72.0, Math.toRadians(90.0))
@@ -117,8 +122,11 @@ class MainTeleop : NextFTCOpMode() {
             backRightMotor,
             -Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
-            Gamepads.gamepad1.rightStickX
+            Gamepads.gamepad1.rightStickX,
+            FieldCentric(imu)
         )
+
+        driverControlled()
         driverControlled.scalar = 1.0
         //driverControlled()
 

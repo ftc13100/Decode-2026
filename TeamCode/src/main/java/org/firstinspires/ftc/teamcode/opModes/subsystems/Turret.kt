@@ -1,18 +1,12 @@
-package org.firstinspires.ftc.teamcode.opModes.subsystems.shooter
+package org.firstinspires.ftc.teamcode.opModes.subsystems
 
 import com.bylazar.configurables.annotations.Configurable
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
-import dev.nextftc.ftc.ActiveOpMode.telemetry
 import dev.nextftc.hardware.controllable.RunToPosition
-import dev.nextftc.hardware.controllable.RunToVelocity
 import dev.nextftc.hardware.impl.MotorEx
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter.controller
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter.shooterActive
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter.shooterReady
-
 
 @Configurable
 object Turret : Subsystem {
@@ -49,7 +43,6 @@ object Turret : Subsystem {
             RunToPosition(controlSystem, target, 0.0)
         ).setInterruptible(true).requires(this)
 
-
 //    val toRight = RunToPosition(controlSystem, 300.0).requires(this)
 //    val toMiddle = RunToPosition(controlSystem, 0.0).requires(this)
 //    val toLeft = RunToPosition(controlSystem, -300.0).requires(this)
@@ -62,7 +55,7 @@ object Turret : Subsystem {
 //                spinZero()
 //            }
 //        }
-//
+
     override fun periodic() {
         if (turretActive) {
             turret.power = controlSystem.calculate(turret.state)
