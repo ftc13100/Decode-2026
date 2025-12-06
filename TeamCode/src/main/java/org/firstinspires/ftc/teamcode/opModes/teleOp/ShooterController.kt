@@ -1,14 +1,13 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
-import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.CommandManager
-import dev.nextftc.ftc.ActiveOpMode.telemetry
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 
-data class ShotParameters(val x: Double, val y: Double, val velocity: Double, val angle: Double)
 
-class ShooterController {
+object ShooterController {
+    data class ShotParameters(val x: Double, val y: Double, val velocity: Double, val angle: Double)
+
     private val shooterLookupTable: Map<Pair<Double, Double>, ShotParameters> = mapOf(
         //first = x, second = y
         //listing at 12 inch intervals, lookup written first match within 6 inches

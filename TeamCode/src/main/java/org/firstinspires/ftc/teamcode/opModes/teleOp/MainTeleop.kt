@@ -9,7 +9,6 @@ import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
 import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.core.commands.delays.Delay
-import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.PedroComponent
@@ -21,7 +20,6 @@ import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Turret
@@ -49,7 +47,7 @@ class MainTeleop : NextFTCOpMode() {
     private val backLeftName = "backLeft"
     private val backRightName = "backRight"
 
-    private val shooterController = ShooterController()
+    private val shooterController = ShooterController
 
     private lateinit var frontLeftMotor: MotorEx
     private lateinit var frontRightMotor: MotorEx
