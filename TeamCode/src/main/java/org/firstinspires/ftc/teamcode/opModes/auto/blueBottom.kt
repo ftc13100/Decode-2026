@@ -23,6 +23,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil.limelight
+import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
@@ -33,7 +34,7 @@ import kotlin.time.Duration.Companion.seconds
 class blueBottom: NextFTCOpMode() {
     init {
         addComponents(
-               SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake, Gate),
+               SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage),
                   BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
@@ -71,16 +72,12 @@ class blueBottom: NextFTCOpMode() {
     private lateinit var PGPsecond: PathChain
     private lateinit var GPPtoShotMove: PathChain
 
-
-
     //GPP path chains
     private lateinit var GPPfirst: PathChain
     private lateinit var GPPsecond: PathChain
 
-
     //Move a bit
     private lateinit var MoveAbit: PathChain
-
 
     private fun buildPaths() {
         //PGP paths
@@ -109,15 +106,11 @@ class blueBottom: NextFTCOpMode() {
                 .setLinearHeadingInterpolation(pickUpPGP2.heading, PGPtoShot.heading)
                 .build()
         //PPG paths
-
-
         //Move a bit
             MoveAbit = follower.pathBuilder()
             .addPath(BezierLine(startPose,shootPose))
                 .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
             .build()
-
-
     }
 
     val PPG: Command
@@ -194,8 +187,8 @@ class blueBottom: NextFTCOpMode() {
                          ShooterAngle.angle_up,
                          Shooter.spinAtSpeed(-1650.0),
                          Delay(2.seconds),
-
         )
+
     val GPP: Command
         get() = SequentialGroup(
             FollowPath(MoveAbit),
@@ -244,25 +237,27 @@ class blueBottom: NextFTCOpMode() {
 
         }
 
-
-
-
     override fun onUpdate() {
 
         val result: LLResult? = limelight.latestResult
 
+        PoseStorage.poseEnd = follower.pose
+
         // Common Telemetry
         if (result != null && result.isValid) {
-            val botpose: Pose3D = result.botpose
+           // val botpose: Pose3D = result.botpose
             telemetry.addData("tx (Horizontal Error)", "%.2f", result.tx)
             telemetry.addData("ty (Vertical Error)", "%.2f", result.ty)
-            telemetry.addData("Bot pose", botpose.toString())
+        //    telemetry.addData("Bot pose", botpose.toString())
         } else {
             telemetry.addData("Limelight", "Target not found")
         }
 
         telemetry.addData("Mode", "TeleOp Running")
         telemetry.update()
-    }   }
+    }
+//     override fun onStop() {
+//    }
+}
 
 
