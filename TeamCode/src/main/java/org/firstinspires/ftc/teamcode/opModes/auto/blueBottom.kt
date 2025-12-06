@@ -29,7 +29,6 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
-
 @Autonomous(name = "blueBottom")
 class blueBottom: NextFTCOpMode() {
     init {
