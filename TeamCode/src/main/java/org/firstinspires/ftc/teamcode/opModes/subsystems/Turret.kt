@@ -13,6 +13,12 @@ object Turret : Subsystem {
     @JvmField
     var target = 0.0
     var turretActive: Boolean = false
+
+    var startPosition: Double = 0.0
+    var leftLimit: Double = 0.0
+    var rightLimit: Double = 0.0
+
+
     @JvmField
     var posPIDCoefficients = PIDCoefficients(0.025, 0.0, 0.0)
 
@@ -21,6 +27,12 @@ object Turret : Subsystem {
 
     val resetPos = InstantCommand {
      turret.zero()
+    }.requires(this)
+
+    val setStartPos = InstantCommand {
+        startPosition = turret.currentPosition
+        rightLimit = startPosition + 1500
+        leftLimit = startPosition - 1500
     }.requires(this)
 
 
@@ -36,8 +48,14 @@ object Turret : Subsystem {
 //        }.setInterruptible(true).requires(this)
 
     fun spinToPos(pos: Double) =
-        InstantCommand{
-            target = pos
+        InstantCommand {
+            if (pos > rightLimit) {
+                target = rightLimit
+            } else if (pos < leftLimit) {
+                target = leftLimit
+            } else {
+                target = pos
+            }
             turretActive = true
         }.then(
             RunToPosition(controlSystem, target, 0.0)

@@ -203,6 +203,24 @@ class MainTeleop : NextFTCOpMode() {
                     Turret.spinToPos(turretPos)
                 )
             }
+        button {gamepad2.right_trigger > 0.5 }
+            .whenBecomesTrue {
+                val turretPos = Turret.target - 15.0
+                CommandManager.scheduleCommand(
+                    Turret.spinToPos(turretPos)
+                )
+            }
+        button {gamepad2.left_trigger > 0.5}
+            .whenBecomesTrue {
+                val turretPos = Turret.target + 15.0
+                CommandManager.scheduleCommand(
+                    Turret.spinToPos(turretPos)
+                )
+            }
+
+
+
+
 
         //Point to target
         button { gamepad2.a }
