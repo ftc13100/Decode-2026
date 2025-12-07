@@ -1,8 +1,13 @@
 package org.firstinspires.ftc.teamcode.opModes.subsystems
 
 import com.bylazar.configurables.annotations.Configurable
+import com.qualcomm.robotcore.hardware.PIDFCoefficients
+import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
+import dev.nextftc.control.feedback.FeedbackElement
 import dev.nextftc.control.feedback.PIDCoefficients
+import dev.nextftc.control.feedforward.BasicFeedforward
+import dev.nextftc.control.feedforward.FeedforwardElement
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.hardware.controllable.RunToPosition
@@ -15,8 +20,8 @@ object Turret : Subsystem {
     @JvmField var startPosition: Double = 0.0
     @JvmField var leftLimit: Double = 0.0
     @JvmField var rightLimit: Double = 0.0
-    @JvmField var posPIDCoefficients = PIDCoefficients(0.025, 0.0, 0.0)
-
+    @JvmField var posPIDCoefficients = PIDCoefficients(0.015, 0.0, 0.5)
+   // @JvmField var feedforward = FeedbackElement(0.0)
     val turret = MotorEx("turret").brakeMode()
 
 
@@ -30,11 +35,18 @@ object Turret : Subsystem {
         leftLimit = startPosition - 1000
     }.requires(this)
 
-
     val controlSystem = controlSystem {
         posPid(posPIDCoefficients)
     }
 
+    fun turretPID() {
+        turretActive = true
+        controlSystem.goal = KineticState(position = target)
+
+        turret.power = controlSystem.calculate(
+            KineticState(position = turret.currentPosition)
+        )
+    }
 //    fun spinToPos(pos: Double) =
 //        InstantCommand{
 //            turretActive = true
@@ -56,9 +68,6 @@ object Turret : Subsystem {
             RunToPosition(controlSystem, target, 0.0)
         ).setInterruptible(true).requires(this)
 
-//    val toRight = RunToPosition(controlSystem, 300.0).requires(this)
-//    val toMiddle = RunToPosition(controlSystem, 0.0).requires(this)
-//    val toLeft = RunToPosition(controlSystem, -300.0).requires(this)
 
 //    fun moveToTag (tagPos: Double) =
 //        if (tagPos < 300 && tagPos > -300) {
@@ -69,11 +78,11 @@ object Turret : Subsystem {
 //            }
 //        }
 
-    override fun periodic() {
-        if (turretActive) {
-            turret.power = controlSystem.calculate(turret.state)
-        } else {
-            turret.power = 0.0
-        }
-        }
+//    override fun periodic() {
+//        if (turretActive) {
+//            turret.power = controlSystem.calculate(turret.state)
+//        } else {
+//            turret.power = 0.0
+//        }
+//        }
     }

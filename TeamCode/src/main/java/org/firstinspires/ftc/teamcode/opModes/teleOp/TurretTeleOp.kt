@@ -45,15 +45,24 @@ class TurretTeleOp : NextFTCOpMode() {
     private var previous_tx = 0.0
     private val panelsTelemetry = PanelsTelemetry.telemetry
 
+    val turretCommand = PerpetualCommand(
+        LambdaCommand()
+            .setUpdate{
+                Turret.turretPID()
+            }
+    )
+
     override fun onInit() {
+        Turret.setStartPos()
         limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
         telemetry.msTransmissionInterval = 11
         limelight.pipelineSwitch(1)
         limelight.start()
+        turretCommand()
+        val limeError = limelight.latestResult.tx
     }
 
     override fun onStartButtonPressed() {
-
 
         button { gamepad1.y}
             .toggleOnBecomesTrue()
@@ -70,6 +79,7 @@ class TurretTeleOp : NextFTCOpMode() {
         telemetry.addData("Turret Position", Turret.turret.currentPosition)
         panelsTelemetry.addData("Target", Turret.target)
         panelsTelemetry.addData("Position", Turret.turret.currentPosition)
+        panelsTelemetry.addData("LL Error", limelight.latestResult.tx)
         panelsTelemetry.update(telemetry)
 //        val result: LLResult? = limelight.latestResult
 //        if (result != null && result.isValid) {
