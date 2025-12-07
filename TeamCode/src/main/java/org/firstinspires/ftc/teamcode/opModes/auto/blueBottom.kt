@@ -233,10 +233,8 @@ class blueBottom: NextFTCOpMode() {
                     } else {
                         GPP()
                     }
-
                 }
             }
-
         }
 
     override fun onUpdate() {

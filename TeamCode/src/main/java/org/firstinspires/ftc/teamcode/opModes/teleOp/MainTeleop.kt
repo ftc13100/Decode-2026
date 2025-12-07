@@ -60,10 +60,12 @@ class MainTeleop : NextFTCOpMode() {
 
     private lateinit var driverControlled: MecanumDriverControlled
 
-    private val imu = IMUEx("imu", Direction.LEFT, Direction.UP).zeroed()
+//    private val imu = IMUEx("imu", Direction.LEFT, Direction.UP).zeroed()
 
     private lateinit var limelight: Limelight3A
     private val startPose = PoseStorage.poseEnd  //(72.0,72.0, Math.toRadians(90.0))
+    private val testingPose = Pose(72.0,72.0,Math.toRadians(90.0))
+    private var testMode: Boolean = false
     private var targetTrackingActive: Boolean = false
     private var targetTrackingDone: Boolean = false
     private var targetTrackingLoopCounter: Int = 0
@@ -86,7 +88,13 @@ class MainTeleop : NextFTCOpMode() {
 
     override fun onInit() {
 
-        follower.setStartingPose(startPose)
+        if(abs(startPose.x) < 0.1 && abs(startPose.y) < 0.1) {
+            follower.setStartingPose(testingPose)
+            PoseStorage.blueAlliance = true
+            testMode = true
+        } else {
+            follower.setStartingPose(startPose)
+        }
 
         frontLeftMotor = MotorEx(frontLeftName)
         frontRightMotor = MotorEx(frontRightName)
@@ -121,7 +129,7 @@ class MainTeleop : NextFTCOpMode() {
             -Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
             Gamepads.gamepad1.rightStickX,
-            FieldCentric(imu)
+//            FieldCentric(imu)
         )
 
         driverControlled()
@@ -177,9 +185,9 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad1.b }
             .whenBecomesTrue {
                 if (PoseStorage.blueAlliance) {
-                    follower.setStartingPose(Pose(136.25, 8.5, -90.0))
+                    follower.setPose(Pose(136.25, 8.5, Math.toRadians(-90.0)))
                 } else {
-                    follower.setStartingPose(Pose(7.75, 8.5, -90.0))
+                    follower.setPose(Pose(7.75, 8.5,Math.toRadians(-90.0)))
                 }
             }
 
@@ -293,12 +301,16 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad2.left_stick_button }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                PoseStorage.blueAlliance = false
-                limelight.pipelineSwitch(2)
+                if (testMode) {
+                    PoseStorage.blueAlliance = false
+                    limelight.pipelineSwitch(2)
+                }
             }
             .whenBecomesFalse {
-                PoseStorage.blueAlliance = true
-                limelight.pipelineSwitch(1)
+                if (testMode) {
+                    PoseStorage.blueAlliance = true
+                    limelight.pipelineSwitch(1)
+                }
             }
     }
 
@@ -315,11 +327,11 @@ class MainTeleop : NextFTCOpMode() {
             val heading = follower.heading
 
             var targetAngle : Double
-            if(PoseStorage.blueAlliance) {
+            if (PoseStorage.blueAlliance) {
                 targetAngle = Math.PI - atan2(abs(goal.y - y), abs(goal.x - x))
             }
             else {
-                targetAngle =   atan2(abs(goal.y - y), abs(goal.x - (144 - x)))
+                targetAngle = atan2(abs(goal.y - y), abs(goal.x - (144 - x)))
             }
             var headingError = targetAngle - heading
             if (headingError > Math.PI) headingError = headingError - (2 * (Math.PI))
@@ -380,21 +392,21 @@ class MainTeleop : NextFTCOpMode() {
             telemetry.addData("Shooter Speed", "Current: %.0f, Target: %.0f", Shooter.shooter.velocity, Shooter.target)
             telemetry.addData("Intake Running", intakeRunning)
             telemetry.addData("Gate Open", gateOpen)
-            if(llResult != null) {
-                telemetry.addData(
-                    "From LL",
-                    "%s, X: %.0f, Y: %.0f, Z: %.1f",
-                    llResult.botpose.toString(),
-                    llResult.botpose.position.x,
-                    llResult.botpose.position.y,
-                    llResult.botpose.position.z
-                )
-            }
+////            if(llResult != null) {
+////                telemetry.addData(
+////                    "From LL",
+////                    "%s, X: %.0f, Y: %.0f, Z: %.1f",
+////                    llResult.botpose.toString(),
+////                    llResult.botpose.position.x,
+////                    llResult.botpose.position.y,
+////                    llResult.botpose.position.z
+////                )
+//            }
 
             telemetry.update()
         }
 
-//        override fun onStop() {
-//            BindingManager.reset()
-//        }
+        override fun onStop() {
+            BindingManager.reset()
+        }
     }

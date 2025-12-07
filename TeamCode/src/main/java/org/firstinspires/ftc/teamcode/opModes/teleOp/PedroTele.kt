@@ -19,7 +19,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Turret
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.firstinspires.ftc.teamcode.pedroPathing.Tuning
 import kotlin.math.abs
