@@ -10,17 +10,12 @@ import dev.nextftc.hardware.impl.MotorEx
 
 @Configurable
 object Turret : Subsystem {
-    @JvmField
-    var target = 0.0
-    var turretActive: Boolean = false
-
-    var startPosition: Double = 0.0
-    var leftLimit: Double = 0.0
-    var rightLimit: Double = 0.0
-
-
-    @JvmField
-    var posPIDCoefficients = PIDCoefficients(0.025, 0.0, 0.0)
+    @JvmField var target = 0.0
+    @JvmField var turretActive: Boolean = false
+    @JvmField var startPosition: Double = 0.0
+    @JvmField var leftLimit: Double = 0.0
+    @JvmField var rightLimit: Double = 0.0
+    @JvmField var posPIDCoefficients = PIDCoefficients(0.025, 0.0, 0.0)
 
     val turret = MotorEx("turret").brakeMode()
 
@@ -31,8 +26,8 @@ object Turret : Subsystem {
 
     val setStartPos = InstantCommand {
         startPosition = turret.currentPosition
-        rightLimit = startPosition + 1500
-        leftLimit = startPosition - 1500
+        rightLimit = startPosition + 1000
+        leftLimit = startPosition - 1000
     }.requires(this)
 
 
@@ -49,9 +44,9 @@ object Turret : Subsystem {
 
     fun spinToPos(pos: Double) =
         InstantCommand {
-            if (pos > rightLimit) {
+            if (pos < rightLimit) {
                 target = rightLimit
-            } else if (pos < leftLimit) {
+            } else if (pos > leftLimit) {
                 target = leftLimit
             } else {
                 target = pos

@@ -68,6 +68,7 @@ class TurretTeleOp : NextFTCOpMode() {
     override fun onUpdate() {
         BindingManager.update()
         telemetry.addData("Turret Position", Turret.turret.currentPosition)
+        panelsTelemetry.addData("Target", Turret.target)
         panelsTelemetry.addData("Position", Turret.turret.currentPosition)
         panelsTelemetry.update(telemetry)
 //        val result: LLResult? = limelight.latestResult

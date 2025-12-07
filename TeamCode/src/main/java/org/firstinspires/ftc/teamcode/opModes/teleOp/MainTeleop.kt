@@ -32,7 +32,6 @@ import org.opencv.core.Mat
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.time.Duration.Companion.seconds
-
 @TeleOp(name = "MainTeleop")
 class MainTeleop : NextFTCOpMode() {
     init {
@@ -77,7 +76,6 @@ class MainTeleop : NextFTCOpMode() {
     private val HEADING_LIMELIGHT: Double = Math.toRadians(4.0)
     private val HEADING_TOLERANCE: Double = Math.toRadians(1.0)
     private val TRACKING_COUNTDOWN: Int = 12
-
     private var currentShotX: Double = 0.0
     private var currentShotY: Double = 0.0
     private var currentShotVelocity: Double = 0.0
@@ -111,15 +109,14 @@ class MainTeleop : NextFTCOpMode() {
         limelight.start()
         follower.update()
 
-        var turretCurPos:Double = Turret.turret.currentPosition
-        Turret.target = turretCurPos
-
+        Turret.setStartPos()
+        val turretCurPos:Double = Turret.turret.currentPosition
         CommandManager.scheduleCommand(
             Turret.spinToPos(turretCurPos)
         )
+
         Gate.gate_close()
     }
-
     override fun onStartButtonPressed() {
         driverControlled = MecanumDriverControlled(
             frontLeftMotor,
@@ -132,7 +129,7 @@ class MainTeleop : NextFTCOpMode() {
 //            FieldCentric(imu)
         )
         driverControlled.scalar = 0.9
-        driverControlled()
+
         //Intake artifact
         button { gamepad1.left_bumper }
             .toggleOnBecomesTrue()
@@ -160,8 +157,7 @@ class MainTeleop : NextFTCOpMode() {
                 Intake.spinStop()
                 intakeRunning = false
             }
-
-        //Gate control
+//Gate control
         button { gamepad1.a }
             .toggleOnBecomesTrue() //make this a button command that only opens when held // default command?
             .whenBecomesTrue {
@@ -259,8 +255,7 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesFalse {
                 CommandManager.scheduleCommand ( Shooter.stopShooter)
             }
-
-        //feed artifacts into shooter
+//feed artifacts into shooter
         button { gamepad2.b }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
@@ -312,7 +307,7 @@ class MainTeleop : NextFTCOpMode() {
                     )
                 }
             }
-        //REMOVE BEFORE THE COMPETITION
+//REMOVE BEFORE THE COMPETITION
         button { gamepad2.left_stick_button }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
@@ -329,84 +324,81 @@ class MainTeleop : NextFTCOpMode() {
             }
     }
 
-        override fun onUpdate() {
-            BindingManager.update()
-            follower.update()
-            val llResult: LLResult? = limelight.latestResult
-            var llError: Double = 99.0
+    override fun onUpdate() {
+        BindingManager.update()
+        follower.update()
+        val llResult: LLResult? = limelight.latestResult
+        var llError: Double = 99.0
 
-            //start tracking goal
-            val goal = Pose(16.0, 132.0)
-            val x = abs(follower.pose.x)
-            val y = abs(follower.pose.y)
-            val heading = follower.heading
+        //start tracking goal
+        val goal = Pose(16.0, 132.0)
+        val x = abs(follower.pose.x)
+        val y = abs(follower.pose.y)
+        val heading = follower.heading
 
-            var targetAngle : Double
-            if (PoseStorage.blueAlliance) {
-                targetAngle = Math.PI - atan2(abs(goal.y - y), abs(goal.x - x))
-            }
-            else {
-                targetAngle = atan2(abs(goal.y - y), abs(goal.x - (144 - x)))
-            }
-            var headingError = targetAngle - heading
-            if (headingError > Math.PI) headingError = headingError - (2 * (Math.PI))
-
-            if (targetTrackingActive) {
-                ++targetTrackingLoopCounter
-                var turnPower: Double = 0.0
-                if (targetTrackingLoopCounter == 1 && abs(headingError) < HEADING_TOLERANCE) {
-                    targetTrackingDone = true
-                    targetTrackingActive = false
-                } else if (abs(headingError) > HEADING_TOLERANCE_FINE) {
-                    turnPower = if (headingError > 0) {
-                        -ALIGNMENT_POWER_COARSE
-                    } else {
-                        ALIGNMENT_POWER_COARSE
-                    }
-                } else if (abs(headingError) > HEADING_TOLERANCE) {
-                    turnPower = if (headingError > 0) {
-                        -ALIGNMENT_POWER_FINE
-                    } else {
-                        ALIGNMENT_POWER_FINE
-                    }
-                } else if (--targetTrackingCountdown > 0) {
-                    turnPower = if (headingError > 0) {
-                        -ALIGNMENT_POWER_FINE
-                    } else {
-                        ALIGNMENT_POWER_FINE
-                    }
+        var targetAngle : Double
+        if (PoseStorage.blueAlliance) {
+            targetAngle = Math.PI - atan2(abs(goal.y - y), abs(goal.x - x))
+        }
+        else {
+            targetAngle = atan2(abs(goal.y - y), abs(goal.x - (144 - x)))
+        }
+        var headingError = targetAngle - heading
+        if (headingError > Math.PI) headingError = headingError - (2 * (Math.PI))
+        if (targetTrackingActive) {
+            ++targetTrackingLoopCounter
+            var turnPower: Double = 0.0
+            if (targetTrackingLoopCounter == 1 && abs(headingError) < HEADING_TOLERANCE) {
+                targetTrackingDone = true
+                targetTrackingActive = false
+            } else if (abs(headingError) > HEADING_TOLERANCE_FINE) {
+                turnPower = if (headingError > 0) {
+                    -ALIGNMENT_POWER_COARSE
                 } else {
-                    targetTrackingDone = true
-                    targetTrackingActive = false
+                    ALIGNMENT_POWER_COARSE
                 }
-
-                frontLeftMotor.power = turnPower
-                frontRightMotor.power = -turnPower
-                backLeftMotor.power = turnPower
-                backRightMotor.power = -turnPower
-
+            } else if (abs(headingError) > HEADING_TOLERANCE) {
+                turnPower = if (headingError > 0) {
+                    -ALIGNMENT_POWER_FINE
+                } else {
+                    ALIGNMENT_POWER_FINE
+                }
+            } else if (--targetTrackingCountdown > 0) {
+                turnPower = if (headingError > 0) {
+                    -ALIGNMENT_POWER_FINE
+                } else {
+                    ALIGNMENT_POWER_FINE
+                }
             } else {
-                // Manual Control
-                driverControlled.update()
-            } // end tracking goal
-
-            llError = if (llResult != null && llResult.isValid) {
-                llResult.tx
-            } else {
-                99.0
+                targetTrackingDone = true
+                targetTrackingActive = false
             }
+            frontLeftMotor.power = turnPower
+            frontRightMotor.power = -turnPower
+            backLeftMotor.power = turnPower
+            backRightMotor.power = -turnPower
 
-            if(PoseStorage.blueAlliance) { telemetry.addData("Alliance", "Blue") }
-            else {telemetry.addData("Alliance", "Red") }
-            telemetry.addData("", "X: %.0f, Y: %.0f, Heading: %.1f, Target: %.1f", follower.pose.x, follower.pose.y, Math.toDegrees(follower.pose.heading), Math.toDegrees(targetAngle))
-            telemetry.addData("Pointing Status", "Done: %b, Active: %b", targetTrackingDone , targetTrackingActive)
-            telemetry.addData("Pointing Error", "Heading: %.1f, Limelight: %.1f", Math.toDegrees(headingError), llError)
-            telemetry.addData("Turret Target", "Current: %.0f, Target: %.0f, Active: %b",  Turret.turret.currentPosition, Turret.target, Turret.turretActive)
-            telemetry.addData("Shot","X: %.0f, Y: %.0f, Vel: %.0f, Angle: %.3f", currentShotX, currentShotY, currentShotVelocity, currentShotAngle)
-            telemetry.addData("Shooter", "Ready: %b, Active: %b", Shooter.shooterReady, Shooter.shooterActive)
-            telemetry.addData("Shooter Speed", "Current: %.0f, Target: %.0f", Shooter.shooter.velocity, Shooter.target)
-            telemetry.addData("Intake Running", intakeRunning)
-            telemetry.addData("Gate Open", gateOpen)
+        } else {
+            // Manual Control
+            driverControlled.update()
+        } // end tracking goal
+
+        llError = if (llResult != null && llResult.isValid) {
+            llResult.tx
+        } else {
+            99.0
+        }
+        if(PoseStorage.blueAlliance) { telemetry.addData("Alliance", "Blue") }
+        else {telemetry.addData("Alliance", "Red") }
+        telemetry.addData("", "X: %.0f, Y: %.0f, Heading: %.1f, Target: %.1f", follower.pose.x, follower.pose.y, Math.toDegrees(follower.pose.heading), Math.toDegrees(targetAngle))
+        telemetry.addData("Pointing Status", "Done: %b, Active: %b", targetTrackingDone , targetTrackingActive)
+        telemetry.addData("Pointing Error", "Heading: %.1f, Limelight: %.1f", Math.toDegrees(headingError), llError)
+        telemetry.addData("Turret Target", "Current: %.0f, Target: %.0f, Active: %b",  Turret.turret.currentPosition, Turret.target, Turret.turretActive)
+        telemetry.addData("Shot","X: %.0f, Y: %.0f, Vel: %.0f, Angle: %.3f", currentShotX, currentShotY, currentShotVelocity, currentShotAngle)
+        telemetry.addData("Shooter", "Ready: %b, Active: %b", Shooter.shooterReady, Shooter.shooterActive)
+        telemetry.addData("Shooter Speed", "Current: %.0f, Target: %.0f", Shooter.shooter.velocity, Shooter.target)
+        telemetry.addData("Intake Running", intakeRunning)
+        telemetry.addData("Gate Open", gateOpen)
 ////            if(llResult != null) {
 ////                telemetry.addData(
 ////                    "From LL",
@@ -418,10 +410,10 @@ class MainTeleop : NextFTCOpMode() {
 ////                )
 //            }
 
-            telemetry.update()
-        }
-
-        override fun onStop() {
-            BindingManager.reset()
-        }
+        telemetry.update()
     }
+
+    override fun onStop() {
+        BindingManager.reset()
+    }
+}
