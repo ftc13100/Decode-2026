@@ -131,11 +131,8 @@ class MainTeleop : NextFTCOpMode() {
             Gamepads.gamepad1.rightStickX,
 //            FieldCentric(imu)
         )
-
-        driverControlled()
         driverControlled.scalar = 0.9
-        //driverControlled()
-
+        driverControlled()
         //Intake artifact
         button { gamepad1.left_bumper }
             .toggleOnBecomesTrue()
