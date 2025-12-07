@@ -46,7 +46,7 @@ class blueBottom: NextFTCOpMode() {
             //path to pick up PPG motif
         private val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0))
         private val pickUpPPGControl = Pose(73.5, 85.9, Math.toRadians(0.0))
-        private val pickUpPPG2= Pose(131.3, 84.0, Math.toRadians(0.0))
+        private val pickUpPPG2= Pose(128.9, 84.0, Math.toRadians(0.0))
         private val PPGtoShot= Pose(85.0, 16.0, Math.toRadians(119.5))
         private val PPGtoShotControl= Pose(80.0, 73.26, Math.toRadians(0.0))
     //path to pick up PGP motif
@@ -85,7 +85,7 @@ class blueBottom: NextFTCOpMode() {
                 .setLinearHeadingInterpolation(shootPose.heading,pickUpPPG1.heading)
                 .build()
             PPGsecond = follower.pathBuilder()
-                .addPath(BezierLine(pickUpPPG1, pickUpPPG2)).setGlobalDeceleration(4.0)
+                .addPath(BezierLine(pickUpPPG1, pickUpPPG2)).setGlobalDeceleration(5.0)
                 .setConstantHeadingInterpolation(0.0)
                 .build()
             PPGtoShotMove = follower.pathBuilder()
@@ -97,7 +97,7 @@ class blueBottom: NextFTCOpMode() {
                 .setLinearHeadingInterpolation(shootPose.heading,pickUpPGP1.heading)
                 .build()
             GPPsecond = follower.pathBuilder()
-                .addPath(BezierLine(pickUpPGP1,pickUpPGP2)).setGlobalDeceleration(4.0)
+                .addPath(BezierLine(pickUpPGP1,pickUpPGP2)).setGlobalDeceleration(5.0)
                 .setConstantHeadingInterpolation(0.0)
                 .build()
             GPPtoShotMove = follower.pathBuilder()
@@ -117,10 +117,10 @@ class blueBottom: NextFTCOpMode() {
             FollowPath(MoveAbit),
             //shoots the preload
                          ShooterAngle.angle_up,
-                         Shooter.spinAtSpeed(1725.0),
+                         Shooter.spinAtSpeed(1650.0),
                          Gate.gate_open,
                          Intake.spinSlowSpeed,
-                         Delay(2.6.seconds),
+                         Delay(3.seconds),
             ParallelGroup(
                         Shooter.stopShooter,
                          Intake.spinStop,
@@ -136,10 +136,10 @@ class blueBottom: NextFTCOpMode() {
             FollowPath(PPGtoShotMove),
             //shoots the motif
                          ShooterAngle.angle_up,
-                         Shooter.spinAtSpeed(1725.0),
+                         Shooter.spinAtSpeed(1685.0),
                          Gate.gate_open,
                          Intake.spinSlowSpeed,
-                         Delay(2.6.seconds),
+                         Delay(3.seconds),
             ParallelGroup(
                 Shooter.stopShooter,
                          Intake.spinStop,
@@ -158,7 +158,7 @@ class blueBottom: NextFTCOpMode() {
                          Shooter.spinAtSpeed(1725.0),
                          Gate.gate_open,
                          Intake.spinSlowSpeed,
-                         Delay(2.6.seconds),
+                         Delay(3.seconds),
             ParallelGroup(
                 Shooter.stopShooter,
                 Intake.spinStop,
