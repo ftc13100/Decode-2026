@@ -19,7 +19,7 @@ object Intake : Subsystem {
         SetPower(intake, 0.0)
 
     val spinSlowSpeed =
-        SetPower(intake, 0.7,)
+        SetPower(intake, 0.8,)
 
 
 

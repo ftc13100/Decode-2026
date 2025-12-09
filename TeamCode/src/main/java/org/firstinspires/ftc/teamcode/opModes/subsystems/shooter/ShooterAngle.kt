@@ -29,4 +29,10 @@ object ShooterAngle: Subsystem {
     val angle_down = InstantCommand {
         servo.position = 0.7
     }
-}
+    fun toAngle (angle : Double)=
+        InstantCommand {
+            servo.position = angle
+
+        }
+    }
+

@@ -228,10 +228,8 @@ class MainTeleop : NextFTCOpMode() {
 
         button { gamepad2.x }
             .whenBecomesTrue {
-                val turretStartPos = Turret.startPosition
-                Turret.spinToPos(turretStartPos)
-//                Gate.gate_open()
-//                gateOpen = true
+                Gate.gate_open()
+                gateOpen = true
             }
 
         // Start shooter and set hood angle / Stop shooter

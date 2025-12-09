@@ -5,17 +5,15 @@ import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.groups.SequentialGroup
-import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
-import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 
 
-@Autonomous(name = "blueTop")
-class blueTop: NextFTCOpMode() {
+@Autonomous(name = "blueTopHard")
+class blueTopHard: NextFTCOpMode() {
     init {
        addComponents(
            PedroComponent(Constants::createFollower)
