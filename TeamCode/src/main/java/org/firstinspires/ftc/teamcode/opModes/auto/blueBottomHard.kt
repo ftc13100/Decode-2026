@@ -6,9 +6,7 @@ import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import com.qualcomm.robotcore.robot.Robot
 import dev.nextftc.core.commands.Command
-import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.core.commands.delays.Delay
 import dev.nextftc.core.commands.groups.ParallelGroup
 import dev.nextftc.core.commands.groups.SequentialGroup
@@ -18,7 +16,6 @@ import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
@@ -29,8 +26,8 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
-@Autonomous(name = "blueBottom")
-class blueBottom: NextFTCOpMode() {
+@Autonomous(name = "blueBottomHard")
+class blueBottomHard: NextFTCOpMode() {
     init {
         addComponents(
                SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage),
@@ -214,11 +211,12 @@ class blueBottom: NextFTCOpMode() {
     override fun onInit() {
         follower.setMaxPower(1.0)
         Gate.gate_close()
-        follower.setStartingPose(startPose)
-        buildPaths()
+
     }
 
     override fun onStartButtonPressed() {
+        follower.setStartingPose(startPose)
+        buildPaths()
         PoseStorage.blueAlliance = true
         PoseStorage.redAlliance = false
 
@@ -238,6 +236,7 @@ class blueBottom: NextFTCOpMode() {
         }
 
     override fun onUpdate() {
+        telemetry.addData("Shooter Speed", "Current: %.0f, Target: %.0f", Shooter.shooter.velocity, Shooter.target)
 
         val result: LLResult? = limelight.latestResult
 

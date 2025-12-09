@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.opModes.auto
 
-import com.pedropathing.geometry.BezierCurve
 import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import com.qualcomm.robotcore.robot.Robot
 import dev.nextftc.core.commands.Command
-import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.core.commands.delays.Delay
 import dev.nextftc.core.commands.groups.ParallelGroup
 import dev.nextftc.core.commands.groups.SequentialGroup
@@ -29,8 +26,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
 
-@Autonomous(name = "redTop")
-class redTop: NextFTCOpMode() {
+@Autonomous(name = "redTopHard")
+class redTopHard: NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake, Gate),
@@ -92,6 +89,8 @@ class redTop: NextFTCOpMode() {
 
 
     override fun onUpdate() {
+        telemetry.addData("Shooter Speed", "Current: %.0f, Target: %.0f", Shooter.shooter.velocity, Shooter.target)
+
 
         val result: LLResult? = limelight.latestResult
 

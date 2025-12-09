@@ -20,7 +20,7 @@ object Turret : Subsystem {
     @JvmField var startPosition: Double = 0.0
     @JvmField var leftLimit: Double = 0.0
     @JvmField var rightLimit: Double = 0.0
-    @JvmField var posPIDCoefficients = PIDCoefficients(0.015, 0.0, 0.5)
+    @JvmField var posPIDCoefficients = PIDCoefficients(0.015, 0.0, 0.0)
    // @JvmField var feedforward = FeedbackElement(0.0)
     val turret = MotorEx("turret").brakeMode()
 
