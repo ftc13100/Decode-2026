@@ -110,10 +110,8 @@ class MainTeleop : NextFTCOpMode() {
         follower.update()
 
         Turret.setStartPos()
-        val turretCurPos:Double = Turret.turret.currentPosition
-        CommandManager.scheduleCommand(
-            Turret.spinToPos(turretCurPos)
-        )
+        val turretPos = Turret.target
+        Turret.spinToPos(turretPos)
 
         Gate.gate_close()
     }
@@ -130,6 +128,9 @@ class MainTeleop : NextFTCOpMode() {
         )
         driverControlled.scalar = 0.9
 
+////////////////////////////////////////////////////////////////////////////
+//        GamePad 2 - Operator Commands
+////////////////////////////////////////////////////////////////////////////
         //Intake artifact
         button { gamepad1.left_bumper }
             .toggleOnBecomesTrue()
@@ -157,19 +158,16 @@ class MainTeleop : NextFTCOpMode() {
                 Intake.spinStop()
                 intakeRunning = false
             }
-//Gate control
+        // Point to Target
         button { gamepad1.a }
-            .toggleOnBecomesTrue() //make this a button command that only opens when held // default command?
             .whenBecomesTrue {
-                Gate.gate_open()
-                gateOpen = true
-            }
-            .whenBecomesFalse {
-                Gate.gate_close()
-                gateOpen = false
+                targetTrackingActive = !targetTrackingActive
+                targetTrackingDone = false
+                targetTrackingCountdown = TRACKING_COUNTDOWN
+                targetTrackingLoopCounter = 0
             }
 
-        //Drivetrain Slow-fast speed
+        // Drivetrain Slow-fast speed
         button { gamepad1.y }
             .whenTrue { driverControlled.scalar = 0.4 }
             .whenFalse { driverControlled.scalar = 0.9 }
@@ -184,57 +182,59 @@ class MainTeleop : NextFTCOpMode() {
                 }
             }
 
-        //gamepad 2 operator controls below
+////////////////////////////////////////////////////////////////////////////
+//        GamePad 2 - Operator Commands
+////////////////////////////////////////////////////////////////////////////
+
+        // Fine jump turret right
         button {gamepad2.right_bumper}
             .whenBecomesTrue {
-                val turretPos = Turret.target - 3.0
-                CommandManager.scheduleCommand(
-                    Turret.spinToPos(turretPos)
-                )
+                val turretPos = Turret.target + 5.0
+                Turret.spinToPos(turretPos)
             }
+
+        // Fine jump turret left
         button {gamepad2.left_bumper}
             .whenBecomesTrue {
-                val turretPos = Turret.target + 3.0
-                CommandManager.scheduleCommand(
-                    Turret.spinToPos(turretPos)
-                )
+                val turretPos = Turret.target - 5.0
+                Turret.spinToPos(turretPos)
             }
+
+        // Coarse jump turret right
         button {gamepad2.right_trigger > 0.5 }
             .whenBecomesTrue {
-                val turretPos = Turret.target - 15.0
-                CommandManager.scheduleCommand(
-                    Turret.spinToPos(turretPos)
-                )
+                val turretPos = Turret.target + 100.0
+                Turret.spinToPos(turretPos)
             }
+
+        // Coarse jump turret left
         button {gamepad2.left_trigger > 0.5}
             .whenBecomesTrue {
-                val turretPos = Turret.target + 15.0
-                CommandManager.scheduleCommand(
-                    Turret.spinToPos(turretPos)
-                )
+                val turretPos = Turret.target - 100.0
+                Turret.spinToPos(turretPos)
             }
 
-
-
-
-
-        //Point to target
+        // Gate Open/Close
         button { gamepad2.a }
-            .whenBecomesTrue {
-                targetTrackingActive = !targetTrackingActive
-                targetTrackingDone = false
-                targetTrackingCountdown = TRACKING_COUNTDOWN
-                targetTrackingLoopCounter = 0
-
-            }
-
-        button { gamepad2.x }
+            .toggleOnBecomesTrue() //make this a button command that only opens when held // default command?
             .whenBecomesTrue {
                 Gate.gate_open()
                 gateOpen = true
             }
+            .whenBecomesFalse {
+                Gate.gate_close()
+                gateOpen = false
+            }
 
-        //lookup shot parameters from lookup table based on the current location
+        button { gamepad2.x }
+            .whenBecomesTrue {
+                val turretStartPos = Turret.startPosition
+                Turret.spinToPos(turretStartPos)
+//                Gate.gate_open()
+//                gateOpen = true
+            }
+
+        // Start shooter and set hood angle / Stop shooter
         button { gamepad2.y }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
@@ -255,7 +255,8 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesFalse {
                 CommandManager.scheduleCommand ( Shooter.stopShooter)
             }
-//feed artifacts into shooter
+
+        // Shoot  artifacts / stop shooting
         button { gamepad2.b }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
@@ -271,6 +272,7 @@ class MainTeleop : NextFTCOpMode() {
                 intakeRunning = false
             }
 
+        // Increase shooter velocity
         button { gamepad2.dpad_up }
             .whenBecomesTrue {
                 if (currentShotVelocity < 1800 ) {
@@ -279,6 +281,7 @@ class MainTeleop : NextFTCOpMode() {
                 }
             }
 
+        // Decrease shooter velocity
         button { gamepad2.dpad_down }
             .whenBecomesTrue {
                 if (currentShotVelocity > 800 ) {
@@ -287,6 +290,7 @@ class MainTeleop : NextFTCOpMode() {
                 }
             }
 
+        // Raise shooting hood
         button { gamepad2.dpad_left }
             .whenBecomesTrue {
                 if (currentShotAngle > 0.0 && currentShotAngle >= 0.519 ) {
@@ -297,6 +301,8 @@ class MainTeleop : NextFTCOpMode() {
                     )
                 }
             }
+
+        // Lower shooting hood
         button { gamepad2.dpad_right }
             .whenBecomesTrue {
                 if (currentShotAngle > 0.0 && currentShotAngle <= 0.681 ) {
@@ -307,7 +313,8 @@ class MainTeleop : NextFTCOpMode() {
                     )
                 }
             }
-//REMOVE BEFORE THE COMPETITION
+
+        // Switch alliance (works only in test mode where Teleop was started without Auto)
         button { gamepad2.left_stick_button }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
@@ -328,7 +335,9 @@ class MainTeleop : NextFTCOpMode() {
         BindingManager.update()
         follower.update()
         val llResult: LLResult? = limelight.latestResult
-        var llError: Double = 99.0
+        var llTx: Double = 99.0
+        var llTy: Double = 99.0
+        var llTa: Double = 99.0
 
         //start tracking goal
         val goal = Pose(16.0, 132.0)
@@ -383,32 +392,25 @@ class MainTeleop : NextFTCOpMode() {
             driverControlled.update()
         } // end tracking goal
 
-        llError = if (llResult != null && llResult.isValid) {
-            llResult.tx
+        if (llResult != null && llResult.isValid) {
+            llTx = llResult.tx
+            llTy = llResult.ty
+            llTa = llResult.ta
         } else {
             99.0
         }
         if(PoseStorage.blueAlliance) { telemetry.addData("Alliance", "Blue") }
         else {telemetry.addData("Alliance", "Red") }
-        telemetry.addData("", "X: %.0f, Y: %.0f, Heading: %.1f, Target: %.1f", follower.pose.x, follower.pose.y, Math.toDegrees(follower.pose.heading), Math.toDegrees(targetAngle))
+        telemetry.addData("X", "%.0f, Y: %.0f, Heading: %.1f, Target: %.1f", follower.pose.x, follower.pose.y, Math.toDegrees(follower.pose.heading), Math.toDegrees(targetAngle))
         telemetry.addData("Pointing Status", "Done: %b, Active: %b", targetTrackingDone , targetTrackingActive)
-        telemetry.addData("Pointing Error", "Heading: %.1f, Limelight: %.1f", Math.toDegrees(headingError), llError)
-        telemetry.addData("Turret Target", "Current: %.0f, Target: %.0f, Active: %b",  Turret.turret.currentPosition, Turret.target, Turret.turretActive)
+        telemetry.addData("Pointing Error", "Heading: %.1f, Limelight: (%.1f, %.1f, %.2f)", Math.toDegrees(headingError), llTx, llTy, llTa)
+        telemetry.addData("Turret Pos", "Current: %.0f, Target: %.0f",  Turret.turret.currentPosition, Turret.target)
+        telemetry.addData("Turret", "Ready: %b, ReadyMs: %.0f, Active: %b",  Turret.turretReady, Turret.turretReadyMs, Turret.turretActive)
         telemetry.addData("Shot","X: %.0f, Y: %.0f, Vel: %.0f, Angle: %.3f", currentShotX, currentShotY, currentShotVelocity, currentShotAngle)
-        telemetry.addData("Shooter", "Ready: %b, Active: %b", Shooter.shooterReady, Shooter.shooterActive)
         telemetry.addData("Shooter Speed", "Current: %.0f, Target: %.0f", Shooter.shooter.velocity, Shooter.target)
+        telemetry.addData("Shooter", "Ready: %b, ReadyMs:  %.0f, Active: %b, Power: %.2f", Shooter.shooterReady, Shooter.shooterReadyMs, Shooter.shooterActive, Shooter.shooter.power)
         telemetry.addData("Intake Running", intakeRunning)
         telemetry.addData("Gate Open", gateOpen)
-////            if(llResult != null) {
-////                telemetry.addData(
-////                    "From LL",
-////                    "%s, X: %.0f, Y: %.0f, Z: %.1f",
-////                    llResult.botpose.toString(),
-////                    llResult.botpose.position.x,
-////                    llResult.botpose.position.y,
-////                    llResult.botpose.position.z
-////                )
-//            }
 
         telemetry.update()
     }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opModes.subsystems.shooter
 
 import com.bylazar.configurables.annotations.Configurable
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
@@ -25,6 +26,8 @@ object Shooter : Subsystem {
     val shooter = MotorEx("shooter").brakeMode().reversed()
     var shooterActive  = false
     var shooterReady  = false
+    var shooterReadyMs: Double = 0.00
+    private val runtime = ElapsedTime()
 
     val controller = controlSystem {
         velPid(velPIDCoefficients)
@@ -46,9 +49,14 @@ object Shooter : Subsystem {
             target = speed
             shooterActive = true
             shooterReady = false
+            shooterReadyMs = 0.00
+            runtime.reset()
         }.then(
             RunToVelocity(controller, speed, 11.0),
-            InstantCommand { shooterReady = true }
+            InstantCommand {
+                shooterReady = true
+                shooterReadyMs = runtime.milliseconds()
+            }
         ).setInterruptible(true).requires(this)
 
     val stopShooter =
