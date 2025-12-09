@@ -1,88 +1,138 @@
 package org.firstinspires.ftc.teamcode.opModes.subsystems
 
 import com.bylazar.configurables.annotations.Configurable
+import com.pedropathing.geometry.Pose
+import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.hardware.PIDFCoefficients
+import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.FeedbackElement
 import dev.nextftc.control.feedback.PIDCoefficients
 import dev.nextftc.control.feedforward.BasicFeedforward
 import dev.nextftc.control.feedforward.FeedforwardElement
+import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
+import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.hardware.controllable.RunToPosition
 import dev.nextftc.hardware.impl.MotorEx
+import org.opencv.core.Mat
+import kotlin.math.abs
+import kotlin.math.atan2
 
 @Configurable
 object Turret : Subsystem {
     @JvmField var target = 0.0
-    @JvmField var turretActive: Boolean = false
-    @JvmField var startPosition: Double = 0.0
-    @JvmField var leftLimit: Double = 0.0
-    @JvmField var rightLimit: Double = 0.0
-    @JvmField var posPIDCoefficients = PIDCoefficients(0.015, 0.0, 0.0)
-   // @JvmField var feedforward = FeedbackElement(0.0)
+    @JvmField var turretActive = false
+    @JvmField var goalTrackingActive = false
+    @JvmField var turretReady = false
+    @JvmField var turretReadyMs = 0.0
+    @JvmField var startPosition = 0.0
+    @JvmField var leftLimit = 0.0
+    @JvmField var rightLimit = 0.0
+    @JvmField var targetAngle = 0.0
+    @JvmField var turretAngle = 0.0
+    @JvmField var heading = 0.0
+    @JvmField var turretError = 0.0
+    @JvmField var posPIDCoefficients = PIDCoefficients(0.0095, 0.0, 0.0001)
+
+    private var initialized = false
+
     val turret = MotorEx("turret").brakeMode()
-
-
-    val resetPos = InstantCommand {
-     turret.zero()
-    }.requires(this)
-
-    val setStartPos = InstantCommand {
-        startPosition = turret.currentPosition
-        rightLimit = startPosition + 1000
-        leftLimit = startPosition - 1000
-    }.requires(this)
+    private val runtime = ElapsedTime()
 
     val controlSystem = controlSystem {
         posPid(posPIDCoefficients)
     }
 
-    fun turretPID() {
-        turretActive = true
-        controlSystem.goal = KineticState(position = target)
+    /**
+     * PID-Only turn: updates target and turret logic handles the rest.
+     */
+    fun turn(posAdj: Double) {
+        target = (target + posAdj).coerceIn(leftLimit, rightLimit)
 
-        turret.power = controlSystem.calculate(
-            KineticState(position = turret.currentPosition)
-        )
+        goalTrackingActive = false       // stop tracking if active
+        turretActive = true              // PID hold mode ON
+        turretReady = false
+        runtime.reset()
+
+        // Ready automatically when close enough (handled in periodic)
     }
-//    fun spinToPos(pos: Double) =
-//        InstantCommand{
-//            turretActive = true
-//            target = pos
-//            RunToPosition(controlSystem, target)
-//        }.setInterruptible(true).requires(this)
 
-    fun spinToPos(pos: Double) =
-        InstantCommand {
-            if (pos < rightLimit) {
-                target = rightLimit
-            } else if (pos > leftLimit) {
-                target = leftLimit
-            } else {
-                target = pos
-            }
-            turretActive = true
-        }.then(
-            RunToPosition(controlSystem, target, 0.0)
-        ).setInterruptible(true).requires(this)
+    /**
+     * Enable auto tracking; PID will follow continuously in periodic.
+     */
+    fun trackTarget() {
+        goalTrackingActive = true
+        turretActive = false
+        turretReady = false
+        turretReadyMs = 0.0
+    }
 
+    /**
+     * Compute a new turret angle target during auto-tracking.
+     */
+    fun updateTarget() {
+        val goal = Pose(16.0, 132.0)
+        val x = abs(follower.pose.x)
+        val y = abs(follower.pose.y)
+        heading = follower.heading
 
-//    fun moveToTag (tagPos: Double) =
-//        if (tagPos < 300 && tagPos > -300) {
-//            RunToPosition(controlSystem, tagPos).requires(this)
-//        } else {
-//            InstantCommand {
-//                spinZero()
-//            }
-//        }
+        targetAngle = if (PoseStorage.blueAlliance) {
+            Math.PI - atan2(abs(goal.y - y), abs(goal.x - x))
+        } else {
+            atan2(abs(goal.y - y), abs(goal.x - (144 - x)))
+        }
+
+        turretAngle = heading -
+                (2 * Math.PI * (turret.currentPosition - startPosition) / (537.7 * 6.0))
+
+        turretError = targetAngle - turretAngle
+        if (turretError > Math.PI) turretError -= 2 * Math.PI
+
+        if(goalTrackingActive) {
+            target = (turret.currentPosition - (turretError / (2 * Math.PI) * (537.7 * 6.0))).coerceIn(
+                leftLimit,
+                rightLimit
+            )
+        }
+    }
 
     override fun periodic() {
-        if (turretActive) {
+        if(!initialized) {
+//            turret.zero()
+            startPosition = turret.currentPosition
+            target = startPosition
+            rightLimit = startPosition + 900.0
+            leftLimit = startPosition - 900.0
+            turn(0.0)
+            initialized = true
+        }
+        val current = turret.currentPosition
+        updateTarget()
+
+        // 1. TARGET TRACKING MODE
+        if (goalTrackingActive) {
+            controlSystem.goal = KineticState(target)
             turret.power = controlSystem.calculate(turret.state)
-        } else {
-            turret.power = 0.0
+            return
         }
+
+        // 2. PID HOLD MODE
+        if (turretActive) {
+            controlSystem.goal = KineticState(position = target)
+            turret.power = controlSystem.calculate(turret.state)
+
+            // Determine when turret is "ready"
+            if (!turretReady && abs(current - target) < 5.0) {
+                turretReady = true
+                turretReadyMs = runtime.milliseconds()
+            }
+            return
         }
+
+        // 3. IDLE MODE
+        turret.power = 0.0
     }
+}
