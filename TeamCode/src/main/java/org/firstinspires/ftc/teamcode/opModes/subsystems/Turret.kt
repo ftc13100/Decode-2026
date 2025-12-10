@@ -104,8 +104,8 @@ object Turret : Subsystem {
 //            turret.zero()
             startPosition = turret.currentPosition
             target = startPosition
-            rightLimit = startPosition + 900.0
-            leftLimit = startPosition - 900.0
+            rightLimit = startPosition + 850.0
+            leftLimit = startPosition - 850.0
             turn(0.0)
             initialized = true
         }
