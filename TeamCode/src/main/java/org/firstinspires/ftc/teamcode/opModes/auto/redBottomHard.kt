@@ -38,7 +38,7 @@ class redBottomHard: NextFTCOpMode() {
 
     //universal paths
         private val startPose = Pose(88.0, 9.0, Math.toRadians(90.0))
-        private val shootPose = Pose(85.0, 16.0, Math.toRadians(59.0))
+        private val shootPose = Pose(85.0, 16.0, Math.toRadians(68.0))
     //path to pick up PPG motif
         private val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0))
         private val pickUpPPGControl = Pose(73.5, 85.9, Math.toRadians(0.0))
