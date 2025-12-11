@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil.limelight
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
@@ -313,7 +314,7 @@ class blueBottomHard: NextFTCOpMode() {
     }
 
     override fun onUpdate() {
-        telemetry.addData("Shooter Speed", "Current: %.0f, Target: %.0f", Shooter.shooter.velocity, Shooter.target)
+        telemetry.addData("Mode", "TeleOp Running")
 
         val result: LLResult? = limelight.latestResult
 
@@ -328,8 +329,17 @@ class blueBottomHard: NextFTCOpMode() {
         } else {
             telemetry.addData("Limelight", "Target not found")
         }
+        telemetry.addData("X", "%.2f, Y: %.2f, Heading: %.2f", follower.pose.x, follower.pose.y, Math.toDegrees(follower.pose.heading))
+        telemetry.addData("Turret Pos", "Current: %.0f, Target: %.0f, Start: %.0f, Left: %.0f, Right: %.0f",  Turret.turret.currentPosition, Turret.target,
+            Turret.startPosition,
+            Turret.leftLimit,
+            Turret.rightLimit)
+        telemetry.addData("Turret", "Active: %b, Ready: %b, ReadyMs: %.0f, GoalTracking: %b, Power: %.2f",Turret.turretActive, Turret.turretReady, Turret.turretReadyMs, Turret.goalTrackingActive,
+            Turret.turret.power)
+        telemetry.addData("Shooter Speed", "Current: %.0f, Target: %.0f", Shooter.shooter.velocity, Shooter.target)
+        telemetry.addData("Shooter", "Ready: %b, ReadyMs:  %.0f, Active: %b, Power: %.2f", Shooter.shooterReady, Shooter.shooterReadyMs, Shooter.shooterActive, Shooter.shooter.power)
 
-        telemetry.addData("Mode", "TeleOp Running")
+
         telemetry.update()
     }
 //     override fun onStop() {

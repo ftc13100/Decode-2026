@@ -39,7 +39,7 @@ class redBottomEasy: NextFTCOpMode() {
     //starting position and the pose that we will be shooting
 
     private val startPose = Pose(56.0, 9.0, Math.toRadians(90.0))
-    private val shootPose = Pose(59.0, 16.0, Math.toRadians(59.0))
+    private val shootPose = Pose(59.0, 16.0, Math.toRadians(68.0))
     //path to pick up PPG motif
     //PPG path chains
 
