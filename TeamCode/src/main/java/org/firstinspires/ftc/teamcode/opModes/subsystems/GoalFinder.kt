@@ -15,16 +15,11 @@ import kotlin.unaryMinus
 
 object GoalFinder : Subsystem {
     var gfActive = false
-    var gfModeLL = true
     var gfDone  = false
     var gfDoneMs = 0.0
     
     var gfLLFound = false
     var gfLLLostCount = 0
-    var gfStartHeading = 0.0
-    var gfLastHeading = 0.0
-    var gfTurnedAngle = 0.0
-    var gfTurnClockwise = false
     var gfTargetAngle = 0.0
     var gfHeadingError = 0.0
     var gfLLTx = 99.0
@@ -36,9 +31,12 @@ object GoalFinder : Subsystem {
     private val ALIGNMENT_POWER_FINE = 0.2
     private val HEADING_TOLERANCE_COARSE = Math.toRadians(12.0)
     private val HEADING_TOLERANCE_FINE = Math.toRadians(1.0)
+    private val LL_TOLERANCE_DRIVETRAIN = 15.0
+    private val TURRET_LL_ADJ_FACTOR = 10
     private val LL_TOLERANCE = 1.0
-    private val TOLERANCE_TARGET = 12
-    private val LL_LOST_MAX = 100
+    private val HEADING_TOLERANCE_TARGET = 5
+    private val LL_TOLERANCE_TARGET = 5
+    private val LL_LOST_MAX = 25
     private val goal = Pose(16.0, 132.0)
     private val shooterToGoalZSqrd = Math.pow(46.0 - 13.5, 2.0)
 
@@ -53,7 +51,7 @@ object GoalFinder : Subsystem {
 
     fun findGoal(pose: Pose, heading: Double, llResult: LLResult?, blueAlliance: Boolean) {
         gfActive = true
-        gfModeLL = true
+        gfModeLL = false
         gfBelowToleranceCount = 0
         gfDone = false
         gfDoneMs = 0.0
@@ -91,17 +89,11 @@ object GoalFinder : Subsystem {
             }
             gfHeadingError = normalizeAngle(gfTargetAngle - heading)
 
-            // Initialize turn direction based on heading error calculated from X and Y.
-            // Since we are seeing issues with these, after starting the trun, only stop
-            // based on April Tag detection or if full 360 turn has completed
-            gfTurnClockwise = if(gfHeadingError < 0) true else false
         } else {
             gfGoalDistance = 1000.0
-            gfTurnClockwise = true
+            gfTargetAngle = 0.0
+            gfHeadingError = 0.0
         }
-        gfStartHeading = heading
-        gfLastHeading = gfStartHeading
-        gfTurnedAngle = 0.0
     }
 
     fun goalFindSuccess() {
@@ -119,6 +111,9 @@ object GoalFinder : Subsystem {
     {
         gfActive = false
         gfDone = false
+
+        val posAdj = Turret.turret.currentPosition - Turret.startPosition
+        Turret.turn(posAdj)
     }
     fun calculate(pose: Pose, heading: Double, llResult: LLResult?, blueAlliance: Boolean): Double {
         val adjX = if(blueAlliance) {
@@ -147,80 +142,81 @@ object GoalFinder : Subsystem {
         if(!gfActive)
             return 0.0
 
-        var delta = normalizeAngle(heading - gfLastHeading)
-        gfTurnedAngle += delta;
-        gfLastHeading = heading;
-
-        if(gfLLFound && !(llResult != null && llResult.isValid)) {
-            if(++gfLLLostCount > LL_LOST_MAX) {
-                gfModeLL = false
-                gfBelowToleranceCount = 0
-            }
-        }
-
-        if(gfModeLL) {
-            if (!gfLLFound) {
-                // Check how far have we turned before finding LL. If we have already made one full turn,
-                // then stop and point by computed heading angles using odometry provided x, y, heading
-
-                if (abs(gfTurnedAngle) > 2 * Math.PI * 1.05) {
-                    gfModeLL = false
-                    gfBelowToleranceCount = 0
+        if(!gfModeLL) {
+            if (gfBelowToleranceCount == 0 && abs(gfHeadingError) < HEADING_TOLERANCE_FINE) {
+                gfModeLL = true
+                gfLLLostCount = 0
+                gfBelowToleranceCount = 0;
+            } else if (abs(gfHeadingError) > HEADING_TOLERANCE_COARSE) {
+                return if (gfHeadingError > 0) {
+                    -ALIGNMENT_POWER_COARSE
                 } else {
-                    return if (gfTurnClockwise) {
-                        ALIGNMENT_POWER_COARSE
-                    } else {
-                        -ALIGNMENT_POWER_COARSE
-                    }
+                    ALIGNMENT_POWER_COARSE
                 }
-
+            } else if (abs(gfHeadingError) > HEADING_TOLERANCE_FINE) {
+                return if (gfHeadingError > 0) {
+                    -ALIGNMENT_POWER_FINE
+                } else {
+                    ALIGNMENT_POWER_FINE
+                }
+            } else if (++gfBelowToleranceCount < HEADING_TOLERANCE_TARGET) {
+                return if (gfHeadingError > 0) {
+                    -ALIGNMENT_POWER_FINE
+                } else {
+                    ALIGNMENT_POWER_FINE
+                }
             } else {
-                if(abs(gfLLTx) < LL_TOLERANCE) {
-                    if(++gfBelowToleranceCount >= TOLERANCE_TARGET) {
-                        goalFindSuccess()
-                        return 0.0
-                    }
-
-                    return if((gfLLTx > 0.0)) {
-                        ALIGNMENT_POWER_FINE
-                    } else {
-                        -ALIGNMENT_POWER_FINE
-                    }
-                }
+                gfModeLL = true
+                gfLLLostCount = 0
+                gfBelowToleranceCount = 0;
             }
         }
 
-        // Use computed targetAngle and current heading to find goal
-        if(pose.x < 0.0 || pose.x > 144.0 || pose.y < 0.0 || pose.y > 144.0)
-        {
-            goalFindFailed()
-            return 0.0
-        }
+//        if(gfModeLL) {
+//            if (!gfLLFound) {
+//                // We completed heading based auto point. If LL is not found, mark it a failure
+//                goalFindFailed()
+//                return 0.0
+//            }
+//
+//            if (gfLLFound) {
+//                if (llResult == null || llResult.isValid) {
+//                    if (++gfLLLostCount > LL_LOST_MAX) {
+//                        goalFindFailed()
+//                    }
+//                    return 0.0
+//                }
+//
+//                gfLLLostCount = 0
+//                if (abs(gfLLTx) > LL_TOLERANCE_DRIVETRAIN) {
+//                    return if (gfLLTx > 0) {
+//                        ALIGNMENT_POWER_FINE
+//                    } else {
+//                        -ALIGNMENT_POWER_FINE
+//                    }
+//                } else if (abs(gfLLTx) > LL_TOLERANCE) {
+//                    if (Turret.turretReady) {
+//                        Turret.turn(gfLLTx * TURRET_LL_ADJ_FACTOR)
+//                    }
+//                    return 0.0
+//                } else {
+//                    if (++gfBelowToleranceCount >= LL_TOLERANCE_TARGET) {
+//                        goalFindSuccess()
+//                    }
+//                    return 0.0
+//                }
+//            }
+//        }
+        return 0.0
+    }
 
-        if (gfBelowToleranceCount == 0 && abs(gfHeadingError) < HEADING_TOLERANCE_FINE) {
-            goalFindSuccess()
-            return 0.0
-        } else if (abs(gfHeadingError) > HEADING_TOLERANCE_COARSE) {
-            return if (gfHeadingError > 0) {
-                -ALIGNMENT_POWER_COARSE
-            } else {
-                ALIGNMENT_POWER_COARSE
-            }
-        } else if (abs(gfHeadingError) > HEADING_TOLERANCE_FINE) {
-            return if (gfHeadingError > 0) {
-                -ALIGNMENT_POWER_FINE
-            } else {
-                ALIGNMENT_POWER_FINE
-            }
-        } else if (++gfBelowToleranceCount < TOLERANCE_TARGET) {
-            return if (gfHeadingError > 0) {
-                -ALIGNMENT_POWER_FINE
-            } else {
-                ALIGNMENT_POWER_FINE
-            }
-        } else {
-            goalFindSuccess()
-            return 0.0
+    fun adjustToLL(llResult: LLResult?) {
+        if (llResult != null && llResult.isValid) {
+            gfLLTx = llResult.tx
+            gfLLTy = llResult.ty
+            gfLLTa = llResult.ta
+
+            Turret.turn(gfLLTx * TURRET_LL_ADJ_FACTOR)
         }
     }
 }

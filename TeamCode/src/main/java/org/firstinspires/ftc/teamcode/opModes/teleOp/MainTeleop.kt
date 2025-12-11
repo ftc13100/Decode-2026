@@ -182,13 +182,13 @@ class MainTeleop : NextFTCOpMode() {
         // Fine jump turret right
         button {gamepad2.right_bumper}
             .whenBecomesTrue {
-                Turret.turn(5.0)
+                Turret.turn(10.0)
             }
 
         // Fine jump turret left
         button {gamepad2.left_bumper}
             .whenBecomesTrue {
-                Turret.turn(-5.0)
+                Turret.turn(-10.0)
             }
 
         // Coarse jump turret right
@@ -205,13 +205,9 @@ class MainTeleop : NextFTCOpMode() {
 
         // turret tracking goal
         button { gamepad2.a }
-            .toggleOnBecomesTrue() //make this a button command that only opens when held // default command?
             .whenBecomesTrue {
-                Turret.trackTarget()
-            }
-            .whenBecomesFalse {
-                val posAdj = Turret.turret.currentPosition - Turret.startPosition
-                Turret.turn(posAdj)
+                val llResult: LLResult? = limelight.latestResult
+                GoalFinder.adjustToLL(llResult)
             }
 
         button { gamepad2.x }
@@ -337,7 +333,6 @@ class MainTeleop : NextFTCOpMode() {
             frontRightMotor.power = -turnPower
             backLeftMotor.power = turnPower
             backRightMotor.power = -turnPower
-
         } else {
             // Manual Control
             driverControlled.update()
@@ -348,12 +343,9 @@ class MainTeleop : NextFTCOpMode() {
         telemetry.addData("X", "%.1f, Y: %.1f, Heading: %.1f, Goal: %.1f", follower.pose.x, follower.pose.y, Math.toDegrees(follower.heading), Math.toDegrees(GoalFinder.gfTargetAngle))
         telemetry.addData("Pointing", "Active: %b, Done: %b, DoneMs: %.0f", GoalFinder.gfActive, GoalFinder.gfDone, GoalFinder.gfDoneMs)
         telemetry.addData("PointingVals", "Error: %.1f, Limelight: (%.1f, %.1f, %.2f), Dist: %.1f", Math.toDegrees(GoalFinder.gfHeadingError), GoalFinder.gfLLTx, GoalFinder.gfLLTy, GoalFinder.gfLLTa, GoalFinder.gfGoalDistance)
-        telemetry.addData("PointingDbg", "Turned: %.1f, CW: %b, Pwr: %.1f, LLMode: %b, LLFound: %b, LLLost: %d", Math.toDegrees(GoalFinder.gfTurnedAngle),
-            GoalFinder.gfTurnClockwise, turnPower, GoalFinder.gfModeLL, GoalFinder.gfLLFound, GoalFinder.gfLLLostCount)
-        telemetry.addData("Turret", "Active: %b, Ready: %b, ReadyMs: %.0f, GoalTracking: %b, Power: %.2f",Turret.turretActive, Turret.turretReady, Turret.turretReadyMs, Turret.goalTrackingActive,             Turret.turret.power)
-        telemetry.addData("TurretPos", "Current: %.0f, Target: %.0f, Start: %.0f, Left: %.0f, Right: %.0f",  Turret.turret.currentPosition, Turret.target, Turret.startPosition, Turret.leftLimit, Turret.rightLimit)
-        telemetry.addData("TurretTracking", "Heading: %.1f, Goal: %.1f, Turret: %.1f, Error: %.1f",
-            Math.toDegrees(Turret.heading), Math.toDegrees(Turret.targetAngle), Math.toDegrees(Turret.turretAngle), Math.toDegrees(Turret.turretError))
+        telemetry.addData("PointingDbg", "Pwr: %.1f, LLMode: %b, LLFound: %b, LLLost: %d", turnPower, GoalFinder.gfModeLL, GoalFinder.gfLLFound, GoalFinder.gfLLLostCount)
+        telemetry.addData("Turret", "Active: %b, Ready: %b, ReadyMs: %.0f",Turret.turretActive, Turret.turretReady, Turret.turretReadyMs)
+        telemetry.addData("TurretPos", "Current: %.0f, Target: %.0f",  Turret.turret.currentPosition, Turret.target)
         telemetry.addData("Shot","X: %.0f, Y: %.0f, Vel: %.0f, Angle: %.3f", currentShotX, currentShotY, currentShotVelocity, currentShotAngle)
         telemetry.addData("Shooter Speed", "Current: %.0f, Target: %.0f", Shooter.shooter.velocity, Shooter.target)
         telemetry.addData("Shooter", "Ready: %b, ReadyMs:  %.0f, Active: %b, Power: %.2f", Shooter.shooterReady, Shooter.shooterReadyMs, Shooter.shooterActive, Shooter.shooter.power)

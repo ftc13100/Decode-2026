@@ -35,6 +35,7 @@ object Turret : Subsystem {
     @JvmField var turretAngle = 0.0
     @JvmField var heading = 0.0
     @JvmField var turretError = 0.0
+    @JvmField var turretTolearanceCount = 0
     @JvmField var posPIDCoefficients = PIDCoefficients(0.0095, 0.0, 0.0001)
     val turret = MotorEx("turret").brakeMode()
     private val runtime = ElapsedTime()
@@ -60,6 +61,7 @@ object Turret : Subsystem {
         goalTrackingActive = false       // stop tracking if active
         turretActive = true              // PID hold mode ON
         turretReady = false
+        turretTolearanceCount = 0
         runtime.reset()
 
         // Ready automatically when close enough (handled in periodic)
@@ -121,7 +123,7 @@ object Turret : Subsystem {
             turret.power = controlSystem.calculate(turret.state)
 
             // Determine when turret is "ready"
-            if (!turretReady && abs(current - target) < 5.0) {
+            if (!turretReady && abs(current - target) < 5.0 && ++turretTolearanceCount >= 5) {
                 turretReady = true
                 turretReadyMs = runtime.milliseconds()
             }
