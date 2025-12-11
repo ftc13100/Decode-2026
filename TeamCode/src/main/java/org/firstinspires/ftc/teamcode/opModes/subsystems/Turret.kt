@@ -67,6 +67,9 @@ object Turret : Subsystem {
         // Ready automatically when close enough (handled in periodic)
     }
 
+    fun resetToStartPosition() {
+        turn(startPosition - turret.currentPosition)
+    }
     /**
      * Enable auto tracking; PID will follow continuously in periodic.
      */

@@ -311,6 +311,11 @@ class MainTeleop : NextFTCOpMode() {
                     limelight.pipelineSwitch(1)
                 }
             }
+
+        button { gamepad2.right_stick_button }
+            .whenBecomesTrue {
+                Turret.resetToStartPosition()
+            }
     }
 
     override fun onUpdate() {

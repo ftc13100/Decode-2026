@@ -15,9 +15,10 @@ import kotlin.unaryMinus
 
 object GoalFinder : Subsystem {
     var gfActive = false
+    var gfModeLL = false
     var gfDone  = false
     var gfDoneMs = 0.0
-    
+
     var gfLLFound = false
     var gfLLLostCount = 0
     var gfTargetAngle = 0.0
@@ -142,33 +143,26 @@ object GoalFinder : Subsystem {
         if(!gfActive)
             return 0.0
 
-        if(!gfModeLL) {
-            if (gfBelowToleranceCount == 0 && abs(gfHeadingError) < HEADING_TOLERANCE_FINE) {
-                gfModeLL = true
-                gfLLLostCount = 0
-                gfBelowToleranceCount = 0;
-            } else if (abs(gfHeadingError) > HEADING_TOLERANCE_COARSE) {
-                return if (gfHeadingError > 0) {
-                    -ALIGNMENT_POWER_COARSE
-                } else {
-                    ALIGNMENT_POWER_COARSE
-                }
-            } else if (abs(gfHeadingError) > HEADING_TOLERANCE_FINE) {
-                return if (gfHeadingError > 0) {
-                    -ALIGNMENT_POWER_FINE
-                } else {
-                    ALIGNMENT_POWER_FINE
-                }
-            } else if (++gfBelowToleranceCount < HEADING_TOLERANCE_TARGET) {
-                return if (gfHeadingError > 0) {
-                    -ALIGNMENT_POWER_FINE
-                } else {
-                    ALIGNMENT_POWER_FINE
-                }
+        if (gfBelowToleranceCount == 0 && abs(gfHeadingError) < HEADING_TOLERANCE_FINE) {
+            goalFindSuccess()
+            return 0.0
+        } else if (abs(gfHeadingError) > HEADING_TOLERANCE_COARSE) {
+            return if (gfHeadingError > 0) {
+                -ALIGNMENT_POWER_COARSE
             } else {
-                gfModeLL = true
-                gfLLLostCount = 0
-                gfBelowToleranceCount = 0;
+                ALIGNMENT_POWER_COARSE
+            }
+        } else if (abs(gfHeadingError) > HEADING_TOLERANCE_FINE) {
+            return if (gfHeadingError > 0) {
+                -ALIGNMENT_POWER_FINE
+            } else {
+                ALIGNMENT_POWER_FINE
+            }
+        } else if (++gfBelowToleranceCount < HEADING_TOLERANCE_TARGET) {
+            return if (gfHeadingError > 0) {
+                -ALIGNMENT_POWER_FINE
+            } else {
+                ALIGNMENT_POWER_FINE
             }
         }
 
