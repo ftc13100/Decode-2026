@@ -22,6 +22,11 @@ import dev.nextftc.hardware.impl.Direction
 import dev.nextftc.hardware.impl.IMUEx
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
+import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
+import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder.gfLLFound
+import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder.gfLLTa
+import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder.gfLLTx
+import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder.gfLLTy
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
@@ -37,7 +42,7 @@ class MainTeleop : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                ShooterAngle, Shooter, Gate, Intake, Turret, PoseStorage
+                ShooterAngle, Shooter, Gate, Intake, Turret, PoseStorage, GoalFinder
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -65,24 +70,14 @@ class MainTeleop : NextFTCOpMode() {
     private val startPose = PoseStorage.poseEnd  //(72.0,72.0, Math.toRadians(90.0))
     private val testingPose = Pose(72.0,72.0,Math.toRadians(90.0))
     private var testMode: Boolean = false
-    private var targetTrackingActive: Boolean = false
-    private var targetTrackingDone: Boolean = false
-    private var targetTrackingLoopCounter: Int = 0
-    private var targetTrackingCountdown: Int = 0
-    // 0.5, 0.25, 10.0, 1.0, 8 --> 2 seconds max turning
-    private val ALIGNMENT_POWER_COARSE: Double = 0.6
-    private val ALIGNMENT_POWER_FINE: Double = 0.2
-    private val HEADING_TOLERANCE_FINE: Double = Math.toRadians(12.0)
-    private val HEADING_LIMELIGHT: Double = Math.toRadians(4.0)
-    private val HEADING_TOLERANCE: Double = Math.toRadians(1.0)
-    private val TRACKING_COUNTDOWN: Int = 12
     private var currentShotX: Double = 0.0
     private var currentShotY: Double = 0.0
     private var currentShotVelocity: Double = 0.0
     private var currentShotAngle: Double = 0.0
-
     private var gateOpen: Boolean = false
     private var intakeRunning: Boolean = false
+
+    private var initialized = false;
 
     override fun onInit() {
 
@@ -157,10 +152,12 @@ class MainTeleop : NextFTCOpMode() {
         // Point to Target
         button { gamepad1.a }
             .whenBecomesTrue {
-                targetTrackingActive = !targetTrackingActive
-                targetTrackingDone = false
-                targetTrackingCountdown = TRACKING_COUNTDOWN
-                targetTrackingLoopCounter = 0
+                if(! GoalFinder.gfActive) {
+                    val llResult: LLResult? = limelight.latestResult
+                    GoalFinder.findGoal(follower.pose, follower.heading, llResult, PoseStorage.blueAlliance)
+                } else {
+                    GoalFinder.stop()
+                }
             }
 
         // Drivetrain Slow-fast speed
@@ -183,38 +180,39 @@ class MainTeleop : NextFTCOpMode() {
 ////////////////////////////////////////////////////////////////////////////
 
         // Fine jump turret right
-//        button {gamepad2.right_bumper}
-//            .whenBecomesTrue {
-//                Turret.turn(5.0)
-//            }
+        button {gamepad2.right_bumper}
+            .whenBecomesTrue {
+                Turret.turn(5.0)
+            }
 
         // Fine jump turret left
-//        button {gamepad2.left_bumper}
-//            .whenBecomesTrue {
-//                Turret.turn(-5.0)
-//            }
+        button {gamepad2.left_bumper}
+            .whenBecomesTrue {
+                Turret.turn(-5.0)
+            }
 
         // Coarse jump turret right
-//        button {gamepad2.right_trigger > 0.5 }
-//            .whenBecomesTrue {
-//                Turret.turn(100.0)
-//            }
+        button {gamepad2.right_trigger > 0.5 }
+            .whenBecomesTrue {
+                Turret.turn(100.0)
+            }
 
         // Coarse jump turret left
-//        button {gamepad2.left_trigger > 0.5}
-//            .whenBecomesTrue {
-//                Turret.turn(-100.0)
-//            }
+        button {gamepad2.left_trigger > 0.5}
+            .whenBecomesTrue {
+                Turret.turn(-100.0)
+            }
 
         // turret tracking goal
-//        button { gamepad2.a }
-//            .toggleOnBecomesTrue() //make this a button command that only opens when held // default command?
-//            .whenBecomesTrue {
-//                Turret.trackTarget()
-//            }
-//            .whenBecomesFalse {
-//                Turret.turn(0.0)
-//            }
+        button { gamepad2.a }
+            .toggleOnBecomesTrue() //make this a button command that only opens when held // default command?
+            .whenBecomesTrue {
+                Turret.trackTarget()
+            }
+            .whenBecomesFalse {
+                val posAdj = Turret.turret.currentPosition - Turret.startPosition
+                Turret.turn(posAdj)
+            }
 
         button { gamepad2.x }
             .whenBecomesTrue {
@@ -323,90 +321,44 @@ class MainTeleop : NextFTCOpMode() {
         BindingManager.update()
         follower.update()
         driverControlled.update()
-//        val llResult: LLResult? = limelight.latestResult
-//        var llTx: Double = 99.0
-//        var llTy: Double = 99.0
-//        var llTa: Double = 99.0
-//
-//        //start tracking goal
-//        val goal = Pose(16.0, 132.0)
-//        val x = abs(follower.pose.x)
-//        val y = abs(follower.pose.y)
-//        val heading = follower.heading
-//
-//        var targetAngle : Double
-//        if (PoseStorage.blueAlliance) {
-//            targetAngle = Math.PI - atan2(abs(goal.y - y), abs(goal.x - x))
-//        }
-//        else {
-//            targetAngle = atan2(abs(goal.y - y), abs(goal.x - (144 - x)))
-//        }
-//        var headingError = targetAngle - heading
-//        if (headingError > Math.PI) headingError = headingError - (2 * (Math.PI))
-//        if (targetTrackingActive) {
-//            ++targetTrackingLoopCounter
-//            var turnPower: Double = 0.0
-//            if (targetTrackingLoopCounter == 1 && abs(headingError) < HEADING_TOLERANCE) {
-//                targetTrackingDone = true
-//                targetTrackingActive = false
-//            } else if (abs(headingError) > HEADING_TOLERANCE_FINE) {
-//                turnPower = if (headingError > 0) {
-//                    -ALIGNMENT_POWER_COARSE
-//                } else {
-//                    ALIGNMENT_POWER_COARSE
-//                }
-//            } else if (abs(headingError) > HEADING_TOLERANCE) {
-//                turnPower = if (headingError > 0) {
-//                    -ALIGNMENT_POWER_FINE
-//                } else {
-//                    ALIGNMENT_POWER_FINE
-//                }
-//            } else if (--targetTrackingCountdown > 0) {
-//                turnPower = if (headingError > 0) {
-//                    -ALIGNMENT_POWER_FINE
-//                } else {
-//                    ALIGNMENT_POWER_FINE
-//                }
-//            } else {
-//                targetTrackingDone = true
-//                targetTrackingActive = false
-//            }
-//            frontLeftMotor.power = turnPower
-//            frontRightMotor.power = -turnPower
-//            backLeftMotor.power = turnPower
-//            backRightMotor.power = -turnPower
-//
-//        } else {
-//            // Manual Control
-//            driverControlled.update()
-//        } // end tracking goal
-//
-//        if (llResult != null && llResult.isValid) {
-//            llTx = llResult.tx
-//            llTy = llResult.ty
-//            llTa = llResult.ta
-//        } else {
-//            99.0
-//        }
-//        if(PoseStorage.blueAlliance) { telemetry.addData("Alliance", "Blue") }
-//        else {telemetry.addData("Alliance", "Red") }
-//        telemetry.addData("X", "%.0f, Y: %.0f, Heading: %.1f, Target: %.1f", follower.pose.x, follower.pose.y, Math.toDegrees(follower.pose.heading), Math.toDegrees(targetAngle))
-        telemetry.addData("X", "%.2f, Y: %.2f, Heading: %.2f", follower.pose.x, follower.pose.y, Math.toDegrees(follower.pose.heading))
-//        telemetry.addData("Pointing Status", "Done: %b, Active: %b", targetTrackingDone , targetTrackingActive)
-//        telemetry.addData("Pointing Error", "Heading: %.1f, Limelight: (%.1f, %.1f, %.2f)", Math.toDegrees(headingError), llTx, llTy, llTa)
-//        telemetry.addData("Turret Pos", "Current: %.0f, Target: %.0f, Start: %.0f, Left: %.0f, Right: %.0f",  Turret.turret.currentPosition, Turret.target,
-//            Turret.startPosition,
-//            Turret.leftLimit,
-//            Turret.rightLimit)
-//        telemetry.addData("Turret", "Active: %b, Ready: %b, ReadyMs: %.0f, GoalTracking: %b, Power: %.2f",Turret.turretActive, Turret.turretReady, Turret.turretReadyMs, Turret.goalTrackingActive,
-//            Turret.turret.power)
-//        telemetry.addData("GoalTracking", "Heading: %.1f, Goal: %.1f, Turret: %.1f, Error: %.1f",
-//            Math.toDegrees(Turret.heading), Math.toDegrees(Turret.targetAngle), Math.toDegrees(Turret.turretAngle), Math.toDegrees(Turret.turretError))
-//        telemetry.addData("Shot","X: %.0f, Y: %.0f, Vel: %.0f, Angle: %.3f", currentShotX, currentShotY, currentShotVelocity, currentShotAngle)
-//        telemetry.addData("Shooter Speed", "Current: %.0f, Target: %.0f", Shooter.shooter.velocity, Shooter.target)
-//        telemetry.addData("Shooter", "Ready: %b, ReadyMs:  %.0f, Active: %b, Power: %.2f", Shooter.shooterReady, Shooter.shooterReadyMs, Shooter.shooterActive, Shooter.shooter.power)
-//        telemetry.addData("Intake Running", intakeRunning)
-//        telemetry.addData("Gate Open", gateOpen)
+
+        if(!initialized)
+        {
+            Turret.initPos()
+            initialized = true
+        }
+
+        val llResult: LLResult? = limelight.latestResult
+        val turnPower = GoalFinder.calculate(follower.pose, follower.heading, llResult, PoseStorage.blueAlliance)
+
+        if(GoalFinder.gfActive)
+        {
+            frontLeftMotor.power = turnPower
+            frontRightMotor.power = -turnPower
+            backLeftMotor.power = turnPower
+            backRightMotor.power = -turnPower
+
+        } else {
+            // Manual Control
+            driverControlled.update()
+        } // end tracking goal
+
+        if(PoseStorage.blueAlliance) { telemetry.addData("Alliance", "Blue") }
+        else {telemetry.addData("Alliance", "Red") }
+        telemetry.addData("X", "%.1f, Y: %.1f, Heading: %.1f, Goal: %.1f", follower.pose.x, follower.pose.y, Math.toDegrees(follower.heading), Math.toDegrees(GoalFinder.gfTargetAngle))
+        telemetry.addData("Pointing", "Active: %b, Done: %b, DoneMs: %.0f", GoalFinder.gfActive, GoalFinder.gfDone, GoalFinder.gfDoneMs)
+        telemetry.addData("PointingVals", "Error: %.1f, Limelight: (%.1f, %.1f, %.2f), Dist: %.1f", Math.toDegrees(GoalFinder.gfHeadingError), GoalFinder.gfLLTx, GoalFinder.gfLLTy, GoalFinder.gfLLTa, GoalFinder.gfGoalDistance)
+        telemetry.addData("PointingDbg", "Turned: %.1f, CW: %b, Pwr: %.1f, LLMode: %b, LLFound: %b, LLLost: %d", Math.toDegrees(GoalFinder.gfTurnedAngle),
+            GoalFinder.gfTurnClockwise, turnPower, GoalFinder.gfModeLL, GoalFinder.gfLLFound, GoalFinder.gfLLLostCount)
+        telemetry.addData("Turret", "Active: %b, Ready: %b, ReadyMs: %.0f, GoalTracking: %b, Power: %.2f",Turret.turretActive, Turret.turretReady, Turret.turretReadyMs, Turret.goalTrackingActive,             Turret.turret.power)
+        telemetry.addData("TurretPos", "Current: %.0f, Target: %.0f, Start: %.0f, Left: %.0f, Right: %.0f",  Turret.turret.currentPosition, Turret.target, Turret.startPosition, Turret.leftLimit, Turret.rightLimit)
+        telemetry.addData("TurretTracking", "Heading: %.1f, Goal: %.1f, Turret: %.1f, Error: %.1f",
+            Math.toDegrees(Turret.heading), Math.toDegrees(Turret.targetAngle), Math.toDegrees(Turret.turretAngle), Math.toDegrees(Turret.turretError))
+        telemetry.addData("Shot","X: %.0f, Y: %.0f, Vel: %.0f, Angle: %.3f", currentShotX, currentShotY, currentShotVelocity, currentShotAngle)
+        telemetry.addData("Shooter Speed", "Current: %.0f, Target: %.0f", Shooter.shooter.velocity, Shooter.target)
+        telemetry.addData("Shooter", "Ready: %b, ReadyMs:  %.0f, Active: %b, Power: %.2f", Shooter.shooterReady, Shooter.shooterReadyMs, Shooter.shooterActive, Shooter.shooter.power)
+        telemetry.addData("Intake Running", intakeRunning)
+        telemetry.addData("Gate Open", gateOpen)
 
         telemetry.update()
     }

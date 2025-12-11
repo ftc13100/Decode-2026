@@ -36,9 +36,6 @@ object Turret : Subsystem {
     @JvmField var heading = 0.0
     @JvmField var turretError = 0.0
     @JvmField var posPIDCoefficients = PIDCoefficients(0.0095, 0.0, 0.0001)
-
-    private var initialized = false
-
     val turret = MotorEx("turret").brakeMode()
     private val runtime = ElapsedTime()
 
@@ -46,6 +43,14 @@ object Turret : Subsystem {
         posPid(posPIDCoefficients)
     }
 
+    fun initPos()
+    {
+        startPosition = turret.currentPosition
+        target = startPosition
+        rightLimit = startPosition + 850.0
+        leftLimit = startPosition - 850.0
+        turn(0.0)
+    }
     /**
      * PID-Only turn: updates target and turret logic handles the rest.
      */
@@ -100,15 +105,6 @@ object Turret : Subsystem {
     }
 
     override fun periodic() {
-        if(!initialized) {
-//            turret.zero()
-            startPosition = turret.currentPosition
-            target = startPosition
-            rightLimit = startPosition + 850.0
-            leftLimit = startPosition - 850.0
-            turn(0.0)
-            initialized = true
-        }
         val current = turret.currentPosition
         updateTarget()
 
