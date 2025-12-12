@@ -38,7 +38,8 @@ object GoalFinder : Subsystem {
     private val HEADING_TOLERANCE_TARGET = 5
     private val LL_TOLERANCE_TARGET = 5
     private val LL_LOST_MAX = 25
-    private val goal = Pose(16.0, 132.0)
+    private val goal = Pose(3.0, 144.0)
+    private val aprilTag = Pose(12.0, 132.0)
     private val shooterToGoalZSqrd = Math.pow(46.0 - 13.5, 2.0)
 
     private val gfRuntime = ElapsedTime()
@@ -204,13 +205,33 @@ object GoalFinder : Subsystem {
         return 0.0
     }
 
-    fun adjustToLL(llResult: LLResult?) {
+    fun adjustToLL(pose: Pose, heading: Double, llResult: LLResult?, blueAlliance: Boolean) {
         if (llResult != null && llResult.isValid) {
             gfLLTx = llResult.tx
             gfLLTy = llResult.ty
             gfLLTa = llResult.ta
+            val turretShiftLL = gfLLTx * TURRET_LL_ADJ_FACTOR
 
-            Turret.turn(gfLLTx * TURRET_LL_ADJ_FACTOR)
+            val adjX = if(blueAlliance) {
+                pose.x
+            } else {
+                144.0 - pose.x
+            }
+
+            // Calculate adjustment angle to account for position difference of April tag and desired goal
+            val aprilTagVecorX = aprilTag.x - adjX
+            val aprilTagVecorY = aprilTag.y - pose.y
+            val goalVectorX = goal.x - adjX
+            val goalVectorY = goal.y - pose.y
+            val angleShift = Math.acos((aprilTagVecorX * goalVectorX + aprilTagVecorY * goalVectorY) / (Math.sqrt(Math.pow(aprilTagVecorX, 2.0) + Math.pow(aprilTagVecorY, 2.0))) * Math.sqrt(Math.pow(goalVectorX, 2.0) + Math.pow(goalVectorY, 2.0)))
+            var turretShiftAprilTagToGoal = angleShift / (2 * Math.PI) * 537.7 * 6.0
+
+            val blueTargetAngle = Math.PI - atan2(abs(goal.y - pose.y), abs(goal.x - pose.x))
+            if(blueTargetAngle < Math.PI * 3.0 / 4.0) {
+                turretShiftAprilTagToGoal = -turretShiftAprilTagToGoal
+            }
+
+            Turret.turn(turretShiftAprilTagToGoal + turretShiftLL)
         }
     }
 }

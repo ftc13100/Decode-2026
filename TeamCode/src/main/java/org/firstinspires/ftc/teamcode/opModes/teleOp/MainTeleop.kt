@@ -207,7 +207,7 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad2.a }
             .whenBecomesTrue {
                 val llResult: LLResult? = limelight.latestResult
-                GoalFinder.adjustToLL(llResult)
+                GoalFinder.adjustToLL(follower.pose, follower.heading, llResult, PoseStorage.blueAlliance)
             }
 
         button { gamepad2.x }
