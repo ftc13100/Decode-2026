@@ -38,7 +38,10 @@ class blueBottomHard: NextFTCOpMode() {
 
     //universal paths
     private val startPose = Pose(88.0, 9.0, Math.toRadians(90.0)).mirror()
-    private val shootPose = Pose(85.0, 16.0, Math.toRadians(69.0)).mirror()
+    private val shootPose = Pose(85.0, 16.0, Math.toRadians(68.5)).mirror()
+    private val getOut = Pose(96.0, 48.0, Math.toRadians(90.0)).mirror()
+
+
     //path to pick up PPG motif
     private val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0)).mirror()
     private val pickUpPPGControl = Pose(73.5, 85.9, Math.toRadians(0.0)).mirror()
@@ -76,6 +79,8 @@ class blueBottomHard: NextFTCOpMode() {
 
     //Move a bit
     private lateinit var MoveAbit: PathChain
+    private lateinit var MomohitPatilLeave: PathChain
+
 
     private fun buildPaths() {
         //PGP paths
@@ -121,6 +126,10 @@ class blueBottomHard: NextFTCOpMode() {
         MoveAbit = follower.pathBuilder()
             .addPath(BezierLine(startPose,shootPose))
             .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
+            .build()
+        MomohitPatilLeave = follower.pathBuilder()
+            .addPath(BezierLine(shootPose,getOut))
+            .setLinearHeadingInterpolation(shootPose.heading, getOut.heading)
             .build()
     }
 
@@ -174,7 +183,9 @@ class blueBottomHard: NextFTCOpMode() {
             ParallelGroup(
                 Shooter.stopShooter,
                 Intake.spinStop,
-                Gate.gate_close)
+                Gate.gate_close),
+            FollowPath(MomohitPatilLeave)
+
         )
 
     val PGP: Command
@@ -227,7 +238,9 @@ class blueBottomHard: NextFTCOpMode() {
             ParallelGroup(
                 Shooter.stopShooter,
                 Intake.spinStop,
-                Gate.gate_close)
+                Gate.gate_close),
+            FollowPath(MomohitPatilLeave)
+
         )
 
     val GPP: Command
@@ -281,7 +294,9 @@ class blueBottomHard: NextFTCOpMode() {
             ParallelGroup(
                 Shooter.stopShooter,
                 Intake.spinStop,
-                Gate.gate_close)
+                Gate.gate_close),
+            FollowPath(MomohitPatilLeave)
+
         )
 
 

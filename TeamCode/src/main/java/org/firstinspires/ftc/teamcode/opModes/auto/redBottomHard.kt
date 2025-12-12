@@ -38,7 +38,7 @@ class redBottomHard: NextFTCOpMode() {
 
     //universal paths
         private val startPose = Pose(88.0, 9.0, Math.toRadians(90.0))
-        private val shootPose = Pose(85.0, 16.0, Math.toRadians(69.0))
+        private val shootPose = Pose(85.0, 16.0, Math.toRadians(68.5))
     //path to pick up PPG motif
         private val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0))
         private val pickUpPPGControl = Pose(73.5, 85.9, Math.toRadians(0.0))
@@ -56,6 +56,8 @@ class redBottomHard: NextFTCOpMode() {
         private val pickUpGPP2= Pose(135.9, 36.0, Math.toRadians(0.0))
         private val GPPtoShot= Pose(85.0, 16.0, Math.toRadians(69.0))
         private val GPPtoShotControl= Pose(87.0, 47.6, Math.toRadians(0.0))
+    private val getOut = Pose(96.0, 48.0, Math.toRadians(90.0))
+
 
 
 
@@ -78,6 +80,8 @@ class redBottomHard: NextFTCOpMode() {
 
     //Move a bit
     private lateinit var MoveAbit: PathChain
+    private lateinit var MomohitPatilLeave: PathChain
+
 
     private fun buildPaths() {
         //PGP paths
@@ -123,6 +127,10 @@ class redBottomHard: NextFTCOpMode() {
             MoveAbit = follower.pathBuilder()
             .addPath(BezierLine(startPose,shootPose))
                 .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
+            .build()
+        MomohitPatilLeave = follower.pathBuilder()
+            .addPath(BezierLine(shootPose,getOut))
+            .setLinearHeadingInterpolation(shootPose.heading, getOut.heading)
             .build()
     }
 
@@ -176,7 +184,9 @@ class redBottomHard: NextFTCOpMode() {
             ParallelGroup(
                 Shooter.stopShooter,
                 Intake.spinStop,
-                Gate.gate_close)
+                Gate.gate_close),
+            FollowPath(MomohitPatilLeave)
+
         )
 
     val PGP: Command
@@ -229,7 +239,9 @@ class redBottomHard: NextFTCOpMode() {
             ParallelGroup(
                 Shooter.stopShooter,
                 Intake.spinStop,
-                Gate.gate_close)
+                Gate.gate_close),
+                    FollowPath(MomohitPatilLeave)
+
         )
 
     val GPP: Command
@@ -283,7 +295,8 @@ class redBottomHard: NextFTCOpMode() {
             ParallelGroup(
                 Shooter.stopShooter,
                 Intake.spinStop,
-                Gate.gate_close)
+                Gate.gate_close),
+            FollowPath(MomohitPatilLeave)
         )
 
 

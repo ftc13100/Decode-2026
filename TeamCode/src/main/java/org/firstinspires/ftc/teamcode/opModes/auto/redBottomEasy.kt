@@ -38,13 +38,17 @@ class redBottomEasy: NextFTCOpMode() {
 
     //starting position and the pose that we will be shooting
 
-    private val startPose = Pose(56.0, 9.0, Math.toRadians(90.0))
-    private val shootPose = Pose(59.0, 16.0, Math.toRadians(68.0))
+    private val startPose = Pose(88.0, 9.0, Math.toRadians(90.0))
+    private val shootPose = Pose(85.0, 16.0, Math.toRadians(68.5))
+    private val getOut = Pose(96.0, 48.0, Math.toRadians(90.0))
+
     //path to pick up PPG motif
     //PPG path chains
 
     //Move a bit
     private lateinit var MoveAbit: PathChain
+    private lateinit var MomohitPatilLeave: PathChain
+
 
     private fun buildPaths() {
         //PGP paths
@@ -53,6 +57,10 @@ class redBottomEasy: NextFTCOpMode() {
         MoveAbit = follower.pathBuilder()
             .addPath(BezierLine(startPose,shootPose))
             .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
+            .build()
+        MomohitPatilLeave = follower.pathBuilder()
+            .addPath(BezierLine(shootPose,getOut))
+            .setLinearHeadingInterpolation(shootPose.heading, getOut.heading)
             .build()
     }
 
@@ -69,6 +77,8 @@ class redBottomEasy: NextFTCOpMode() {
                 Shooter.stopShooter,
                 Intake.spinStop,
                 Gate.gate_close),
+            FollowPath(MomohitPatilLeave)
+
         )
 
     val PGP: Command
@@ -83,6 +93,8 @@ class redBottomEasy: NextFTCOpMode() {
                 Shooter.stopShooter,
                 Intake.spinStop,
                 Gate.gate_close),
+            FollowPath(MomohitPatilLeave)
+
         )
 
     val GPP: Command
@@ -98,6 +110,8 @@ class redBottomEasy: NextFTCOpMode() {
                 Shooter.stopShooter,
                 Intake.spinStop,
                 Gate.gate_close),
+            FollowPath(MomohitPatilLeave)
+
         )
 
     override fun onInit() {

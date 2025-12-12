@@ -38,9 +38,10 @@ class blueBottomEasy: NextFTCOpMode() {
 
     //starting position and the pose that we will be shooting
 
-    private val startPose = Pose(88.0, 9.0, Math.toRadians(90.0))
-    private val shootPose = Pose(85.0, 16.0, Math.toRadians(121.0))
+    private val startPose = Pose(88.0, 9.0, Math.toRadians(90.0)).mirror()
+    private val shootPose = Pose(85.0, 16.0, Math.toRadians(68.5)).mirror()
     //path to pick up PPG motif
+    private val getOut = Pose(96.0, 48.0, Math.toRadians(90.0)).mirror()
 
 
     private val pickUpPGPcontrol= Pose(81.29, 60.7, Math.toRadians(0.0))
@@ -52,6 +53,8 @@ class blueBottomEasy: NextFTCOpMode() {
 
     //Move a bit
     private lateinit var MoveAbit: PathChain
+    private lateinit var MomohitPatilLeave: PathChain
+
 
     private fun buildPaths() {
         //PGP paths
@@ -60,6 +63,10 @@ class blueBottomEasy: NextFTCOpMode() {
         MoveAbit = follower.pathBuilder()
             .addPath(BezierLine(startPose,shootPose))
             .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
+            .build()
+        MomohitPatilLeave = follower.pathBuilder()
+            .addPath(BezierLine(shootPose,getOut))
+            .setLinearHeadingInterpolation(shootPose.heading, getOut.heading)
             .build()
     }
 
@@ -76,6 +83,8 @@ class blueBottomEasy: NextFTCOpMode() {
                 Shooter.stopShooter,
                 Intake.spinStop,
                 Gate.gate_close),
+            FollowPath(MomohitPatilLeave)
+
         )
 
     val PGP: Command
@@ -90,6 +99,8 @@ class blueBottomEasy: NextFTCOpMode() {
                 Shooter.stopShooter,
                 Intake.spinStop,
                 Gate.gate_close),
+            FollowPath(MomohitPatilLeave)
+
         )
 
     val GPP: Command
@@ -105,6 +116,8 @@ class blueBottomEasy: NextFTCOpMode() {
                 Shooter.stopShooter,
                 Intake.spinStop,
                 Gate.gate_close),
+            FollowPath(MomohitPatilLeave)
+
         )
 
     override fun onInit() {
