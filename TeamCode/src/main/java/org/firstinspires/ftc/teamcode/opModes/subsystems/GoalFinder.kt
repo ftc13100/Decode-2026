@@ -109,7 +109,7 @@ object GoalFinder : Subsystem {
         val goalVectorX = goal.x - adjX
         val goalVectorY = goal.y - pose.y
 
-        gfGoalAprilTagAdj = Math.acos((aprilTagVecorX * goalVectorX + aprilTagVecorY * goalVectorY) / (Math.sqrt(Math.pow(aprilTagVecorX, 2.0) + Math.pow(aprilTagVecorY, 2.0))) * Math.sqrt(Math.pow(goalVectorX, 2.0) + Math.pow(goalVectorY, 2.0)))
+        gfGoalAprilTagAdj = Math.acos((aprilTagVecorX * goalVectorX + aprilTagVecorY * goalVectorY) / ( Math.sqrt(aprilTagVecorX * aprilTagVecorX + aprilTagVecorY * aprilTagVecorY) * Math.sqrt(goalVectorX * goalVectorX + goalVectorY * goalVectorY)))
 
         if(blueAlliance) {
             if(gfTargetAngle < Math.PI * 3.0 / 4.0) {
