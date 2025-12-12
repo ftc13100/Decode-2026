@@ -39,7 +39,7 @@ class blueTopEasy: NextFTCOpMode() {
     //starting position and the pose that we will be shooting
 
     private val startPose = Pose( 18.0, 120.0, Math.toRadians(321.0))
-    private val shootPose = Pose(43.0, 101.0, Math.toRadians(155.0))
+    private val shootPose = Pose(43.0, 101.0, Math.toRadians(135.0))
 
     //path to pick up PPG motif
 

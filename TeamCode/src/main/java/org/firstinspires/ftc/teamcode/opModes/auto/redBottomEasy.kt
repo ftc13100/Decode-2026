@@ -61,7 +61,7 @@ class redBottomEasy: NextFTCOpMode() {
             FollowPath(MoveAbit),
             //shoots the preload
             ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1650.0),
+            Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
             Delay(3.seconds),
@@ -75,7 +75,7 @@ class redBottomEasy: NextFTCOpMode() {
         get() = SequentialGroup( FollowPath(MoveAbit),
             //shoots the preload
             ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1650.0),
+            Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
             Delay(3.seconds),
@@ -90,7 +90,7 @@ class redBottomEasy: NextFTCOpMode() {
             FollowPath(MoveAbit),
             //shoots the preload
             ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1650.0),
+            Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
             Delay(3.seconds),

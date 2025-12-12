@@ -38,23 +38,23 @@ class redBottomHard: NextFTCOpMode() {
 
     //universal paths
         private val startPose = Pose(88.0, 9.0, Math.toRadians(90.0))
-        private val shootPose = Pose(85.0, 16.0, Math.toRadians(68.0))
+        private val shootPose = Pose(85.0, 16.0, Math.toRadians(69.0))
     //path to pick up PPG motif
         private val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0))
         private val pickUpPPGControl = Pose(73.5, 85.9, Math.toRadians(0.0))
         private val pickUpPPG2= Pose(128.9, 84.0, Math.toRadians(0.0))
-        private val PPGtoShot= Pose(85.0, 16.0, Math.toRadians(59.0))
+        private val PPGtoShot= Pose(85.0, 16.0, Math.toRadians(69.0))
         private val PPGtoShotControl= Pose(80.0, 73.26, Math.toRadians(0.0))
     //paths to pick up PGP
         private val pickUpPGP1 = Pose(96.0, 60.0, Math.toRadians(0.0))
         private val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0))
         private val pickUpPGP2= Pose(128.9, 60.0, Math.toRadians(0.0))
-        private val PGPtoShot= Pose(85.0, 16.0, Math.toRadians(59.0))
+        private val PGPtoShot= Pose(85.0, 16.0, Math.toRadians(69.0))
         private val PGPtoShotControl= Pose(78.0, 76.0, Math.toRadians(0.0))
     //path to pick up GPP motif
         private val pickUpGPP1 = Pose(98.25, 36.0, Math.toRadians(0.0))
         private val pickUpGPP2= Pose(135.9, 36.0, Math.toRadians(0.0))
-        private val GPPtoShot= Pose(85.0, 16.0, Math.toRadians(59.0))
+        private val GPPtoShot= Pose(85.0, 16.0, Math.toRadians(69.0))
         private val GPPtoShotControl= Pose(87.0, 47.6, Math.toRadians(0.0))
 
 
@@ -131,7 +131,7 @@ class redBottomHard: NextFTCOpMode() {
             FollowPath(MoveAbit),
             //shoots the preload
                          ShooterAngle.angle_up,
-                         Shooter.spinAtSpeed(1650.0),
+                         Shooter.spinAtSpeed(1620.0),
                          Gate.gate_open,
                          Intake.spinSlowSpeed,
                          Delay(3.seconds),
@@ -150,7 +150,7 @@ class redBottomHard: NextFTCOpMode() {
             FollowPath(PPGtoShotMove),
             //shoots the motif
                          ShooterAngle.angle_up,
-                         Shooter.spinAtSpeed(1685.0),
+                         Shooter.spinAtSpeed(1620.0),
                          Gate.gate_open,
                          Intake.spinSlowSpeed,
                          Delay(3.seconds),
@@ -169,7 +169,7 @@ class redBottomHard: NextFTCOpMode() {
                          FollowPath(GPPtoShotMove),
             //shoots the non-motif
                          ShooterAngle.angle_up,
-                         Shooter.spinAtSpeed(1725.0),
+                         Shooter.spinAtSpeed(1620.0),
                          Gate.gate_open,
                          Intake.spinSlowSpeed,
                          Delay(3.seconds),
@@ -184,7 +184,7 @@ class redBottomHard: NextFTCOpMode() {
             FollowPath(MoveAbit),
             //shoots the preload
             ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1650.0),
+            Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
             Delay(3.seconds),
@@ -203,7 +203,7 @@ class redBottomHard: NextFTCOpMode() {
             FollowPath(PGPtoShotMove),
             //shoots the motif
             ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1685.0),
+            Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
             Delay(3.seconds),
@@ -222,7 +222,7 @@ class redBottomHard: NextFTCOpMode() {
             FollowPath(GPPtoShotMove),
             //shoots the non-motif
             ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1725.0),
+            Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
             Delay(3.seconds),
@@ -238,7 +238,7 @@ class redBottomHard: NextFTCOpMode() {
             FollowPath(MoveAbit),
             //shoots the preload
             ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1650.0),
+            Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
             Delay(3.seconds),
@@ -257,7 +257,7 @@ class redBottomHard: NextFTCOpMode() {
             FollowPath(GPPtoShotMove),
             //shoots the motif
             ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1685.0),
+            Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
             Delay(3.seconds),
@@ -276,7 +276,7 @@ class redBottomHard: NextFTCOpMode() {
             FollowPath(PGPtoShotMove),
             //shoots the non-motif
             ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1725.0),
+            Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
             Delay(3.seconds),
@@ -296,10 +296,13 @@ class redBottomHard: NextFTCOpMode() {
     override fun onStartButtonPressed() {
         follower.setStartingPose(startPose)
         buildPaths()
-        PoseStorage.blueAlliance = true
-        PoseStorage.redAlliance = false
+        PoseStorage.blueAlliance = false
+        PoseStorage.redAlliance = true
 
         val result: LLResult? = limelight.latestResult
+        if (result == null) {
+            GPP()
+        }
         if (result != null && result.isValid) {
             val fiducials = result.fiducialResults
             for (fiducial in fiducials) {
