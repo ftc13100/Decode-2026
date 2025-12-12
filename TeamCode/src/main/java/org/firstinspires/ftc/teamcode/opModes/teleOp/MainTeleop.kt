@@ -149,8 +149,7 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad1.a }
             .whenBecomesTrue {
                 if(! GoalFinder.gfActive) {
-                    val llResult: LLResult? = limelight.latestResult
-                    GoalFinder.findGoal(follower.pose, follower.heading, llResult, PoseStorage.blueAlliance)
+                    GoalFinder.findGoal()
                 } else {
                     GoalFinder.stop()
                 }
@@ -382,7 +381,7 @@ class MainTeleop : NextFTCOpMode() {
                 "AnglesValid: %b, LLValid: %b, GoalAprilTagAdj: %.2f",
                 GoalFinder.gfAnglesValid,
                 GoalFinder.gfLLValid,
-                GoalFinder.gfGoalAprilTagAdj
+                Math.toDegrees(GoalFinder.gfGoalAprilTagAdj)
             )
 
             telemetry.addData(

@@ -49,7 +49,7 @@ object GoalFinder : Subsystem {
         return a
     }
 
-    fun findGoal(pose: Pose, heading: Double, llResult: LLResult?, blueAlliance: Boolean) {
+    fun findGoal() {
         gfActive = true
         gfBelowToleranceCount = 0
         gfDone = false
@@ -94,6 +94,9 @@ object GoalFinder : Subsystem {
         gfAnglesValid = true
 
         if (llResult == null || !llResult.isValid) {
+            gfLLTx = 99.0
+            gfLLTy = 99.0
+            gfLLTa = 99.0
             gfLLValid = false
             return
         }
