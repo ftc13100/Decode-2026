@@ -23,10 +23,6 @@ import dev.nextftc.hardware.impl.IMUEx
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
-import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder.gfLLFound
-import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder.gfLLTa
-import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder.gfLLTx
-import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder.gfLLTy
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
@@ -76,7 +72,7 @@ class MainTeleop : NextFTCOpMode() {
     private var currentShotAngle: Double = 0.0
     private var gateOpen: Boolean = false
     private var intakeRunning: Boolean = false
-
+    private var debugTelemetry = false
     private var initialized = false;
 
     override fun onInit() {
@@ -206,12 +202,12 @@ class MainTeleop : NextFTCOpMode() {
         // turret tracking goal
         button { gamepad2.a }
             .whenBecomesTrue {
-                val llResult: LLResult? = limelight.latestResult
-                GoalFinder.adjustToLL(follower.pose, follower.heading, llResult, PoseStorage.blueAlliance)
+                GoalFinder.adjustToLL()
             }
 
         button { gamepad2.x }
             .whenBecomesTrue {
+                debugTelemetry = ! debugTelemetry
                 Gate.gate_open()
                 gateOpen = true
             }
@@ -316,6 +312,11 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesTrue {
                 Turret.resetToStartPosition()
             }
+
+//        button { gamepad2.back }
+//            .whenBecomesTrue {
+//                debugTelemetry = ! debugTelemetry
+//            }
     }
 
     override fun onUpdate() {
@@ -343,19 +344,109 @@ class MainTeleop : NextFTCOpMode() {
             driverControlled.update()
         } // end tracking goal
 
-        if(PoseStorage.blueAlliance) { telemetry.addData("Alliance", "Blue") }
-        else {telemetry.addData("Alliance", "Red") }
-        telemetry.addData("X", "%.1f, Y: %.1f, Heading: %.1f, Goal: %.1f", follower.pose.x, follower.pose.y, Math.toDegrees(follower.heading), Math.toDegrees(GoalFinder.gfTargetAngle))
-        telemetry.addData("Pointing", "Active: %b, Done: %b, DoneMs: %.0f", GoalFinder.gfActive, GoalFinder.gfDone, GoalFinder.gfDoneMs)
-        telemetry.addData("PointingVals", "Error: %.1f, Limelight: (%.1f, %.1f, %.2f), Dist: %.1f", Math.toDegrees(GoalFinder.gfHeadingError), GoalFinder.gfLLTx, GoalFinder.gfLLTy, GoalFinder.gfLLTa, GoalFinder.gfGoalDistance)
-        telemetry.addData("PointingDbg", "Pwr: %.1f, LLMode: %b, LLFound: %b, LLLost: %d", turnPower, GoalFinder.gfModeLL, GoalFinder.gfLLFound, GoalFinder.gfLLLostCount)
-        telemetry.addData("Turret", "Active: %b, Ready: %b, ReadyMs: %.0f",Turret.turretActive, Turret.turretReady, Turret.turretReadyMs)
-        telemetry.addData("TurretPos", "Current: %.0f, Target: %.0f",  Turret.turret.currentPosition, Turret.target)
-        telemetry.addData("Shot","X: %.0f, Y: %.0f, Vel: %.0f, Angle: %.3f", currentShotX, currentShotY, currentShotVelocity, currentShotAngle)
-        telemetry.addData("Shooter Speed", "Current: %.0f, Target: %.0f", Shooter.shooter.velocity, Shooter.target)
-        telemetry.addData("Shooter", "Ready: %b, ReadyMs:  %.0f, Active: %b, Power: %.2f", Shooter.shooterReady, Shooter.shooterReadyMs, Shooter.shooterActive, Shooter.shooter.power)
-        telemetry.addData("Intake Running", intakeRunning)
-        telemetry.addData("Gate Open", gateOpen)
+        if(PoseStorage.blueAlliance) { telemetry.addData("Alliance", "BLUE") }
+        else {telemetry.addData("Alliance", "RED") }
+
+        if(debugTelemetry) {
+            telemetry.addData(
+                "X",
+                "%.1f, Y: %.1f, Heading: %.1f, Goal: %.1f",
+                follower.pose.x,
+                follower.pose.y,
+                Math.toDegrees(follower.heading),
+                Math.toDegrees(GoalFinder.gfTargetAngle)
+            )
+        } else {
+            telemetry.addData("X", "%.1f, Y: %.1f, Heading: %.1f", follower.pose.x, follower.pose.y, Math.toDegrees(follower.heading))
+        }
+
+        if(debugTelemetry) {
+            telemetry.addData(
+                "Pointing",
+                "Active: %b, Done: %b, DoneMs: %.0f",
+                GoalFinder.gfActive,
+                GoalFinder.gfDone,
+                GoalFinder.gfDoneMs
+            )
+            telemetry.addData(
+                "PointingVals",
+                "Error: %.1f, Limelight: (%.1f, %.1f, %.2f), Dist: %.1f",
+                Math.toDegrees(GoalFinder.gfHeadingError),
+                GoalFinder.gfLLTx,
+                GoalFinder.gfLLTy,
+                GoalFinder.gfLLTa,
+                GoalFinder.gfGoalDistance
+            )
+            telemetry.addData(
+                "PointingDbg",
+                "AnglesValid: %b, LLValid: %b, GoalAprilTagAdj: %.2f",
+                GoalFinder.gfAnglesValid,
+                GoalFinder.gfLLValid,
+                GoalFinder.gfGoalAprilTagAdj
+            )
+
+            telemetry.addData(
+                "PointingDbg2",
+                "TurretAdjLL: %.0f, TurretAdjGoalAT: %.0f, Total: %.0f",
+                GoalFinder.gfTurretAdjLL,
+                GoalFinder.gfTurretAdjGoalAprilTag,
+                GoalFinder.gfTurretAdj
+            )
+            telemetry.addData(
+                "Turret",
+                "Active: %b, Ready: %b, ReadyMs: %.0f",
+                Turret.turretActive,
+                Turret.turretReady,
+                Turret.turretReadyMs
+            )
+            telemetry.addData(
+                "TurretPos",
+                "Current: %.0f, Target: %.0f",
+                Turret.turret.currentPosition,
+                Turret.target
+            )
+        } else {
+            telemetry.addData("Pointing", "Error: %+3.1f Limelight: +%2.1f", Math.toDegrees(GoalFinder.gfHeadingError), GoalFinder.gfLLTx)
+        }
+
+        if(debugTelemetry) {
+            telemetry.addData(
+                "Shot Lookup",
+                "X: %.0f, Y: %.0f",
+                currentShotX,
+                currentShotY,
+            )
+        }
+        telemetry.addData(
+            "Shooter",
+            "Target: %4.0f, Current: %4.0f, Ready: %s",
+            Shooter.target,
+            Shooter.shooter.velocity,
+            if(Shooter.shooterReady) { "Yes" } else { "No" }
+            )
+
+        if(debugTelemetry) {
+            telemetry.addData(
+                "Shooter",
+                "ReadyMs: %.0f, Active: %b, Power: %.2f",
+                Shooter.shooterReadyMs,
+                Shooter.shooterActive,
+                Shooter.shooter.power
+            )
+        }
+
+        telemetry.addData(
+            "Shooter Angle:",
+            "%.3f",
+            currentShotAngle
+        )
+        telemetry.addData("Gate", "%s",if(gateOpen) { "Open" } else { "Closed" })
+        telemetry.addData(
+            "Intake",
+            "%s (Power: %+1.1f)",
+            if(intakeRunning) { "Running" } else { "Stopped" },
+            Intake.intake.power
+        )
 
         telemetry.update()
     }
