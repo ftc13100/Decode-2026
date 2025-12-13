@@ -164,9 +164,9 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad1.b }
             .whenBecomesTrue {
                 if (PoseStorage.blueAlliance) {
-                    follower.setPose(Pose(136.25, 8.5, Math.toRadians(-90.0)))
+                    follower.setPose(Pose(136.5, 9.25, Math.toRadians(-90.0)))
                 } else {
-                    follower.setPose(Pose(7.75, 8.5,Math.toRadians(-90.0)))
+                    follower.setPose(Pose(8.0, 9.25,Math.toRadians(-90.0)))
                 }
             }
 
