@@ -326,7 +326,9 @@ class redBottomHard: NextFTCOpMode() {
                         GPP()
                     }
                 }
-            }
+            } else {
+                GPP()
+        }
         }
 
     override fun onUpdate() {

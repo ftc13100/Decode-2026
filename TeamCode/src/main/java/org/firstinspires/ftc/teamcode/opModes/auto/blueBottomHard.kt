@@ -326,6 +326,8 @@ class blueBottomHard: NextFTCOpMode() {
                     GPP()
                 }
             }
+        } else {
+            GPP()
         }
     }
 

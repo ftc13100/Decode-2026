@@ -40,12 +40,16 @@ class redTopEasy: NextFTCOpMode() {
 
     private val startPose = Pose(126.0, 120.0, Math.toRadians(211.0))
     private val shootPose = Pose(101.0, 101.0, Math.toRadians(45.0))
+    private val move = Pose(88.0, 110.0, Math.toRadians(-90.0))
+
     //path to pick up PPG motif
 
 
 
     //Move a bit
     private lateinit var MoveAbit: PathChain
+    private lateinit var MoveToOut: PathChain
+
 
     private fun buildPaths() {
         //PGP paths
@@ -55,6 +59,11 @@ class redTopEasy: NextFTCOpMode() {
             .addPath(BezierLine(startPose,shootPose))
             .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
             .build()
+        MoveToOut = follower.pathBuilder()
+            .addPath(BezierLine(shootPose,move))
+            .setLinearHeadingInterpolation(shootPose.heading, move.heading)
+            .build()
+
     }
 
     val PPG: Command
@@ -62,7 +71,7 @@ class redTopEasy: NextFTCOpMode() {
             FollowPath(MoveAbit),
             //shoots the preload
             ShooterAngle.toAngle(0.55),
-            Shooter.spinAtSpeed(1265.0),
+            Shooter.spinAtSpeed(1250.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
             Delay(4.seconds),
@@ -70,7 +79,8 @@ class redTopEasy: NextFTCOpMode() {
                 Shooter.stopShooter,
                 Intake.spinStop,
                 Gate.gate_close),
-        )
+            FollowPath(MoveToOut))
+
 
     val PGP: Command
         get() = SequentialGroup( FollowPath(MoveAbit),
