@@ -51,7 +51,7 @@ class blueBottomHard: NextFTCOpMode() {
     //paths to pick up PGP
     private val pickUpPGP1 = Pose(96.0, 60.0, Math.toRadians(0.0)).mirror()
     private val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0)).mirror()
-    private val pickUpPGP2= Pose(128.9, 60.0, Math.toRadians(0.0)).mirror()
+    private val pickUpPGP2= Pose(135.9, 60.0, Math.toRadians(0.0)).mirror()
     private val PGPtoShot= Pose(85.0, 16.0, Math.toRadians(69.0)).mirror()
     private val PGPtoShotControl= Pose(78.0, 76.0, Math.toRadians(0.0)).mirror()
     //path to pick up GPP motif
@@ -317,9 +317,11 @@ class blueBottomHard: NextFTCOpMode() {
             val fiducials = result.fiducialResults
             for (fiducial in fiducials) {
                 if (fiducial.fiducialId == 22) {
-                    PGP() }
-                else if (fiducial.fiducialId == 23) {
+                    PGP()
+                } else if (fiducial.fiducialId == 23) {
                     PPG()
+                } else if (fiducial.fiducialId == 21) {
+                    GPP()
                 } else {
                     GPP()
                 }

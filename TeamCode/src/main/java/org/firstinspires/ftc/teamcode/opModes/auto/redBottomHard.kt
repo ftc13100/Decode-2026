@@ -48,7 +48,7 @@ class redBottomHard: NextFTCOpMode() {
     //paths to pick up PGP
         private val pickUpPGP1 = Pose(96.0, 60.0, Math.toRadians(0.0))
         private val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0))
-        private val pickUpPGP2= Pose(128.9, 60.0, Math.toRadians(0.0))
+        private val pickUpPGP2= Pose(135.9, 60.0, Math.toRadians(0.0))
         private val PGPtoShot= Pose(85.0, 16.0, Math.toRadians(69.0))
         private val PGPtoShotControl= Pose(78.0, 76.0, Math.toRadians(0.0))
     //path to pick up GPP motif
@@ -313,9 +313,6 @@ class redBottomHard: NextFTCOpMode() {
         PoseStorage.redAlliance = true
 
         val result: LLResult? = limelight.latestResult
-        if (result == null) {
-            GPP()
-        }
         if (result != null && result.isValid) {
             val fiducials = result.fiducialResults
             for (fiducial in fiducials) {
@@ -323,6 +320,8 @@ class redBottomHard: NextFTCOpMode() {
                     PGP() }
                     else if (fiducial.fiducialId == 23) {
                         PPG()
+                    } else if (fiducial.fiducialId == 21 ){
+                        GPP()
                     } else {
                         GPP()
                     }

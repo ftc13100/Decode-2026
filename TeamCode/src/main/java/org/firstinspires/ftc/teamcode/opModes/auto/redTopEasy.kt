@@ -62,7 +62,7 @@ class redTopEasy: NextFTCOpMode() {
             FollowPath(MoveAbit),
             //shoots the preload
             ShooterAngle.toAngle(0.55),
-            Shooter.spinAtSpeed(1275.0),
+            Shooter.spinAtSpeed(1265.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
             Delay(4.seconds),
