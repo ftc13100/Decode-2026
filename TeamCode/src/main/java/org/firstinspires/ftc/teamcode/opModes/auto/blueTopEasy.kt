@@ -62,8 +62,8 @@ class blueTopEasy: NextFTCOpMode() {
         get() = SequentialGroup(
             FollowPath(MoveAbit),
             //shoots the preload
-            ShooterAngle.toAngle(0.58),
-            Shooter.spinAtSpeed(1425.0),
+            ShooterAngle.toAngle(0.55),
+            Shooter.spinAtSpeed(1275.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
             Delay(4.seconds),

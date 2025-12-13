@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil.limelight
+import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
@@ -40,27 +41,117 @@ class redTopHard: NextFTCOpMode() {
 
 
     private lateinit var Move: PathChain
+    private lateinit var seeObelisk: PathChain
+    private lateinit var goToPPG: PathChain
 
-    private val startPose = Pose(96.9, 83.7, Math.toRadians(0.0))
-    private val endPose = Pose(136.44, 84.0, Math.toRadians(0.0))
+    private lateinit var goToPGP1: PathChain
+    private lateinit var goToPGP2: PathChain
+
+
+    private lateinit var PPGtoShot: PathChain
+
+
+
+
+
+    private val startPose = Pose(126.0, 120.0, Math.toRadians(211.0))
+    private val endPose = Pose(101.0, 101.0, Math.toRadians(45.0))
+
+    private val obelisk = Pose(83.0, 83.0, Math.toRadians(90.0))
+    private val pickUpPPG = Pose(128.9, 83.0, Math.toRadians(0.0))
+    private val pickUpPGP1 = Pose(101.0, 59.0, Math.toRadians(0.0))
+    private val pickUpPGP2 = Pose(135.9, 59.0, Math.toRadians(0.0))
+
+
+
+
 
     private fun buildPaths() {
         Move = follower.pathBuilder()
-            .addPath(BezierLine(startPose, endPose)).setGlobalDeceleration(2.0)
-            .setConstantHeadingInterpolation(startPose.heading)
+            .addPath(BezierLine(startPose, endPose))
+            .setLinearHeadingInterpolation(startPose.heading,endPose.heading)
             .build()
+        seeObelisk = follower.pathBuilder()
+            .addPath(BezierLine(endPose, obelisk))
+            .setLinearHeadingInterpolation(endPose.heading, obelisk.heading)
+            .build()
+
+        //PPG
+        goToPPG = follower.pathBuilder()
+            .addPath(BezierLine(obelisk, pickUpPPG)).setGlobalDeceleration(2.0)
+            .setLinearHeadingInterpolation(obelisk.heading, pickUpPPG.heading)
+            .build()
+
+        PPGtoShot = follower.pathBuilder()
+            .addPath(BezierLine(pickUpPPG, endPose))
+            .setLinearHeadingInterpolation(pickUpPPG.heading, endPose.heading)
+            .build()
+        //PGP
+        goToPGP1 = follower.pathBuilder()
+            .addPath(BezierLine(endPose, pickUpPGP1)).setGlobalDeceleration(2.0)
+            .setLinearHeadingInterpolation(endPose.heading, pickUpPGP1.heading)
+            .build()
+        goToPGP2 = follower.pathBuilder()
+            .addPath(BezierLine(pickUpPGP1, pickUpPGP2)).setGlobalDeceleration(2.0)
+            .setLinearHeadingInterpolation(pickUpPGP1.heading, pickUpPGP2.heading)
+            .build()
+
     }
 
-    val PPG: Command
-        get() = SequentialGroup(
-            Gate.gate_close,
-            ParallelGroup(
-            FollowPath(Move),
-                Intake.spinFast),
-            Delay(0.5.seconds),
-            Intake.spinStop
-
-            )
+//    val PPG: Command
+//        get() = SequentialGroup(
+//            FollowPath(Move),
+//            FollowPath(seeObelisk),
+//            ShooterAngle.angle_up,
+//            Shooter.spinAtSpeed(1620.0),
+//            Gate.gate_open,
+//            Intake.spinSlowSpeed,
+//            Delay(3.seconds),
+//            ParallelGroup(
+//                Shooter.stopShooter,
+//                Intake.spinStop,
+//                Gate.gate_close),
+//            //picks up motif
+//            ParallelGroup(
+//                FollowPath(goToPPG),
+//                Gate.gate_close,),
+//            Intake.spinFast,
+//            Delay(0.6.seconds),
+//            FollowPath(PPGsecond),
+//            Intake.spinStop,
+//            FollowPath(PPGtoShotMove),
+//            //shoots the motif
+//            ShooterAngle.angle_up,
+//            Shooter.spinAtSpeed(1620.0),
+//            Gate.gate_open,
+//            Intake.spinSlowSpeed,
+//            Delay(3.seconds),
+//            ParallelGroup(
+//                Shooter.stopShooter,
+//                Intake.spinStop,
+//                Gate.gate_close),
+//            //picks up the non-motif
+//            ParallelGroup(
+//                FollowPath(GPPfirst),
+//                Gate.gate_close,
+//                Intake.spinFast),
+//            Delay(0.6.seconds),
+//            FollowPath(GPPsecond),
+//            Intake.spinStop,
+//            FollowPath(GPPtoShotMove),
+//            //shoots the non-motif
+//            ShooterAngle.angle_up,
+//            Shooter.spinAtSpeed(1620.0),
+//            Gate.gate_open,
+//            Intake.spinSlowSpeed,
+//            Delay(3.seconds),
+//            ParallelGroup(
+//                Shooter.stopShooter,
+//                Intake.spinStop,
+//                Gate.gate_close),
+//            FollowPath(MomohitPatilLeave)
+//
+//        )
 
 
 
@@ -72,18 +163,13 @@ class redTopHard: NextFTCOpMode() {
 
     }
 
-    override fun onStartButtonPressed() {
-        PPG()
-//        val result: LLResult? = limelight.latestResult
-//        if (result != null && result.isValid) {
-//            val fiducials = result.fiducialResults
-//            for (fiducial in fiducials) {
-//                if (fiducial.fiducialId == 22) {
-//                    PPG() }
-//            }
-//        }
-
-    }
+//    override fun onStartButtonPressed() {
+//        follower.setStartingPose(startPose)
+//        buildPaths()
+//        PoseStorage.blueAlliance = false
+//        PoseStorage.redAlliance = true
+//        PPG()
+//    }
 
 
 
