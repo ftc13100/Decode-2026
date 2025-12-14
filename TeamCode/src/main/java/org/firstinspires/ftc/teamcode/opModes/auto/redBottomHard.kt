@@ -49,12 +49,12 @@ class redBottomHard: NextFTCOpMode() {
         private val pickUpPGP1 = Pose(96.0, 60.0, Math.toRadians(0.0))
         private val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0))
         private val pickUpPGP2= Pose(135.9, 60.0, Math.toRadians(0.0))
-        private val PGPtoShot= Pose(85.0, 16.0, Math.toRadians(69.0))
+        private val PGPtoShot= Pose(85.0, 16.0, Math.toRadians(68.5))
         private val PGPtoShotControl= Pose(78.0, 76.0, Math.toRadians(0.0))
     //path to pick up GPP motif
         private val pickUpGPP1 = Pose(98.25, 36.0, Math.toRadians(0.0))
         private val pickUpGPP2= Pose(135.9, 36.0, Math.toRadians(0.0))
-        private val GPPtoShot= Pose(85.0, 16.0, Math.toRadians(69.0))
+        private val GPPtoShot= Pose(85.0, 16.0, Math.toRadians(68.0))
         private val GPPtoShotControl= Pose(87.0, 47.6, Math.toRadians(0.0))
     private val getOut = Pose(96.0, 48.0, Math.toRadians(90.0))
 

@@ -100,7 +100,7 @@ class MainTeleop : NextFTCOpMode() {
         limelight.start()
         follower.update()
 
-        Gate.gate_close()
+        //Gate.gate_close()
     }
     override fun onStartButtonPressed() {
         driverControlled = MecanumDriverControlled(

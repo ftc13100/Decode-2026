@@ -46,18 +46,18 @@ class blueBottomHard: NextFTCOpMode() {
     private val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0)).mirror()
     private val pickUpPPGControl = Pose(73.5, 85.9, Math.toRadians(0.0)).mirror()
     private val pickUpPPG2= Pose(128.9, 84.0, Math.toRadians(0.0)).mirror()
-    private val PPGtoShot= Pose(85.0, 16.0, Math.toRadians(69.0)).mirror()
+    private val PPGtoShot= Pose(85.0, 16.0, Math.toRadians(68.5)).mirror()
     private val PPGtoShotControl= Pose(80.0, 73.26, Math.toRadians(0.0)).mirror()
     //paths to pick up PGP
     private val pickUpPGP1 = Pose(96.0, 60.0, Math.toRadians(0.0)).mirror()
     private val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0)).mirror()
     private val pickUpPGP2= Pose(135.9, 60.0, Math.toRadians(0.0)).mirror()
-    private val PGPtoShot= Pose(85.0, 16.0, Math.toRadians(69.0)).mirror()
+    private val PGPtoShot= Pose(85.0, 16.0, Math.toRadians(68.5)).mirror()
     private val PGPtoShotControl= Pose(78.0, 76.0, Math.toRadians(0.0)).mirror()
     //path to pick up GPP motif
     private val pickUpGPP1 = Pose(98.25, 36.0, Math.toRadians(0.0)).mirror()
     private val pickUpGPP2= Pose(135.9, 36.0, Math.toRadians(0.0)).mirror()
-    private val GPPtoShot= Pose(85.0, 16.0, Math.toRadians(69.0)).mirror()
+    private val GPPtoShot= Pose(85.0, 16.0, Math.toRadians(68.0)).mirror()
     private val GPPtoShotControl= Pose(87.0, 47.6, Math.toRadians(0.0)).mirror()
 
 
