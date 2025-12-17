@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opModes.auto
 
-import com.pedropathing.geometry.BezierCurve
 import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
@@ -22,7 +21,6 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil.limelight
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
@@ -30,7 +28,7 @@ import kotlin.time.Duration.Companion.seconds
 class blueBottomEasy: NextFTCOpMode() {
     init {
         addComponents(
-            SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage),
+            SubsystemComponent(MohitPatil, Shooter, Intake, Gate, PoseStorage),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
@@ -74,7 +72,7 @@ class blueBottomEasy: NextFTCOpMode() {
         get() = SequentialGroup(
             FollowPath(MoveAbit),
             //shoots the preload
-            ShooterAngle.angle_up,
+            Shooter.angle_up,
             Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
@@ -90,7 +88,7 @@ class blueBottomEasy: NextFTCOpMode() {
     val PGP: Command
         get() = SequentialGroup( FollowPath(MoveAbit),
             //shoots the preload
-            ShooterAngle.angle_up,
+            Shooter.angle_up,
             Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
@@ -107,7 +105,7 @@ class blueBottomEasy: NextFTCOpMode() {
         get() = SequentialGroup(
             FollowPath(MoveAbit),
             //shoots the preload
-            ShooterAngle.angle_up,
+            Shooter.angle_up,
             Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,

@@ -1,14 +1,9 @@
-package org.firstinspires.ftc.teamcode.opModes.teleOp
+package org.firstinspires.ftc.teamcode.opModes.subsystems.shooter
 
-import dev.nextftc.core.commands.CommandManager
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
-
-
-object ShooterController {
+object ShooterTable {
     data class ShotParameters(val x: Double, val y: Double, val velocity: Double, val angle: Double)
 
-    private val shooterLookupTable: Map<Pair<Double, Double>, ShotParameters> = mapOf(
+    val shooterLookupTable = mapOf(
         //first = x, second = y
         //listing at 12 inch intervals, lookup written first match within 6 inches
         //top part starts here
@@ -73,35 +68,5 @@ object ShooterController {
         Pair(84.0, 0.0) to ShotParameters(84.0, 0.0, 1650.0, 0.500),
         Pair(96.0, 0.0) to ShotParameters(96.0, 0.0, 1650.0, 0.500),
         Pair(108.0, 0.0) to ShotParameters(108.0, 0.0, 1650.0, 0.500),
-        )
-    fun getShot(x: Double, y: Double): ShotParameters? {
-        var bestKey: Pair<Double, Double>? = null
-        for ((keyX, keyY) in shooterLookupTable.keys) {
-            val dx = kotlin.math.abs(x - keyX)
-            val dy = kotlin.math.abs(y - keyY)
-
-            if (dx <= 6.0 && dy <= 6.0) {
-                bestKey = Pair(keyX, keyY)
-                break
-            }
-        }
-
-        return if (bestKey != null) {
-            shooterLookupTable[bestKey]
-        } else {
-            null
-        }
-    }
-
-    fun applyShot(velocity: Double, angle: Double) {
-        ShooterAngle.targetPosition = angle
-
-        CommandManager.scheduleCommand(
-            ShooterAngle.update()
-        )
-
-        CommandManager.scheduleCommand(
-        Shooter.spinAtSpeed(velocity)
-        )
-    }
+    )
 }

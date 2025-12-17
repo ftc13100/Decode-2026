@@ -8,9 +8,9 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
 import dev.nextftc.core.commands.CommandManager
-import dev.nextftc.core.commands.delays.Delay
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
+import dev.nextftc.core.units.rad
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.Gamepads
@@ -18,27 +18,22 @@ import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.FieldCentric
 import dev.nextftc.hardware.driving.MecanumDriverControlled
-import dev.nextftc.hardware.impl.Direction
-import dev.nextftc.hardware.impl.IMUEx
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
+import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
-import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
-import org.opencv.core.Mat
 import kotlin.math.abs
-import kotlin.math.atan2
-import kotlin.time.Duration.Companion.seconds
+
 @TeleOp(name = "MainTeleop")
 class MainTeleop : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                ShooterAngle, Shooter, Gate, Intake, Turret, PoseStorage, GoalFinder
+                Shooter, Gate, Intake, Turret, PoseStorage, GoalFinder
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -50,8 +45,6 @@ class MainTeleop : NextFTCOpMode() {
     private val frontRightName = "frontRight"
     private val backLeftName = "backLeft"
     private val backRightName = "backRight"
-
-    private val shooterController = ShooterController
 
     private lateinit var frontLeftMotor: MotorEx
     private lateinit var frontRightMotor: MotorEx
@@ -111,7 +104,9 @@ class MainTeleop : NextFTCOpMode() {
             -Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
             Gamepads.gamepad1.rightStickX,
-//            FieldCentric(imu)
+            FieldCentric {
+                follower.pose.heading.rad
+            }
         )
         driverControlled.scalar = 0.9
 
@@ -164,9 +159,9 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad1.b }
             .whenBecomesTrue {
                 if (PoseStorage.blueAlliance) {
-                    follower.setPose(Pose(136.5, 9.25, Math.toRadians(-90.0)))
+                    follower.pose = Pose(136.5, 9.25, Math.toRadians(-90.0))
                 } else {
-                    follower.setPose(Pose(8.0, 9.25,Math.toRadians(-90.0)))
+                    follower.pose = Pose(8.0, 9.25,Math.toRadians(-90.0))
                 }
             }
 
@@ -219,14 +214,14 @@ class MainTeleop : NextFTCOpMode() {
                 val y = follower.pose.y
                 if (!PoseStorage.blueAlliance){
                     x = 144 - x  }
-                val currentShot = shooterController.getShot(x, y)
+                val currentShot = Shooter.getShot(x, y)
                 if (currentShot != null) {
                     currentShotX = currentShot.x
                     currentShotY = currentShot.y
                     currentShotVelocity = currentShot.velocity
                     currentShotAngle = currentShot.angle
-                    ShooterAngle.targetPosition = currentShotAngle
-                    shooterController.applyShot(currentShotVelocity, currentShotAngle)
+                    Shooter.servoTargetPosition = currentShotAngle
+                    Shooter.applyShot(currentShotVelocity, currentShotAngle)
                 }
             }
             .whenBecomesFalse {
@@ -272,10 +267,8 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesTrue {
                 if (currentShotAngle > 0.0 && currentShotAngle <= 0.681 ) {
                     currentShotAngle += 0.02
-                    ShooterAngle.targetPosition = currentShotAngle
-                    CommandManager.scheduleCommand(
-                        ShooterAngle.update()
-                    )
+                    Shooter.servoTargetPosition = currentShotAngle
+                    Shooter.update()
                 }
             }
 
@@ -284,10 +277,8 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesTrue {
                 if (currentShotAngle > 0.0 && currentShotAngle >= 0.519 ) {
                     currentShotAngle -= 0.02
-                    ShooterAngle.targetPosition = currentShotAngle
-                    CommandManager.scheduleCommand(
-                        ShooterAngle.update()
-                    )
+                    Shooter.servoTargetPosition = currentShotAngle
+                    Shooter.update()
                 }
             }
 

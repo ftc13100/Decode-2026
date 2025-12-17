@@ -22,7 +22,6 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil.limelight
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
@@ -30,7 +29,7 @@ import kotlin.time.Duration.Companion.seconds
 class redBottomHard: NextFTCOpMode() {
     init {
         addComponents(
-               SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage),
+               SubsystemComponent(MohitPatil, Shooter, Intake, Gate, PoseStorage),
                   BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
@@ -138,7 +137,7 @@ class redBottomHard: NextFTCOpMode() {
         get() = SequentialGroup(
             FollowPath(MoveAbit),
             //shoots the preload
-                         ShooterAngle.angle_up,
+                         Shooter.angle_up,
                          Shooter.spinAtSpeed(1620.0),
                          Gate.gate_open,
                          Intake.spinSlowSpeed,
@@ -157,7 +156,7 @@ class redBottomHard: NextFTCOpMode() {
             Intake.spinStop,
             FollowPath(PPGtoShotMove),
             //shoots the motif
-                         ShooterAngle.angle_up,
+                         Shooter.angle_up,
                          Shooter.spinAtSpeed(1620.0),
                          Gate.gate_open,
                          Intake.spinSlowSpeed,
@@ -176,7 +175,7 @@ class redBottomHard: NextFTCOpMode() {
                          Intake.spinStop,
                          FollowPath(GPPtoShotMove),
             //shoots the non-motif
-                         ShooterAngle.angle_up,
+                         Shooter.angle_up,
                          Shooter.spinAtSpeed(1620.0),
                          Gate.gate_open,
                          Intake.spinSlowSpeed,
@@ -193,7 +192,7 @@ class redBottomHard: NextFTCOpMode() {
         get() = SequentialGroup(
             FollowPath(MoveAbit),
             //shoots the preload
-            ShooterAngle.angle_up,
+            Shooter.angle_up,
             Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
@@ -212,7 +211,7 @@ class redBottomHard: NextFTCOpMode() {
             Intake.spinStop,
             FollowPath(PGPtoShotMove),
             //shoots the motif
-            ShooterAngle.angle_up,
+            Shooter.angle_up,
             Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
@@ -231,7 +230,7 @@ class redBottomHard: NextFTCOpMode() {
             Intake.spinStop,
             FollowPath(GPPtoShotMove),
             //shoots the non-motif
-            ShooterAngle.angle_up,
+            Shooter.angle_up,
             Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
@@ -249,7 +248,7 @@ class redBottomHard: NextFTCOpMode() {
         get() = SequentialGroup(
             FollowPath(MoveAbit),
             //shoots the preload
-            ShooterAngle.angle_up,
+            Shooter.angle_up,
             Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
@@ -268,7 +267,7 @@ class redBottomHard: NextFTCOpMode() {
             Intake.spinStop,
             FollowPath(GPPtoShotMove),
             //shoots the motif
-            ShooterAngle.angle_up,
+            Shooter.angle_up,
             Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
@@ -287,7 +286,7 @@ class redBottomHard: NextFTCOpMode() {
             Intake.spinStop,
             FollowPath(PGPtoShotMove),
             //shoots the non-motif
-            ShooterAngle.angle_up,
+            Shooter.angle_up,
             Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
@@ -316,20 +315,16 @@ class redBottomHard: NextFTCOpMode() {
         if (result != null && result.isValid) {
             val fiducials = result.fiducialResults
             for (fiducial in fiducials) {
-                if (fiducial.fiducialId == 22) {
-                    PGP() }
-                    else if (fiducial.fiducialId == 23) {
-                        PPG()
-                    } else if (fiducial.fiducialId == 21 ){
-                        GPP()
-                    } else {
-                        GPP()
-                    }
+                when (fiducial.fiducialId) {
+                    22 -> PGP()
+                    23 -> PPG()
+                    else -> GPP()
                 }
-            } else {
+            }
+        } else {
                 GPP()
         }
-        }
+    }
 
     override fun onUpdate() {
         telemetry.addData("Shooter Speed", "Current: %.0f, Target: %.0f", Shooter.shooter.velocity, Shooter.target)
