@@ -6,7 +6,7 @@ package org.firstinspires.ftc.teamcode.opModes.teleOp//package org.firstinspires
 //import dev.nextftc.core.commands.utility.PerpetualCommand
 //import dev.nextftc.core.components.BindingsComponent
 //import dev.nextftc.core.components.SubsystemComponent
-//import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
+//import org.firstinspires.ftc.teamcode.opModes.subsystems.Shooter
 //import dev.nextftc.ftc.NextFTCOpMode
 //import dev.nextftc.ftc.components.BulkReadComponent
 //import dev.nextftc.hardware.impl.MotorEx

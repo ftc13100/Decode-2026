@@ -1,11 +1,8 @@
-package org.firstinspires.ftc.teamcode.opModes.subsystems
+package org.firstinspires.ftc.teamcode.subsystems
 
-import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
-import dev.nextftc.hardware.controllable.RunToVelocity
 import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.hardware.powerable.SetPower
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter.controller
 
 object Intake : Subsystem {
 
@@ -19,14 +16,9 @@ object Intake : Subsystem {
         SetPower(intake, 0.0)
 
     val spinSlowSpeed =
-        SetPower(intake, 0.8,)
-
-
+        SetPower(intake, 0.8)
 
     val spinReverse =
-        SetPower(intake, -0.7,)
-
-
-
+        SetPower(intake, -0.7)
 }
 

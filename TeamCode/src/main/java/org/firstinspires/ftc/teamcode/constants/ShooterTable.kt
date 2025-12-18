@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opModes.subsystems.shooter
+package org.firstinspires.ftc.teamcode.constants
 
 object ShooterTable {
     data class ShotParameters(val x: Double, val y: Double, val velocity: Double, val angle: Double)

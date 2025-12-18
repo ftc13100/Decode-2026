@@ -1,17 +1,13 @@
-package org.firstinspires.ftc.teamcode.opModes.subsystems
+package org.firstinspires.ftc.teamcode.subsystems
 
 import com.pedropathing.geometry.Pose
 import com.qualcomm.hardware.limelightvision.LLResult
-import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.core.subsystems.Subsystem
-import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
-import kotlin.compareTo
 import kotlin.math.abs
 import kotlin.math.atan2
+import kotlin.math.pow
 import kotlin.math.sqrt
-import kotlin.text.compareTo
-import kotlin.unaryMinus
 
 object GoalFinder : Subsystem {
     var gfActive = false
@@ -84,7 +80,8 @@ object GoalFinder : Subsystem {
             144.0 - pose.x
         }
 
-        gfGoalDistance = Math.sqrt(Math.pow(adjX - goal.x, 2.0) + Math.pow(pose.y - goal.y, 2.0) + shooterToGoalZSqrd)
+        gfGoalDistance =
+            sqrt((adjX - goal.x).pow(2.0) + (pose.y - goal.y).pow(2.0) + shooterToGoalZSqrd)
         gfTargetAngle = if (blueAlliance) {
             Math.PI - atan2(abs(goal.y - pose.y), abs(goal.x - adjX))
         } else {

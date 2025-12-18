@@ -1,23 +1,15 @@
-package org.firstinspires.ftc.teamcode.opModes.subsystems
+package org.firstinspires.ftc.teamcode.subsystems
 
 import com.bylazar.configurables.annotations.Configurable
 import com.pedropathing.geometry.Pose
-import com.qualcomm.hardware.limelightvision.LLResult
-import com.qualcomm.robotcore.hardware.PIDFCoefficients
 import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
-import dev.nextftc.control.feedback.FeedbackElement
 import dev.nextftc.control.feedback.PIDCoefficients
-import dev.nextftc.control.feedforward.BasicFeedforward
-import dev.nextftc.control.feedforward.FeedforwardElement
-import dev.nextftc.core.commands.CommandManager
-import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
-import dev.nextftc.hardware.controllable.RunToPosition
 import dev.nextftc.hardware.impl.MotorEx
-import org.opencv.core.Mat
+import org.firstinspires.ftc.teamcode.constants.PoseStorage
 import kotlin.math.abs
 import kotlin.math.atan2
 

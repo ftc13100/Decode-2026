@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight
+package org.firstinspires.ftc.teamcode.subsystems.limelight
 
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import dev.nextftc.core.subsystems.Subsystem

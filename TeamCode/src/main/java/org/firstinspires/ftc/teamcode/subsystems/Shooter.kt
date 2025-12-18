@@ -1,25 +1,18 @@
-package org.firstinspires.ftc.teamcode.opModes.subsystems.shooter
+package org.firstinspires.ftc.teamcode.subsystems
 
 import com.bylazar.configurables.annotations.Configurable
-import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
 import dev.nextftc.control.feedforward.BasicFeedforwardParameters
-import dev.nextftc.control.feedforward.FeedforwardElement
 import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
-import dev.nextftc.ftc.ActiveOpMode
-import dev.nextftc.ftc.ActiveOpMode.telemetry
 import dev.nextftc.hardware.controllable.RunToVelocity
 import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.hardware.impl.ServoEx
-import dev.nextftc.hardware.powerable.SetPower
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterTable.shooterLookupTable
-import java.time.Instant
+import org.firstinspires.ftc.teamcode.constants.ShooterTable
 
 @Configurable
 object Shooter : Subsystem {
@@ -103,7 +96,7 @@ object Shooter : Subsystem {
         }
 
     fun getShot(x: Double, y: Double) =
-        shooterLookupTable
+        ShooterTable.shooterLookupTable
             .entries
             .find { x - it.key.first <= 6.0 && y - it.key.second <= 6.0 }
             ?.value

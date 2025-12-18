@@ -10,21 +10,19 @@ import dev.nextftc.bindings.button
 import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
-import dev.nextftc.core.units.rad
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import dev.nextftc.hardware.driving.FieldCentric
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
-import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
-import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
+import org.firstinspires.ftc.teamcode.subsystems.Gate
+import org.firstinspires.ftc.teamcode.subsystems.GoalFinder
+import org.firstinspires.ftc.teamcode.subsystems.Intake
+import org.firstinspires.ftc.teamcode.constants.PoseStorage
+import org.firstinspires.ftc.teamcode.subsystems.Turret
+import org.firstinspires.ftc.teamcode.subsystems.Shooter
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.math.abs
 
@@ -33,7 +31,7 @@ class MainTeleop : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                Shooter, Gate, Intake, Turret, PoseStorage, GoalFinder
+                Shooter, Gate, Intake, Turret, GoalFinder
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -104,9 +102,6 @@ class MainTeleop : NextFTCOpMode() {
             -Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
             Gamepads.gamepad1.rightStickX,
-            FieldCentric {
-                follower.pose.heading.rad
-            }
         )
         driverControlled.scalar = 0.9
 

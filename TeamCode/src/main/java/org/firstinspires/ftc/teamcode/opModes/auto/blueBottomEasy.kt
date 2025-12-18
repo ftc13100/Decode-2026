@@ -15,12 +15,12 @@ import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
-import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
-import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil.limelight
-import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
+import org.firstinspires.ftc.teamcode.subsystems.Gate
+import org.firstinspires.ftc.teamcode.subsystems.Intake
+import org.firstinspires.ftc.teamcode.subsystems.limelight.Vision
+import org.firstinspires.ftc.teamcode.subsystems.limelight.Vision.limelight
+import org.firstinspires.ftc.teamcode.constants.PoseStorage
+import org.firstinspires.ftc.teamcode.subsystems.Shooter
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
@@ -28,7 +28,7 @@ import kotlin.time.Duration.Companion.seconds
 class blueBottomEasy: NextFTCOpMode() {
     init {
         addComponents(
-            SubsystemComponent(MohitPatil, Shooter, Intake, Gate, PoseStorage),
+            SubsystemComponent(Vision, Shooter, Intake, Gate),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
