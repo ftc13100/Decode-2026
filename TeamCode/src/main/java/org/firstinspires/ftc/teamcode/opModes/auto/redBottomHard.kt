@@ -48,12 +48,12 @@ class redBottomHard: NextFTCOpMode() {
     //paths to pick up PGP
         private val pickUpPGP1 = Pose(96.0, 60.0, Math.toRadians(0.0))
         private val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0))
-        private val pickUpPGP2= Pose(128.9, 60.0, Math.toRadians(0.0))
+        private val pickUpPGP2= Pose(133.9, 60.0, Math.toRadians(0.0))
         private val PGPtoShot= Pose(85.0, 16.0, Math.toRadians(69.0))
         private val PGPtoShotControl= Pose(78.0, 76.0, Math.toRadians(0.0))
     //path to pick up GPP motif
         private val pickUpGPP1 = Pose(98.25, 36.0, Math.toRadians(0.0))
-        private val pickUpGPP2= Pose(135.9, 36.0, Math.toRadians(0.0))
+        private val pickUpGPP2= Pose(133.9, 36.0, Math.toRadians(0.0))
         private val GPPtoShot= Pose(85.0, 16.0, Math.toRadians(69.0))
         private val GPPtoShotControl= Pose(87.0, 47.6, Math.toRadians(0.0))
     private val getOut = Pose(96.0, 48.0, Math.toRadians(90.0))
@@ -90,7 +90,7 @@ class redBottomHard: NextFTCOpMode() {
                 .setLinearHeadingInterpolation(shootPose.heading,pickUpPPG1.heading)
                 .build()
             PPGsecond = follower.pathBuilder()
-                .addPath(BezierLine(pickUpPPG1, pickUpPPG2)).setGlobalDeceleration(5.0)
+                .addPath(BezierLine(pickUpPPG1, pickUpPPG2, )).setGlobalDeceleration(5.0)
                 .setConstantHeadingInterpolation(0.0)
                 .build()
             PPGtoShotMove = follower.pathBuilder()
@@ -247,13 +247,14 @@ class redBottomHard: NextFTCOpMode() {
     val GPP: Command
 
         get() = SequentialGroup(
-            FollowPath(MoveAbit),
-            //shoots the preload
-            ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1620.0),
-            Gate.gate_open,
-            Intake.spinSlowSpeed,
-            Delay(3.seconds),
+            ParallelGroup(
+                ShooterAngle.angle_up,
+                Shooter.spinAtSpeed(1620.0),
+                FollowPath(MoveAbit),
+                Gate.gate_open,
+                Intake.spinFast,
+                ),
+            Delay(2.3.seconds),
             ParallelGroup(
                 Shooter.stopShooter,
                 Intake.spinStop,
@@ -263,16 +264,16 @@ class redBottomHard: NextFTCOpMode() {
                 FollowPath(GPPfirst),
                 Gate.gate_close,),
             Intake.spinFast,
-            Delay(0.6.seconds),
-            FollowPath(GPPsecond),
+            FollowPath(GPPsecond, holdEnd = true, maxPower = 0.6),
             Intake.spinStop,
-            FollowPath(GPPtoShotMove),
-            //shoots the motif
-            ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1620.0),
-            Gate.gate_open,
-            Intake.spinSlowSpeed,
-            Delay(3.seconds),
+            ParallelGroup(
+                FollowPath(GPPtoShotMove),
+                ShooterAngle.angle_up,
+                Shooter.spinAtSpeed(1620.0),
+                Gate.gate_open,
+                Intake.spinFast,
+            ),
+            Delay(2.3.seconds),
             ParallelGroup(
                 Shooter.stopShooter,
                 Intake.spinStop,
@@ -282,21 +283,23 @@ class redBottomHard: NextFTCOpMode() {
                 FollowPath(PGPfirst),
                 Gate.gate_close,
                 Intake.spinFast),
-            Delay(0.6.seconds),
-            FollowPath(PGPsecond),
+            FollowPath(PGPsecond, holdEnd = true, maxPower = 0.5),
             Intake.spinStop,
-            FollowPath(PGPtoShotMove),
+            ParallelGroup(
+                FollowPath(PGPtoShotMove),
+                ShooterAngle.angle_up,
+                Shooter.spinAtSpeed(1620.0)
+            ),
+            Delay(2.3.seconds),
             //shoots the non-motif
-            ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
-            Delay(3.seconds),
             ParallelGroup(
                 Shooter.stopShooter,
                 Intake.spinStop,
                 Gate.gate_close),
             FollowPath(MomohitPatilLeave)
+
         )
 
 
@@ -311,23 +314,7 @@ class redBottomHard: NextFTCOpMode() {
         buildPaths()
         PoseStorage.blueAlliance = false
         PoseStorage.redAlliance = true
-
-        val result: LLResult? = limelight.latestResult
-        if (result == null) {
-            GPP()
-        }
-        if (result != null && result.isValid) {
-            val fiducials = result.fiducialResults
-            for (fiducial in fiducials) {
-                if (fiducial.fiducialId == 22) {
-                    PGP() }
-                    else if (fiducial.fiducialId == 23) {
-                        PPG()
-                    } else {
-                        GPP()
-                    }
-                }
-            }
+        GPP()
         }
 
     override fun onUpdate() {

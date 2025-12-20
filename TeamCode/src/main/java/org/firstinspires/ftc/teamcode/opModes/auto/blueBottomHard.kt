@@ -51,12 +51,12 @@ class blueBottomHard: NextFTCOpMode() {
     //paths to pick up PGP
     private val pickUpPGP1 = Pose(96.0, 60.0, Math.toRadians(0.0)).mirror()
     private val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0)).mirror()
-    private val pickUpPGP2= Pose(128.9, 60.0, Math.toRadians(0.0)).mirror()
+    private val pickUpPGP2= Pose(133.9, 60.0, Math.toRadians(0.0)).mirror()
     private val PGPtoShot= Pose(85.0, 16.0, Math.toRadians(69.0)).mirror()
     private val PGPtoShotControl= Pose(78.0, 76.0, Math.toRadians(0.0)).mirror()
     //path to pick up GPP motif
     private val pickUpGPP1 = Pose(98.25, 36.0, Math.toRadians(0.0)).mirror()
-    private val pickUpGPP2= Pose(135.9, 36.0, Math.toRadians(0.0)).mirror()
+    private val pickUpGPP2= Pose(133.9, 36.0, Math.toRadians(0.0)).mirror()
     private val GPPtoShot= Pose(85.0, 16.0, Math.toRadians(69.0)).mirror()
     private val GPPtoShotControl= Pose(87.0, 47.6, Math.toRadians(0.0)).mirror()
 
@@ -246,13 +246,14 @@ class blueBottomHard: NextFTCOpMode() {
     val GPP: Command
 
         get() = SequentialGroup(
-            FollowPath(MoveAbit),
-            //shoots the preload
-            ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1620.0),
-            Gate.gate_open,
-            Intake.spinSlowSpeed,
-            Delay(3.seconds),
+            ParallelGroup(
+                ShooterAngle.angle_up,
+                Shooter.spinAtSpeed(1620.0),
+                FollowPath(MoveAbit),
+                Gate.gate_open,
+                Intake.spinFast,
+            ),
+            Delay(2.3.seconds),
             ParallelGroup(
                 Shooter.stopShooter,
                 Intake.spinStop,
@@ -262,16 +263,16 @@ class blueBottomHard: NextFTCOpMode() {
                 FollowPath(GPPfirst),
                 Gate.gate_close,),
             Intake.spinFast,
-            Delay(0.6.seconds),
-            FollowPath(GPPsecond),
+            FollowPath(GPPsecond, holdEnd = true, maxPower = 0.6),
             Intake.spinStop,
-            FollowPath(GPPtoShotMove),
-            //shoots the motif
-            ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1620.0),
-            Gate.gate_open,
-            Intake.spinSlowSpeed,
-            Delay(3.seconds),
+            ParallelGroup(
+                FollowPath(GPPtoShotMove),
+                ShooterAngle.angle_up,
+                Shooter.spinAtSpeed(1620.0),
+                Gate.gate_open,
+                Intake.spinFast,
+            ),
+            Delay(2.3.seconds),
             ParallelGroup(
                 Shooter.stopShooter,
                 Intake.spinStop,
@@ -281,16 +282,17 @@ class blueBottomHard: NextFTCOpMode() {
                 FollowPath(PGPfirst),
                 Gate.gate_close,
                 Intake.spinFast),
-            Delay(0.6.seconds),
-            FollowPath(PGPsecond),
+            FollowPath(PGPsecond, holdEnd = true, maxPower = 0.5),
             Intake.spinStop,
-            FollowPath(PGPtoShotMove),
+            ParallelGroup(
+                FollowPath(PGPtoShotMove),
+                ShooterAngle.angle_up,
+                Shooter.spinAtSpeed(1620.0)
+            ),
+            Delay(2.3.seconds),
             //shoots the non-motif
-            ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1620.0),
             Gate.gate_open,
             Intake.spinSlowSpeed,
-            Delay(3.seconds),
             ParallelGroup(
                 Shooter.stopShooter,
                 Intake.spinStop,
@@ -311,20 +313,7 @@ class blueBottomHard: NextFTCOpMode() {
         buildPaths()
         PoseStorage.blueAlliance = true
         PoseStorage.redAlliance = false
-
-        val result: LLResult? = limelight.latestResult
-        if (result != null && result.isValid) {
-            val fiducials = result.fiducialResults
-            for (fiducial in fiducials) {
-                if (fiducial.fiducialId == 22) {
-                    PGP() }
-                else if (fiducial.fiducialId == 23) {
-                    PPG()
-                } else {
-                    GPP()
-                }
-            }
-        }
+        GPP()
     }
 
     override fun onUpdate() {
