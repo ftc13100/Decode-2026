@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp;
 
+import com.bylazar.configurables.PanelsConfigurables;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -19,8 +20,9 @@ import java.util.function.Supplier;
 @Configurable
 @TeleOp
 public class ExampleTeleOp extends OpMode {
-    private Follower follower;
+    public static Follower follower;
     public static Pose startingPose; //See ExampleAuto to understand how to use this
+    public static double target = 0.0;
     private boolean automatedDrive;
     private Supplier<PathChain> pathChain;
     private TelemetryManager telemetryM;
@@ -45,7 +47,10 @@ public class ExampleTeleOp extends OpMode {
         //The parameter controls whether the Follower should use break mode on the motors (using it is recommended).
         //In order to use float mode, add .useBrakeModeInTeleOp(true); to your Drivetrain Constants in Constant.java (for Mecanum)
         //If you don't pass anything in, it uses the default (false)
-        follower.startTeleopDrive();
+        follower.deactivateAllPIDFs();
+        follower.activateHeading();
+
+        PanelsConfigurables.INSTANCE.refreshClass(this);
     }
 
     @Override
@@ -60,12 +65,9 @@ public class ExampleTeleOp extends OpMode {
 //
 //            //This is the normal version to use in the TeleOp
 //            if (!slowMode)
-        follower.setTeleOpDrive(
-                gamepad1.left_stick_y,
-                gamepad1.left_stick_x,
-                gamepad1.right_stick_x,
-                true // Robot Centric
-        );
+
+        if (gamepad1.aWasPressed())
+            follower.turnTo(Math.toRadians(target));
 
 //                //This is how it looks with slowMode on
 //            else follower.setTeleOpDrive(
@@ -104,7 +106,5 @@ public class ExampleTeleOp extends OpMode {
 //        }
 
         telemetryM.debug("position", follower.getPose());
-        telemetryM.debug("velocity", follower.getVelocity());
-        telemetryM.debug("automatedDrive", automatedDrive);
     }
 }
