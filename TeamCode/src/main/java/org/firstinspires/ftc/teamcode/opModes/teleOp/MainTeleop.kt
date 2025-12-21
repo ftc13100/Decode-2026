@@ -95,7 +95,7 @@ class MainTeleop : NextFTCOpMode() {
         }
 
         limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
-        telemetry.msTransmissionInterval = 11
+        telemetry.msTransmissionInterval = 25
         limelight.pipelineSwitch(1)
         limelight.start()
         follower.update()
