@@ -40,7 +40,7 @@ class LimeLightLocal : NextFTCOpMode() {
 
     companion object {
         @JvmField
-        var limelightMountAngleDegrees = 0.0
+        var limelightMountAngleDegrees = 16.78 //tunable
     }
 
     private val panelsTelemetry = PanelsTelemetry.telemetry
@@ -97,7 +97,7 @@ class LimeLightLocal : NextFTCOpMode() {
             Gamepads.gamepad1.rightStickX
         )
 
-        driverControlled.scalar = 0.9
+        driverControlled.scalar = 0.95
 
         button { gamepad1.y }
             .whenTrue { driverControlled.scalar = 0.4 }
