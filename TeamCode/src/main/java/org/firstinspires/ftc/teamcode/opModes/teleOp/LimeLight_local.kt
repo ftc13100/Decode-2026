@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
-import kotlin.math.PI
-import kotlin.math.tan
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
+import com.bylazar.configurables.annotations.Configurable
+import com.bylazar.telemetry.PanelsTelemetry
 import com.qualcomm.hardware.limelightvision.Limelight3A
-import com.pedropathing.geometry.Pose
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.pedropathing.geometry.Pose
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
 import dev.nextftc.core.components.BindingsComponent
@@ -21,7 +18,14 @@ import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
+import kotlin.math.tan
 
+@Configurable
 @TeleOp(name = "lime@local")
 class LimeLightLocal : NextFTCOpMode() {
 
@@ -34,30 +38,27 @@ class LimeLightLocal : NextFTCOpMode() {
         )
     }
 
-    // known field positions
-    private val goal = Pose(12.0, 132.0)
-    private val aprilTag = Pose(12.0, 132.0)
+    companion object {
+        @JvmField
+        var limelightMountAngleDegrees = 0.0
+    }
+
+    private val panelsTelemetry = PanelsTelemetry.telemetry
+
+    // Known field position
+    private val goal = Pose(16.0, 132.0)
 
     private val startPose = Pose(72.0, 72.0, Math.toRadians(90.0))
 
-    // how many degrees back is your limelight rotated from perfectly vertical
-    private val limelightMountAngleDegrees = 20.0
-
-    // distance from the center of the Limelight lens to the floor
+    // Limelight geometry
     private val limelightLensHeightInches = 12.148
-
-    // distance from the target to the floor
     private val goalHeightInches = 29.5
 
-    // if Limelight is angled left/right like if turret is moved
-    private val limelightYawOffsetRadians = 0.0
+    // Vision results
+    private var visionDistance = 0.0
+    private var estimatedGoalPose: Pose? = null
 
     lateinit var limelight: Limelight3A
-
-    private val frontLeftName = "frontLeft"
-    private val frontRightName = "frontRight"
-    private val backLeftName = "backLeft"
-    private val backRightName = "backRight"
 
     private lateinit var frontLeftMotor: MotorEx
     private lateinit var frontRightMotor: MotorEx
@@ -73,12 +74,12 @@ class LimeLightLocal : NextFTCOpMode() {
         limelight.pipelineSwitch(1)
         limelight.start()
 
-        frontLeftMotor = MotorEx(frontLeftName)
-        frontRightMotor = MotorEx(frontRightName)
-        backLeftMotor = MotorEx(backLeftName)
-        backRightMotor = MotorEx(backRightName)
+        frontLeftMotor = MotorEx("frontLeft")
+        frontRightMotor = MotorEx("frontRight")
+        backLeftMotor = MotorEx("backLeft")
+        backRightMotor = MotorEx("backRight")
 
-        listOf(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor).forEach {
+        listOf(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor).forEach {
             it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
 
@@ -93,7 +94,7 @@ class LimeLightLocal : NextFTCOpMode() {
             backRightMotor,
             -Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
-            Gamepads.gamepad1.rightStickX,
+            Gamepads.gamepad1.rightStickX
         )
 
         driverControlled.scalar = 0.9
@@ -103,62 +104,59 @@ class LimeLightLocal : NextFTCOpMode() {
             .whenFalse { driverControlled.scalar = 0.95 }
     }
 
-    // I just realized I might not be calculating this properly as in considering
-    // the distance from the goal is not the exact position, need to add back in
-
     override fun onUpdate() {
         BindingManager.update()
         follower.update()
         driverControlled.update()
 
+        val robotPose = follower.pose
         val result = limelight.latestResult
-        if (!result.isValid) {
-            telemetry.addData("Limelight", "No target")
-            telemetry.addData("Odo Pose", follower.pose)
-            telemetry.update()
-            return
+
+        if (result.isValid) {
+            // Vertical angle for distance
+            val angleToGoalDegrees = limelightMountAngleDegrees + result.ty
+            val angleToGoalRadians = angleToGoalDegrees * (PI / 180.0)
+
+            visionDistance = (goalHeightInches - limelightLensHeightInches) / tan(angleToGoalRadians)
+
+            // Horizontal offset
+            val horizontalRadians = result.tx * (PI / 180.0)
+            val theta = robotPose.heading + horizontalRadians
+
+            val dx = visionDistance * cos(theta)
+            val dy = visionDistance * sin(theta)
+
+            estimatedGoalPose = Pose(
+                robotPose.x + dx,
+                robotPose.y + dy
+            )
+        } else {
+            estimatedGoalPose = null
         }
 
-        // Vision distance calculation
-        val targetOffsetAngleVertical = result.ty
-        val angleToGoalDegrees =
-            limelightMountAngleDegrees + targetOffsetAngleVertical
-        val angleToGoalRadians =
-            angleToGoalDegrees * (PI / 180.0)
+        // Odometry-only distance
+        val odoDistanceToGoal = sqrt((goal.x - robotPose.x).pow(2.0) + (goal.y - robotPose.y).pow(2.0))
 
-        // calculate distance
-        val distanceFromLimelightToGoalInches =
-            (goalHeightInches - limelightLensHeightInches) / tan(angleToGoalRadians)
+        // ================= TELEMETRY =================
 
-        // distance computed
-        val r = distanceFromLimelightToGoalInches
+        telemetry.addLine("=== Vision ===")
+        if (result.isValid && estimatedGoalPose != null) {
+            telemetry.addData("Vision Distance (in)", visionDistance)
+            telemetry.addData("tx (deg)", result.tx)
+            telemetry.addData("ty (deg)", result.ty)
+            telemetry.addData("Vision Goal Pose", estimatedGoalPose)
+        } else {
+            telemetry.addData("Limelight", "Target Not Found")
+        }
 
-        // Robot pose from odo
-        val robotX = follower.pose.x
-        val robotY = follower.pose.y
-        val robotHeading = follower.pose.heading // radians
+        telemetry.addLine("=== Odometry ===")
+        telemetry.addData("Robot Pose", robotPose)
+        telemetry.addData("Odo Distance to Goal", odoDistanceToGoal)
 
-        // horizontal angle from Limelight
-        val targetOffsetAngleHorizontal = 0.0 //result.tx * (PI / 180.0)
+        telemetry.addLine("=== Debug ===")
+        telemetry.addData("Mount Angle (deg)", limelightMountAngleDegrees)
 
-        val theta = robotHeading + limelightYawOffsetRadians + targetOffsetAngleHorizontal
-
-        // polar to cartesian
-        val dx = r * cos(theta)
-        val dy = r * sin(theta)
-
-        // estimated field position of the goal from vision
-        val estimatedGoalPose = Pose(robotX + dx, robotY + dy)
-
-        // Odo distance to goal
-        val odoDistanceToGoal = sqrt((goal.x - robotX) * (goal.x - robotX) + (goal.y - robotY) * (goal.y - robotY))
-
-        // Telemetry
-        telemetry.addData("Odo Pose", follower.pose)
-        telemetry.addData("Vision Distance (in)", r)
-        telemetry.addData("Odo Distance to Goal (in)", odoDistanceToGoal)
-        telemetry.addData("Vision Goal Pose", estimatedGoalPose)
-        telemetry.addData("True Goal Pose", goal)
+        panelsTelemetry.update(telemetry)
         telemetry.update()
     }
 }
