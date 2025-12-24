@@ -153,7 +153,7 @@ class LimeLightLocal : NextFTCOpMode() {
         telemetry.addData("Robot Pose", robotPose)
         telemetry.addData("Odo Distance to Goal", odoDistanceToGoal)
 
-        telemetry.addLine("=== Debug ===")
+        telemetry.addLine("=== Tune Angle ===")
         telemetry.addData("Mount Angle (deg)", limelightMountAngleDegrees)
 
         panelsTelemetry.update(telemetry)
