@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil.limelight
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
@@ -30,11 +31,13 @@ import kotlin.time.Duration.Companion.seconds
 class blueBottomHard: NextFTCOpMode() {
     init {
         addComponents(
-            SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage),
+            SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage, Turret),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
     }
+
+
 
     //universal paths
     private val startPose = Pose(88.0, 9.0, Math.toRadians(90.0)).mirror()
@@ -330,14 +333,10 @@ class blueBottomHard: NextFTCOpMode() {
                 Intake.spinStop),
         )
 
-
-
-
-
     override fun onInit() {
+        Turret.turretActive = true
         follower.setMaxPower(1.0)
         Gate.gate_close()
-
     }
 
     override fun onStartButtonPressed() {

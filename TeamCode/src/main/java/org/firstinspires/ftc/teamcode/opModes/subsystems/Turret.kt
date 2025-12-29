@@ -36,16 +36,13 @@ object Turret : Subsystem {
     @JvmField var heading = 0.0
     @JvmField var turretError = 0.0
     @JvmField var turretTolearanceCount = 0
-    @JvmField var posPIDCoefficients = PIDCoefficients(0.0095, 0.0, 0.0001)
+    @JvmField var posPIDCoefficients = PIDCoefficients(0.0097, 0.0, 0.00015)
     val turret = MotorEx("turret").brakeMode()
     private val runtime = ElapsedTime()
 
     val controlSystem = controlSystem {
         posPid(posPIDCoefficients)
     }
-    val toLow = RunToPosition(controlSystem, 0.0).requires(this)
-    val toLeft = RunToPosition(controlSystem, -4500.0).requires(this)
-    val toRight = RunToPosition(controlSystem, 1200.0).requires(this)
 
 
     fun initPos()

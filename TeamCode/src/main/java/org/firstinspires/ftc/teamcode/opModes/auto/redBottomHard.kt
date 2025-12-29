@@ -8,8 +8,10 @@ import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
+import dev.nextftc.core.commands.delays.WaitUntil
 import dev.nextftc.core.commands.groups.ParallelGroup
 import dev.nextftc.core.commands.groups.SequentialGroup
+import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
@@ -22,6 +24,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil.limelight
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
+import org.firstinspires.ftc.teamcode.opModes.subsystems.TurretAuto
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
@@ -31,12 +34,12 @@ import kotlin.time.Duration.Companion.seconds
 class redBottomHard: NextFTCOpMode() {
     init {
         addComponents(
-               SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage),
+               SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
+                   TurretAuto),
                   BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
     }
-
     ////////KEY//////////
     //pickUp_____1 == Getting to pick up motif row
     //pickUp_____2 == Ramming into the motif
@@ -50,25 +53,25 @@ class redBottomHard: NextFTCOpMode() {
 
     //universal paths
         private val startPose = Pose(125.23, 121.52, Math.toRadians(37.0))
-        private val shootPose = Pose(78.0, 78.0, Math.toRadians(45.0))
-        private val leavePoint = Pose(96.0, 48.0, Math.toRadians(-135.0))
+        private val shootPose = Pose(78.0, 78.0, Math.toRadians(0.0))
+        private val leavePoint = Pose(96.0, 48.0, Math.toRadians(0.0))
         private val hitGate = Pose(127.4, 73.65, Math.toRadians(0.0))
         private val hitGateControl = Pose(93.118, 77.804, Math.toRadians(0.0))
     //path to pick up PPG motif
         private val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0))
         private val pickUpPPGControl = Pose(73.5, 85.9, Math.toRadians(0.0))
         private val pickUpPPG2= Pose(127.2, 84.0, Math.toRadians(0.0))
-        private val PPGtoShot= Pose(78.0, 78.0, Math.toRadians(45.0))
+        private val PPGtoShot= Pose(78.0, 78.0, Math.toRadians(0.0))
     //paths to pick up PGP
         private val pickUpPGP1 = Pose(96.0, 60.0, Math.toRadians(0.0))
         private val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0))
         private val pickUpPGP2= Pose(133.3, 60.0, Math.toRadians(0.0))
-        private val PGPtoShot= Pose(78.0, 78.0, Math.toRadians(45.0))
+        private val PGPtoShot= Pose(78.0, 78.0, Math.toRadians(0.0))
         private val PGPtoShotControl= Pose(77.485, 53.68, Math.toRadians(0.0))
     //path to pick up GPP motif
         private val pickUpGPP1 = Pose(98.25, 36.0, Math.toRadians(0.0))
         private val pickUpGPP2= Pose(133.3, 36.0, Math.toRadians(0.0))
-        private val GPPtoShot= Pose(78.0, 78.0, Math.toRadians(45.0))
+        private val GPPtoShot= Pose(78.0, 78.0, Math.toRadians(0.0))
         private val GPPtoShotControl= Pose(87.0, 47.6, Math.toRadians(0.0))
 
 
@@ -149,20 +152,22 @@ class redBottomHard: NextFTCOpMode() {
     }
 
     val autoRoutine: Command
-        get() = SequentialGroup(
+        get() =
+            SequentialGroup(
                 ParallelGroup(
-                ShooterAngle.angle_kindaUP,
-                Shooter.spinAtSpeed(1360.0),
-                FollowPath(GoToShot),
-                Gate.gate_open
-                             ),
-                                Intake.spinFast,
-                                Delay(2.3.seconds),
+                    ShooterAngle.angle_kindaUP,
+                    Shooter.spinAtSpeed(1360.0),
+                    FollowPath(GoToShot),
+                    TurretAuto.toLeft,
+                    Gate.gate_open
+                ),
+                Intake.spinFast,
+                Delay(2.3.seconds),
                 ParallelGroup(
-                Shooter.stopShooter,
-                Intake.spinStop,
-                        Gate.gate_close
-                             ),
+                    Shooter.stopShooter,
+                    Intake.spinStop,
+                    Gate.gate_close
+                ),
                 ParallelGroup(
                 FollowPath(PPGfirst),
                 Gate.gate_close
@@ -221,10 +226,6 @@ class redBottomHard: NextFTCOpMode() {
                 Intake.spinStop),
             )
 
-
-
-
-
     override fun onInit() {
         follower.setMaxPower(1.0)
         Gate.gate_close()
@@ -233,13 +234,10 @@ class redBottomHard: NextFTCOpMode() {
     override fun onStartButtonPressed() {
         follower.setStartingPose(startPose)
         buildPaths()
-        Turret.turretActive = true
-        Turret.turretReady=false
-        Turret.goalTrackingActive = false
         PoseStorage.blueAlliance = false
         PoseStorage.redAlliance = true
         autoRoutine()
-        }
+    }
 
     override fun onUpdate() {
     }
