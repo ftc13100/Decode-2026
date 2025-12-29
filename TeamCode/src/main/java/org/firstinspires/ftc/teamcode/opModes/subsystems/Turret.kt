@@ -48,8 +48,8 @@ object Turret : Subsystem {
     {
         startPosition = turret.currentPosition
         target = startPosition
-        rightLimit = startPosition + 850.0
-        leftLimit = startPosition - 850.0
+        rightLimit = startPosition + 3000.0
+        leftLimit = startPosition - 3000.0
         turn(0.0)
     }
     /**
@@ -95,14 +95,13 @@ object Turret : Subsystem {
             atan2(abs(goal.y - y), abs(goal.x - (144 - x)))
         }
 
-        turretAngle = heading -
-                (2 * Math.PI * (turret.currentPosition - startPosition) / (537.7 * 6.0))
+        turretAngle = heading - (2 * Math.PI * (turret.currentPosition - startPosition) / (1425.1 * (138/16)))
 
         turretError = targetAngle - turretAngle
         if (turretError > Math.PI) turretError -= 2 * Math.PI
 
         if(goalTrackingActive) {
-            target = (turret.currentPosition - (turretError / (2 * Math.PI) * (537.7 * 6.0))).coerceIn(
+            target = (turret.currentPosition - (turretError / (2 * Math.PI) * (1425.1 * (138/16)))).coerceIn(
                 leftLimit,
                 rightLimit
             )
