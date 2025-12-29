@@ -43,13 +43,17 @@ object Turret : Subsystem {
     val controlSystem = controlSystem {
         posPid(posPIDCoefficients)
     }
+    val toLow = RunToPosition(controlSystem, 0.0).requires(this)
+    val toLeft = RunToPosition(controlSystem, -4500.0).requires(this)
+    val toRight = RunToPosition(controlSystem, 1200.0).requires(this)
+
 
     fun initPos()
     {
         startPosition = turret.currentPosition
         target = startPosition
-        rightLimit = startPosition + 850.0
-        leftLimit = startPosition - 850.0
+        rightLimit = startPosition + 4500.0
+        leftLimit = startPosition - 4500.0
         turn(0.0)
     }
     /**

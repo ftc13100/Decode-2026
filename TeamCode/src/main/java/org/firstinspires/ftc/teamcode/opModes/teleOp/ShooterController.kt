@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
 import dev.nextftc.core.commands.CommandManager
+import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder.gfGoalDistance
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 
 
 object ShooterController {
+
+
     data class ShotParameters(val x: Double, val y: Double, val velocity: Double, val angle: Double)
 
     private val shooterLookupTable: Map<Pair<Double, Double>, ShotParameters> = mapOf(
@@ -74,6 +77,8 @@ object ShooterController {
         Pair(96.0, 0.0) to ShotParameters(96.0, 0.0, 1650.0, 0.500),
         Pair(108.0, 0.0) to ShotParameters(108.0, 0.0, 1650.0, 0.500),
         )
+
+
     fun getShot(x: Double, y: Double): ShotParameters? {
         var bestKey: Pair<Double, Double>? = null
         for ((keyX, keyY) in shooterLookupTable.keys) {
