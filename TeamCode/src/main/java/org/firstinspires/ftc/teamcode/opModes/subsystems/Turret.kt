@@ -36,7 +36,7 @@ object Turret : Subsystem {
     @JvmField var heading = 0.0
     @JvmField var turretError = 0.0
     @JvmField var turretTolearanceCount = 0
-    @JvmField var posPIDCoefficients = PIDCoefficients(0.01, 0.0, 0.0002)
+    @JvmField var posPIDCoefficients = PIDCoefficients(0.0097, 0.0, 0.00015)
     val turret = MotorEx("turret").brakeMode()
     private val runtime = ElapsedTime()
 
@@ -67,9 +67,19 @@ object Turret : Subsystem {
         // Ready automatically when close enough (handled in periodic)
     }
 
+    fun turnTo(pos: Double) {
+        target = (pos).coerceIn(leftLimit, rightLimit)
+        goalTrackingActive = false       // stop tracking if active
+        turretActive = true              // PID hold mode ON
+        turretReady = false
+        turretTolearanceCount = 0
+        runtime.reset()
+    }
+
     fun resetToStartPosition() {
         turn(startPosition - turret.currentPosition)
     }
+
     /**
      * Enable auto tracking; PID will follow continuously in periodic.
      */

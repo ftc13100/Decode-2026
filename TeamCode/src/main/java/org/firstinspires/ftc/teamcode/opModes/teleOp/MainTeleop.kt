@@ -155,6 +155,12 @@ class MainTeleop : NextFTCOpMode() {
                 }
             }
 
+        // Turret Tracking
+        button { gamepad1.x }
+            .whenBecomesTrue {
+                Turret.trackTarget()
+                }
+
         // Drivetrain Slow-fast speed
         button { gamepad1.y }
             .whenTrue { driverControlled.scalar = 0.4 }
@@ -177,25 +183,25 @@ class MainTeleop : NextFTCOpMode() {
         // Fine jump turret right
         button {gamepad2.right_bumper}
             .whenBecomesTrue {
-                Turret.turn(10.0)
+                Turret.turn(50.0)
             }
 
         // Fine jump turret left
         button {gamepad2.left_bumper}
             .whenBecomesTrue {
-                Turret.turn(-10.0)
+                Turret.turn(-50.0)
             }
 
         // Coarse jump turret right
         button {gamepad2.right_trigger > 0.5 }
             .whenBecomesTrue {
-                Turret.turn(100.0)
+                Turret.turn(500.0)
             }
 
         // Coarse jump turret left
         button {gamepad2.left_trigger > 0.5}
             .whenBecomesTrue {
-                Turret.turn(-100.0)
+                Turret.turn(-500.0)
             }
 
         // turret tracking goal

@@ -9,6 +9,7 @@ import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import kotlin.compareTo
 import kotlin.math.abs
 import kotlin.math.atan2
+import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.text.compareTo
 import kotlin.unaryMinus
@@ -35,11 +36,11 @@ object GoalFinder : Subsystem {
     private val ALIGNMENT_POWER_FINE = 0.2
     private val HEADING_TOLERANCE_COARSE = Math.toRadians(12.0)
     private val HEADING_TOLERANCE_FINE = Math.toRadians(1.0)
-    private val TURRET_LL_ADJ_FACTOR = 10
+    private val TURRET_LL_ADJ_FACTOR = 39.75
     private val HEADING_TOLERANCE_TARGET = 5
-    private val goal = Pose(3.0, 144.0)
+    private val goal = Pose(2.0, 142.0)
     private val aprilTag = Pose(12.0, 132.0)
-    private val shooterToGoalZSqrd = Math.pow(46.0 - 13.5, 2.0)
+    private val shooterToGoalZSqrd = (46.0 - 13.5).pow(2.0)
     private val gfRuntime = ElapsedTime()
 
     fun normalizeAngle(angle: Double): Double {
@@ -84,12 +85,14 @@ object GoalFinder : Subsystem {
             144.0 - pose.x
         }
 
-        gfGoalDistance = Math.sqrt(Math.pow(adjX - goal.x, 2.0) + Math.pow(pose.y - goal.y, 2.0) + shooterToGoalZSqrd)
+        gfGoalDistance = sqrt((adjX - goal.x).pow(2.0) + (pose.y - goal.y).pow(2.0) + shooterToGoalZSqrd)
+
         gfTargetAngle = if (blueAlliance) {
             Math.PI - atan2(abs(goal.y - pose.y), abs(goal.x - adjX))
         } else {
             atan2(abs(goal.y - pose.y), abs(goal.x - adjX))
         }
+
         gfHeadingError = normalizeAngle(gfTargetAngle - heading)
         gfAnglesValid = true
 
