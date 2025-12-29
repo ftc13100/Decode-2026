@@ -29,14 +29,14 @@ object Turret : Subsystem {
     @JvmField var turretReady = false
     @JvmField var turretReadyMs = 0.0
     @JvmField var startPosition = 0.0
-    @JvmField var leftLimit = 0.0
-    @JvmField var rightLimit = 0.0
+    @JvmField var leftLimit = -3000.0
+    @JvmField var rightLimit = 3000.0
     @JvmField var targetAngle = 0.0
     @JvmField var turretAngle = 0.0
     @JvmField var heading = 0.0
     @JvmField var turretError = 0.0
     @JvmField var turretTolearanceCount = 0
-    @JvmField var posPIDCoefficients = PIDCoefficients(0.0095, 0.0, 0.0001)
+    @JvmField var posPIDCoefficients = PIDCoefficients(0.01, 0.0, 0.0002)
     val turret = MotorEx("turret").brakeMode()
     private val runtime = ElapsedTime()
 
