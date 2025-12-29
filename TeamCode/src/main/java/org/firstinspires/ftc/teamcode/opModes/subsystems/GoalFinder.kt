@@ -127,7 +127,7 @@ object GoalFinder : Subsystem {
         }
 
         gfTurretAdjLL = gfLLTx * TURRET_LL_ADJ_FACTOR
-        gfTurretAdjGoalAprilTag = gfGoalAprilTagAdj / (2 * Math.PI) * 537.7 * 6.0
+        gfTurretAdjGoalAprilTag = gfGoalAprilTagAdj / (2 * Math.PI) * 1425.1 * (138/16)
         gfTurretAdj = gfTurretAdjLL + gfTurretAdjGoalAprilTag
     }
     fun calculate(pose: Pose, heading: Double, llResult: LLResult?, blueAlliance: Boolean): Double {
