@@ -417,11 +417,7 @@ class MainTeleop : NextFTCOpMode() {
         }
 
         if(debugTelemetry) {
-            telemetry.addData(
-                "Shot Lookup",
-                "Distance: %.2f",
-                currentShotDistance
-            )
+            telemetry.addData("Shot Lookup", "Distance: %.2f", currentShotDistance)
         }
 
         telemetry.addData(
