@@ -438,11 +438,7 @@ class MainTeleop : NextFTCOpMode() {
             )
         }
 
-        telemetry.addData(
-            "Shooter Angle:",
-            "%.3f",
-            currentShotAngle
-        )
+        telemetry.addData("Shooter Angle:","%.3f", currentShotAngle)
         telemetry.addData("Gate", "%s",if(gateOpen) { "Open" } else { "Closed" })
         telemetry.addData(
             "Intake",
