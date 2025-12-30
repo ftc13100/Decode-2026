@@ -135,7 +135,7 @@ object Turret : Subsystem {
             turret.power = controlSystem.calculate(turret.state)
 
             // Determine when turret is "ready"
-            if (!turretReady && abs(current - target) < 5.0 && ++turretTolearanceCount >= 5) {
+            if (!turretReady && abs(current - target) < 4.0 && ++turretTolearanceCount >= 3) {
                 turretReady = true
                 turretReadyMs = runtime.milliseconds()
             }

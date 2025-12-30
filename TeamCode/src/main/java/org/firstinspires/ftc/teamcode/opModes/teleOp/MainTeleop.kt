@@ -31,6 +31,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import org.opencv.core.Mat
 import kotlin.math.abs
+import kotlin.math.pow
 import kotlin.math.atan2
 import kotlin.time.Duration.Companion.seconds
 @TeleOp(name = "MainTeleop")
@@ -66,8 +67,7 @@ class MainTeleop : NextFTCOpMode() {
     private val startPose = PoseStorage.poseEnd  //(72.0,72.0, Math.toRadians(90.0))
     private val testingPose = Pose(72.0,72.0,Math.toRadians(90.0))
     private var testMode: Boolean = false
-    private var currentShotX: Double = 0.0
-    private var currentShotY: Double = 0.0
+    private var currentShotDistance: Double = 0.0
     private var currentShotVelocity: Double = 0.0
     private var currentShotAngle: Double = 0.0
     private var gateOpen: Boolean = false
@@ -113,7 +113,7 @@ class MainTeleop : NextFTCOpMode() {
             Gamepads.gamepad1.rightStickX,
 //            FieldCentric(imu)
         )
-        driverControlled.scalar = 0.9
+        driverControlled.scalar = 0.95
 
 ////////////////////////////////////////////////////////////////////////////
 //        GamePad 2 - Operator Commands
@@ -164,10 +164,10 @@ class MainTeleop : NextFTCOpMode() {
         // Drivetrain Slow-fast speed
         button { gamepad1.y }
             .whenTrue { driverControlled.scalar = 0.4 }
-            .whenFalse { driverControlled.scalar = 0.9 }
+            .whenFalse { driverControlled.scalar = 0.95 }
 
         // Reset location and heading
-        button { gamepad1.b }
+        Gamepads.gamepad1.leftTrigger.asButton { it > 0.5 } and Gamepads.gamepad1.rightTrigger.asButton { it > 0.5 }
             .whenBecomesTrue {
                 if (PoseStorage.blueAlliance) {
                     follower.setPose(Pose(136.5, 9.25, Math.toRadians(-90.0)))
@@ -216,27 +216,29 @@ class MainTeleop : NextFTCOpMode() {
                 Gate.gate_open()
                 gateOpen = true
             }
-
-        // Start shooter and set hood angle / Stop shooter
+// Start shooter and set hood angle / Stop shooter
         button { gamepad2.y }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                var x = follower.pose.x
-                val y = follower.pose.y
-                if (!PoseStorage.blueAlliance){
-                    x = 144 - x  }
-                val currentShot = shooterController.getShot(x, y)
-                if (currentShot != null) {
-                    currentShotX = currentShot.x
-                    currentShotY = currentShot.y
+                val pose = follower.pose
+                var adjX = pose.x
+                val y = pose.y
+                if (!PoseStorage.blueAlliance) {
+                    adjX = 144.0 - adjX
+                }
+                // Calculate 3D Distance to Goal
+                val goalDistance = kotlin.math.sqrt((adjX - goal.x).pow(2.0) + (y - goal.y).pow(2.0) + shooterToGoalZSqrd)
+                val currentShot = shooterController.getShot(goalDistance)
+
+                if (currentShot != null && Turret.turretReady) {
                     currentShotVelocity = currentShot.velocity
                     currentShotAngle = currentShot.angle
-                    ShooterAngle.targetPosition = currentShotAngle
-                    shooterController.applyShot(currentShotVelocity, currentShotAngle)
+                    currentShotDistance = currentShot.distance
+                    shooterController.applyShot(currentShot)
                 }
             }
             .whenBecomesFalse {
-                CommandManager.scheduleCommand ( Shooter.stopShooter)
+                CommandManager.scheduleCommand(Shooter.stopShooter)
             }
 
         // Shoot  artifacts / stop shooting
@@ -363,6 +365,7 @@ class MainTeleop : NextFTCOpMode() {
             )
         } else {
             telemetry.addData("X", "%.1f, Y: %.1f, Heading: %.1f", follower.pose.x, follower.pose.y, Math.toDegrees(follower.heading))
+            telemetry.addData("Distance", "%.2f",currentShotDistance)
         }
 
         if(debugTelemetry) {
@@ -404,11 +407,10 @@ class MainTeleop : NextFTCOpMode() {
                 Turret.turretReady,
                 Turret.turretReadyMs
             )
-            telemetry.addData(
-                "TurretPos",
-                "Current: %.0f, Target: %.0f",
+            telemetry.addData("TurretPos",
+                "Current: %.1f, Target: %.1f, tolCount: %.1f",
                 Turret.turret.currentPosition,
-                Turret.target
+                Turret.target, Turret.turretTolearanceCount
             )
         } else {
             telemetry.addData("Pointing", "Error: %+3.1f Limelight: +%2.1f", Math.toDegrees(GoalFinder.gfHeadingError), GoalFinder.gfLLTx)
@@ -417,11 +419,11 @@ class MainTeleop : NextFTCOpMode() {
         if(debugTelemetry) {
             telemetry.addData(
                 "Shot Lookup",
-                "X: %.0f, Y: %.0f",
-                currentShotX,
-                currentShotY,
+                "Distance: %.2f",
+                currentShotDistance
             )
         }
+
         telemetry.addData(
             "Shooter",
             "Target: %4.0f, Current: %4.0f, Ready: %s",
@@ -452,7 +454,6 @@ class MainTeleop : NextFTCOpMode() {
             if(intakeRunning) { "Running" } else { "Stopped" },
             Intake.intake.power
         )
-
         telemetry.update()
     }
 
