@@ -54,9 +54,9 @@ class redBottomHard: NextFTCOpMode() {
     //universal paths
         private val startPose = Pose(125.23, 121.52, Math.toRadians(37.0))
         private val shootPose = Pose(78.0, 78.0, Math.toRadians(0.0))
-        private val leavePoint = Pose(96.0, 48.0, Math.toRadians(0.0))
-        private val hitGate = Pose(127.4, 73.65, Math.toRadians(0.0))
-        private val hitGateControl = Pose(93.118, 77.804, Math.toRadians(0.0))
+        private val leavePoint = Pose(84.0, 110.0, Math.toRadians(-16.5))
+        private val gate = Pose(127.5, 75.40674955595027, Math.toRadians(110.0))
+
     //path to pick up PPG motif
         private val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0))
         private val pickUpPPGControl = Pose(73.5, 85.9, Math.toRadians(0.0))
@@ -93,7 +93,8 @@ class redBottomHard: NextFTCOpMode() {
     //Move a bit
     private lateinit var GoToShot: PathChain
     private lateinit var Leave: PathChain
-    private lateinit var PlsHitGate: PathChain
+    private lateinit var MohitHitGate: PathChain
+
 
     private fun buildPaths() {
         //Universal Paths
@@ -105,9 +106,9 @@ class redBottomHard: NextFTCOpMode() {
                 .addPath(BezierLine(PGPtoShot,leavePoint))
                 .setLinearHeadingInterpolation(shootPose.heading, leavePoint.heading)
                 .build()
-            PlsHitGate = follower.pathBuilder()
-                .addPath(BezierCurve(pickUpPPG2, hitGateControl,  hitGate))
-                .setLinearHeadingInterpolation(pickUpPPG2.heading,hitGate.heading)
+            MohitHitGate = follower.pathBuilder()
+                .addPath(BezierLine(pickUpPPG2, gate))
+                .setLinearHeadingInterpolation(pickUpPPG2.heading,gate.heading)
                 .build()
         //PPG paths
              PPGfirst = follower.pathBuilder()
@@ -119,10 +120,9 @@ class redBottomHard: NextFTCOpMode() {
                 .setConstantHeadingInterpolation(0.0)
                 .build()
             PPGtoShotMove = follower.pathBuilder()
-                .addPath(BezierCurve(pickUpPPG2, PPGtoShot))
-                .setLinearHeadingInterpolation(pickUpPPG2.heading,PPGtoShot.heading)
+                .addPath(BezierLine(gate, PPGtoShot))
+                .setLinearHeadingInterpolation(gate.heading,PPGtoShot.heading)
                 .build()
-
         //PGP paths
             PGPfirst = follower.pathBuilder()
                 .addPath(BezierCurve(shootPose, pickUpPGPControl,pickUpPGP1))
@@ -155,18 +155,18 @@ class redBottomHard: NextFTCOpMode() {
         get() =
             SequentialGroup(
                 ParallelGroup(
-                    ShooterAngle.angle_kindaUP,
-                    Shooter.spinAtSpeed(1360.0),
-                    FollowPath(GoToShot),
-                    TurretAuto.toLeft,
-                    Gate.gate_open
+                ShooterAngle.angle_up,
+                Shooter.spinAtSpeed(1360.0),
+                FollowPath(GoToShot),
+                TurretAuto.toLeft,
+                Gate.gate_open
                 ),
-                Intake.spinFast,
-                Delay(2.3.seconds),
+                                Intake.spinFast,
+                                Delay(2.3.seconds),
                 ParallelGroup(
-                    Shooter.stopShooter,
-                    Intake.spinStop,
-                    Gate.gate_close
+                Shooter.stopShooter,
+                Intake.spinStop,
+                Gate.gate_close
                 ),
                 ParallelGroup(
                 FollowPath(PPGfirst),
@@ -175,9 +175,10 @@ class redBottomHard: NextFTCOpMode() {
                                 Intake.spinFast,
                                 FollowPath(PPGsecond, holdEnd = true, maxPower = 0.65),
                                 Intake.spinStop,
+                                FollowPath(MohitHitGate),
                 ParallelGroup(
                 FollowPath(PPGtoShotMove),
-                ShooterAngle.angle_kindaUP,
+                ShooterAngle.angle_up,
                 Shooter.spinAtSpeed(1360.0),
                 Gate.gate_open,
                              ),
@@ -197,7 +198,7 @@ class redBottomHard: NextFTCOpMode() {
                                 Intake.spinStop,
                 ParallelGroup(
                 FollowPath(PGPtoShotMove),
-                ShooterAngle.angle_kindaUP,
+                ShooterAngle.angle_up,
                 Shooter.spinAtSpeed(1360.0),
                 Gate.gate_open,
                              ),
@@ -209,20 +210,20 @@ class redBottomHard: NextFTCOpMode() {
                 FollowPath(GPPfirst),
                 Intake.spinFast
                              ),
-                                FollowPath(GPPsecond, holdEnd = true, maxPower = 0.65),
+                                FollowPath(GPPsecond, holdEnd = true, maxPower = 0.70),
                                 Intake.spinStop,
                 ParallelGroup(
-                FollowPath(GPPtoShotMove),
-                ShooterAngle.angle_kindaUP,
-                Shooter.spinAtSpeed(1370.0),
+                FollowPath(Leave),
+                ShooterAngle.angle_up,
+                Shooter.spinAtSpeed(1280.0),
                 Gate.gate_open,
                              ),
                                 Intake.spinFast,
                                 Delay(2.3.seconds),
                 ParallelGroup(
                 Shooter.stopShooter,
+                TurretAuto.toMid,
                 Gate.gate_close,
-                FollowPath(Leave),
                 Intake.spinStop),
             )
 

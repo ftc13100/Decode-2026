@@ -11,14 +11,19 @@ import dev.nextftc.hardware.impl.MotorEx
 object TurretAuto : Subsystem {
     @JvmField var target = 0.0
     @JvmField var posPIDCoefficients = PIDCoefficients(0.0097, 0.0, 0.00015)
-    val turret = MotorEx("turret").brakeMode()
+    val turret = MotorEx("turret").brakeMode().zeroed()
+
+    override fun initialize() {
+        turret.zero()
+    }
 
     val controlSystem = controlSystem {
         posPid(posPIDCoefficients)
     }
-    val toLow = RunToPosition(controlSystem, 0.0).requires(this)
-    val toLeft = RunToPosition(controlSystem, -1500.0).requires(this)
-    val toRight = RunToPosition(controlSystem, 1500.0).requires(this)
+
+    val toMid = RunToPosition(controlSystem, 0.0).requires(this)
+    val toLeft = RunToPosition(controlSystem, -1550.0).requires(this)
+    val toRight = RunToPosition(controlSystem, 1550.0).requires(this)
 
     override fun periodic() {
         turret.power = controlSystem.calculate(turret.state)
