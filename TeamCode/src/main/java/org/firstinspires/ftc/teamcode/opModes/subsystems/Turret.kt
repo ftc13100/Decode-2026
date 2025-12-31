@@ -57,13 +57,11 @@ object Turret : Subsystem {
      */
     fun turn(posAdj: Double) {
         target = (target + posAdj).coerceIn(leftLimit, rightLimit)
-
         goalTrackingActive = false       // stop tracking if active
         turretActive = true              // PID hold mode ON
         turretReady = false
         turretTolearanceCount = 0
         runtime.reset()
-
         // Ready automatically when close enough (handled in periodic)
     }
 

@@ -8,6 +8,7 @@ import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import kotlin.compareTo
 import kotlin.math.abs
+import kotlin.math.acos
 import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -115,7 +116,7 @@ object GoalFinder : Subsystem {
         val goalVectorX = goal.x - adjX
         val goalVectorY = goal.y - pose.y
 
-        gfGoalAprilTagAdj = Math.acos((aprilTagVecorX * goalVectorX + aprilTagVecorY * goalVectorY) / ( Math.sqrt(aprilTagVecorX * aprilTagVecorX + aprilTagVecorY * aprilTagVecorY) * Math.sqrt(goalVectorX * goalVectorX + goalVectorY * goalVectorY)))
+        gfGoalAprilTagAdj = acos((aprilTagVecorX*goalVectorX+aprilTagVecorY*goalVectorY)/(sqrt(aprilTagVecorX*aprilTagVecorX+aprilTagVecorY*aprilTagVecorY)*sqrt(goalVectorX*goalVectorX+goalVectorY*goalVectorY)))
 
         if(blueAlliance) {
             if(gfTargetAngle < Math.PI * 3.0 / 4.0) {
