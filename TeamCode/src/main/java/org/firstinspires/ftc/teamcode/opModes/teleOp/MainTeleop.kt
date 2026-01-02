@@ -28,6 +28,7 @@ import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.Direction
 import dev.nextftc.hardware.impl.IMUEx
 import dev.nextftc.hardware.impl.MotorEx
+import dev.nextftc.hardware.positionable.Positionable
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
@@ -72,6 +73,8 @@ class MainTeleop : NextFTCOpMode() {
 //    private val imu = IMUEx("imu", Direction.LEFT, Direction.UP).zeroed()
 
     lateinit var limelight: Limelight3A
+    private lateinit var Park : PathChain
+
 
 
     private val startPose = PoseStorage.poseEnd  //(72.0,72.0, Math.toRadians(90.0))
@@ -147,6 +150,16 @@ class MainTeleop : NextFTCOpMode() {
                 intakeRunning = false
             }
 
+//        button { gamepad1.x }
+//            .whenBecomesTrue {
+//               if(PoseStorage.blueAlliance == true){
+//                   Park = follower.pathBuilder()
+//                       .addPath(BezierLine(,shootPose))
+//                       .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
+//                       .build()
+//               }
+//            }
+
         //Outtake artifact
         button { gamepad1.right_bumper }
             .toggleOnBecomesTrue()
@@ -169,12 +182,6 @@ class MainTeleop : NextFTCOpMode() {
                     GoalFinder.stop()
                 }
             }
-
-        // Turret Tracking
-        button { gamepad1.x }
-            .whenBecomesTrue {
-                Turret.trackTarget()
-                }
 
         // Drivetrain Slow-fast speed
         button { gamepad1.y }
@@ -221,9 +228,14 @@ class MainTeleop : NextFTCOpMode() {
             }
 
         // turret tracking goal
+//        button { gamepad2.a }
+//            .whenBecomesTrue {
+//                GoalFinder.adjustToLL()
+//            }
+        // Turret Tracking
         button { gamepad2.a }
             .whenBecomesTrue {
-                GoalFinder.adjustToLL()
+                Turret.trackTarget()
             }
 
         button { gamepad2.x }
