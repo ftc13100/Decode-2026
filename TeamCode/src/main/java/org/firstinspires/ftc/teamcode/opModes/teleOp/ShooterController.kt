@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opModes.teleOp
 
 import com.pedropathing.geometry.Pose
 import dev.nextftc.core.commands.CommandManager
+import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder.gfGoalDistance
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import kotlin.math.pow
