@@ -220,7 +220,6 @@ class MainTeleop : NextFTCOpMode() {
                 Gate.gate_open()
                 gateOpen = true
             }
-
 // Start shooter and set hood angle / Stop shooter
         button { gamepad2.y }
             .toggleOnBecomesTrue()
