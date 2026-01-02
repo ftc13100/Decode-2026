@@ -145,7 +145,7 @@ class redBottomHard: NextFTCOpMode() {
                 .setConstantHeadingInterpolation(0.0)
                 .build()
             GPPtoShotMove = follower.pathBuilder()
-                .addPath(BezierCurve(pickUpGPP2,GPPtoShotControl, GPPtoShot))
+                .addPath(BezierLine(pickUpGPP2, GPPtoShot))
                 .setLinearHeadingInterpolation(pickUpGPP2.heading, GPPtoShot.heading)
                 .build()
     }
@@ -182,7 +182,7 @@ class redBottomHard: NextFTCOpMode() {
                 Gate.gate_open,
                              ),
                                 Intake.spinFast,
-                                Delay(2.3.seconds),
+                                Delay(1.8.seconds),
                 ParallelGroup(
                 Shooter.stopShooter,
                 Intake.spinStop,
@@ -202,7 +202,7 @@ class redBottomHard: NextFTCOpMode() {
                 Gate.gate_open,
                              ),
                                 Intake.spinFast,
-                                Delay(2.3.seconds),
+                                Delay(1.8.seconds),
                 ParallelGroup(
                 Shooter.stopShooter,
                 Gate.gate_close,
@@ -218,7 +218,7 @@ class redBottomHard: NextFTCOpMode() {
                 Gate.gate_open,
                              ),
                                 Intake.spinFast,
-                                Delay(2.3.seconds),
+                                Delay(1.8.seconds),
                 ParallelGroup(
                 Shooter.stopShooter,
                 TurretAuto.toMid,

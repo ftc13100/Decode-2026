@@ -8,8 +8,10 @@ import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
+import dev.nextftc.core.commands.delays.WaitUntil
 import dev.nextftc.core.commands.groups.ParallelGroup
 import dev.nextftc.core.commands.groups.SequentialGroup
+import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
@@ -22,6 +24,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil.limelight
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
+import org.firstinspires.ftc.teamcode.opModes.subsystems.TurretAuto
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
@@ -31,48 +34,43 @@ import kotlin.time.Duration.Companion.seconds
 class blueBottomHard: NextFTCOpMode() {
     init {
         addComponents(
-            SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage, Turret),
+            SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
+                TurretAuto),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
     }
+    ////////KEY//////////
+    //pickUp_____1 == Getting to pick up motif row
+    //pickUp_____2 == Ramming into the motif
+    //___toShot    == Goes to the shootPose after picking up
+    //_____Control == Dilates the straight line into a curve
 
+    ///////DOCS//////////
+    //Parallel Groups    == Everything within happens at the same time
+    //Sequential Groups  == Everything within happens chronologically
 
 
     //universal paths
-    private val startPose = Pose(88.0, 9.0, Math.toRadians(90.0)).mirror()
-    private val shootPose = Pose(85.0, 16.0, Math.toRadians(69.0)).mirror()
+    private val startPose = Pose(125.23, 121.52, Math.toRadians(37.0)).mirror()
+    private val shootPose = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
+    private val leavePoint = Pose(84.0, 110.0, Math.toRadians(-16.5)).mirror()
+    private val gate = Pose(127.5, 75.40674955595027, Math.toRadians(115.0)).mirror()
+
     //path to pick up PPG motif
     private val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0)).mirror()
-    private val pickUpPPGControl = Pose(73.5, 85.9, Math.toRadians(0.0)).mirror()
-    private val pickUpPPG2= Pose(128.9, 84.0, Math.toRadians(0.0)).mirror()
-    private val PPGtoShot= Pose(78.0, 78.0, Math.toRadians(46.0)).mirror()
-    private val PPGtoShotControl= Pose(80.0, 73.26, Math.toRadians(0.0)).mirror()
+    private val pickUpPPG2= Pose(127.2, 84.0, Math.toRadians(0.0)).mirror()
+    private val PPGtoShot= Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
     //paths to pick up PGP
     private val pickUpPGP1 = Pose(96.0, 60.0, Math.toRadians(0.0)).mirror()
     private val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0)).mirror()
-    private val pickUpPGP2= Pose(133.9, 60.0, Math.toRadians(0.0)).mirror()
-
-    private val MohitHitGate= Pose(128.6, 70.25, Math.toRadians(-90.0))
-    private val MohitHitGateControl= Pose(115.52674230145867, 63.24797406807131, Math.toRadians(-90.0))
-
-    private val HumanPlayer= Pose(129.96596434359805, 7.001620745542949, Math.toRadians(0.0))
-    private val HumanPlayerControl= Pose(74.21717990275526, 85.18638573743922, Math.toRadians(0.0))
-
-
-
-    private val PGPtoShot= Pose(78.0, 78.0, Math.toRadians(46.0)).mirror()
-
-    private val PGPtoShotControl= Pose(77.48460291734197, 53.67909238249595, Math.toRadians(0.0)).mirror()
+    private val pickUpPGP2= Pose(133.3, 60.0, Math.toRadians(0.0)).mirror()
+    private val PGPtoShot= Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
+    private val PGPtoShotControl= Pose(77.485, 53.68, Math.toRadians(0.0)).mirror()
     //path to pick up GPP motif
     private val pickUpGPP1 = Pose(98.25, 36.0, Math.toRadians(0.0)).mirror()
-    private val pickUpGPP2= Pose(133.9, 36.0, Math.toRadians(0.0)).mirror()
-    private val GPPtoShot= Pose(78.0, 78.0, Math.toRadians(46.0)).mirror()
-    private val GPPtoShotControl= Pose(87.0, 47.6, Math.toRadians(0.0)).mirror()
-    private val getOut = Pose(96.0, 48.0, Math.toRadians(90.0)).mirror()
-
-
-
+    private val pickUpGPP2= Pose(133.3, 36.0, Math.toRadians(0.0)).mirror()
+    private val GPPtoShot= Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
 
 
     //PPG path chains
@@ -85,35 +83,43 @@ class blueBottomHard: NextFTCOpMode() {
     private lateinit var PGPsecond: PathChain
     private lateinit var PGPtoShotMove: PathChain
 
-    private lateinit var GPPtoShotMove: PathChain
-
     //GPP path chains
     private lateinit var GPPfirst: PathChain
     private lateinit var GPPsecond: PathChain
+    private lateinit var GPPtoShotMove: PathChain
 
     //Move a bit
     private lateinit var GoToShot: PathChain
     private lateinit var Leave: PathChain
-
-
-
-
-
+    private lateinit var MohitHitGate: PathChain
 
 
     private fun buildPaths() {
-        //PG paths
+        //Universal Paths
+        GoToShot = follower.pathBuilder()
+            .addPath(BezierLine(startPose,shootPose))
+            .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
+            .build()
+        Leave = follower.pathBuilder()
+            .addPath(BezierLine(pickUpGPP2,leavePoint))
+            .setLinearHeadingInterpolation(shootPose.heading, leavePoint.heading)
+            .build()
+        MohitHitGate = follower.pathBuilder()
+            .addPath(BezierLine(pickUpPPG2, gate))
+            .setLinearHeadingInterpolation(pickUpPPG2.heading,gate.heading)
+            .build()
+        //PPG paths
         PPGfirst = follower.pathBuilder()
-            .addPath(BezierCurve(PGPtoShot, pickUpPPGControl,pickUpPPG1))
+            .addPath(BezierLine(shootPose, pickUpPPG1))
             .setLinearHeadingInterpolation(shootPose.heading,pickUpPPG1.heading)
             .build()
         PPGsecond = follower.pathBuilder()
-            .addPath(BezierLine(pickUpPPG1, pickUpPPG2, ))
-            .setConstantHeadingInterpolation(-180.0)
+            .addPath(BezierLine(pickUpPPG1, pickUpPPG2))
+            .setLinearHeadingInterpolation(pickUpPPG1.heading, pickUpPPG2.heading)
             .build()
         PPGtoShotMove = follower.pathBuilder()
-            .addPath(BezierCurve(pickUpPPG2, PPGtoShot))
-            .setLinearHeadingInterpolation(pickUpPPG2.heading,PPGtoShot.heading)
+            .addPath(BezierLine(gate, PPGtoShot))
+            .setLinearHeadingInterpolation(gate.heading,PPGtoShot.heading)
             .build()
         //PGP paths
         PGPfirst = follower.pathBuilder()
@@ -122,7 +128,7 @@ class blueBottomHard: NextFTCOpMode() {
             .build()
         PGPsecond = follower.pathBuilder()
             .addPath(BezierLine(pickUpPGP1, pickUpPGP2))
-            .setConstantHeadingInterpolation(-180.0)
+            .setLinearHeadingInterpolation(pickUpPGP1.heading, pickUpPGP2.heading)
             .build()
         PGPtoShotMove = follower.pathBuilder()
             .addPath(BezierCurve(pickUpPGP2,PGPtoShotControl, PGPtoShot))
@@ -135,203 +141,89 @@ class blueBottomHard: NextFTCOpMode() {
             .build()
         GPPsecond = follower.pathBuilder()
             .addPath(BezierLine(pickUpGPP1,pickUpGPP2))
-            .setConstantHeadingInterpolation(-180.0)
+            .setLinearHeadingInterpolation(pickUpGPP1.heading,pickUpGPP2.heading)
             .build()
         GPPtoShotMove = follower.pathBuilder()
-            .addPath(BezierCurve(pickUpGPP2,GPPtoShotControl, GPPtoShot))
+            .addPath(BezierLine(pickUpGPP2, GPPtoShot))
             .setLinearHeadingInterpolation(pickUpGPP2.heading, GPPtoShot.heading)
-            .build()
-        //Universal Paths
-        GoToShot = follower.pathBuilder()
-            .addPath(BezierLine(startPose,shootPose))
-            .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
-            .build()
-        Leave = follower.pathBuilder()
-            .addPath(BezierLine(PGPtoShot,getOut))
-            .setLinearHeadingInterpolation(shootPose.heading, getOut.heading)
             .build()
     }
 
-    val PPG: Command
-        get() = SequentialGroup(
-            FollowPath(GoToShot),
-            //shoots the preload
-            ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1370.0),
-            Gate.gate_open,
-            Intake.spinSlowSpeed,
-            Delay(3.seconds),
-            ParallelGroup(
-                Shooter.stopShooter,
+    val autoRoutine: Command
+        get() =
+            SequentialGroup(
+                ParallelGroup(
+                    ShooterAngle.angle_kindaUP,
+                    Shooter.spinAtSpeed(1170.0),
+                    FollowPath(GoToShot),
+                    TurretAuto.toRight,
+                    Gate.gate_open
+                ),
+                Intake.spinFast,
+                Delay(2.3.seconds),
+                ParallelGroup(
+                    Shooter.stopShooter,
+                    Intake.spinStop,
+                    Gate.gate_close
+                ),
+                ParallelGroup(
+                    FollowPath(PPGfirst),
+                    Gate.gate_close
+                ),
+                Intake.spinFast,
+                FollowPath(PPGsecond, holdEnd = true, maxPower = 0.65),
                 Intake.spinStop,
-                Gate.gate_close),
-            //picks up motif
-            ParallelGroup(
-                FollowPath(GPPfirst),
-                Gate.gate_close,),
-            Intake.spinFast,
-            Delay(0.6.seconds),
-            FollowPath(GPPsecond),
-            Intake.spinStop,
-            FollowPath(GPPtoShotMove),
-            //shoots the motif
-            ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1620.0),
-            Gate.gate_open,
-            Intake.spinSlowSpeed,
-            Delay(3.seconds),
-            ParallelGroup(
-                Shooter.stopShooter,
+                FollowPath(MohitHitGate),
+                ParallelGroup(
+                    FollowPath(PPGtoShotMove),
+                    ShooterAngle.angle_kindaUP,
+                    Shooter.spinAtSpeed(1170.0),
+                    Gate.gate_open,
+                ),
+                Intake.spinFast,
+                Delay(1.8.seconds),
+                ParallelGroup(
+                    Shooter.stopShooter,
+                    Intake.spinStop,
+                    Gate.gate_close
+                ),
+                ParallelGroup(
+                    FollowPath(PGPfirst),
+                    Gate.gate_close,
+                    Intake.spinFast
+                ),
+                FollowPath(PGPsecond, holdEnd = true, maxPower = 0.65),
                 Intake.spinStop,
-                Gate.gate_close),
-            //picks up the non-motif
-            ParallelGroup(
-                FollowPath(PGPfirst),
-                Gate.gate_close,
-                Intake.spinFast),
-            Delay(0.6.seconds),
-            FollowPath(PGPsecond),
-            Intake.spinStop,
-            FollowPath(PGPtoShotMove),
-            //shoots the non-motif
-            ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1620.0),
-            Gate.gate_open,
-            Intake.spinSlowSpeed,
-            Delay(3.seconds),
-            ParallelGroup(
-                Shooter.stopShooter,
+                ParallelGroup(
+                    FollowPath(PGPtoShotMove),
+                    ShooterAngle.angle_kindaUP,
+                    Shooter.spinAtSpeed(1170.0),
+                    Gate.gate_open,
+                ),
+                Intake.spinFast,
+                Delay(1.8.seconds),
+                ParallelGroup(
+                    Shooter.stopShooter,
+                    Gate.gate_close,
+                    FollowPath(GPPfirst),
+                    Intake.spinFast
+                ),
+                FollowPath(GPPsecond, holdEnd = true, maxPower = 0.65),
                 Intake.spinStop,
-                Gate.gate_close),
-            FollowPath(Leave)
-
-        )
-
-    val PGP: Command
-        get() = SequentialGroup(
-            FollowPath(GoToShot),
-            //shoots the preload
-            ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1620.0),
-            Gate.gate_open,
-            Intake.spinSlowSpeed,
-            Delay(3.seconds),
-            ParallelGroup(
-                Shooter.stopShooter,
-                Intake.spinStop,
-                Gate.gate_close),
-            //picks up motif
-            ParallelGroup(
-                FollowPath(PGPfirst),
-                Gate.gate_close,),
-            Intake.spinFast,
-            Delay(0.6.seconds),
-            FollowPath(PGPsecond),
-            Intake.spinStop,
-            FollowPath(PGPtoShotMove),
-            //shoots the motif
-            ShooterAngle.angle_up,
-            Shooter.spinAtSpeed(1620.0),
-            Gate.gate_open,
-            Intake.spinSlowSpeed,
-            Delay(3.seconds),
-            ParallelGroup(
-                Shooter.stopShooter,
-                Intake.spinStop,
-                Gate.gate_close),
-            //picks up the non-motif
-            ParallelGroup(
-                FollowPath(GPPfirst),
-                Gate.gate_close,
-                Intake.spinFast),
-            Delay(0.6.seconds),
-            FollowPath(GPPsecond),
-            Intake.spinStop,
-            ParallelGroup(
-                FollowPath(GPPtoShotMove),
-                //shoots the non-motif
-                ShooterAngle.angle_up,
-                Shooter.spinAtSpeed(1620.0)),
-            Gate.gate_open,
-            Intake.spinSlowSpeed,
-            Delay(3.seconds),
-            ParallelGroup(
-                Shooter.stopShooter,
-                Intake.spinStop,
-                Gate.gate_close,
+                ParallelGroup(
+                    FollowPath(Leave),
+                    ShooterAngle.angle_kindaUP,
+                    Shooter.spinAtSpeed(1170.0),
+                    Gate.gate_open,
+                ),
+                Intake.spinFast,
+                Delay(1.8.seconds),
+                ParallelGroup(
+                    Shooter.stopShooter,
+                    TurretAuto.toMid,
+                    Gate.gate_close,
+                    Intake.spinStop),
             )
-        )
-
-    val GPP: Command
-        get() = SequentialGroup(
-            ParallelGroup(
-                ShooterAngle.angle_up,
-                Shooter.spinAtSpeed(1580.0),
-                FollowPath(GoToShot),
-                Gate.gate_open,
-            ),
-            Intake.spinFast,
-            Delay(2.3.seconds),
-            ParallelGroup(
-                Shooter.stopShooter,
-                Intake.spinStop,
-                Gate.gate_close),
-            //picks up motif
-            ParallelGroup(
-                FollowPath(GPPfirst),
-                Gate.gate_close,),
-            Intake.spinFast,
-            FollowPath(GPPsecond, holdEnd = true, maxPower = 0.65),
-            Intake.spinStop,
-            ParallelGroup(
-                FollowPath(GPPtoShotMove),
-                ShooterAngle.angle_kindaUP,
-                Shooter.spinAtSpeed(1340.0),
-                Gate.gate_open,
-            ),
-            Intake.spinFast,
-            Delay(2.3.seconds),
-            ParallelGroup(
-                Shooter.stopShooter,
-                Intake.spinStop,
-                Gate.gate_close),
-            //picks up the non-motif
-            ParallelGroup(
-                FollowPath(PGPfirst),
-                Gate.gate_close,
-                Intake.spinFast),
-            FollowPath(PGPsecond, holdEnd = true, maxPower = 0.65),
-            Intake.spinStop,
-            ParallelGroup(
-                FollowPath(PGPtoShotMove),
-                ShooterAngle.angle_kindaUP,
-                Shooter.spinAtSpeed(1340.0),
-                Gate.gate_open,
-            ),
-            Intake.spinFast,
-            Delay(2.3.seconds),
-            ParallelGroup(
-                Shooter.stopShooter,
-                Gate.gate_close,
-                FollowPath(PPGfirst),
-                Intake.spinFast),
-            FollowPath(PPGsecond, holdEnd = true, maxPower = 0.65),
-            Intake.spinStop,
-            ParallelGroup(
-                FollowPath(PPGtoShotMove),
-                ShooterAngle.angle_kindaUP,
-                Shooter.spinAtSpeed(1370.0),
-                Gate.gate_open,
-            ),
-            Intake.spinFast,
-            Delay(2.3.seconds),
-            //Leaves
-            ParallelGroup(
-                Shooter.stopShooter,
-                Gate.gate_close,
-                FollowPath(Leave),
-                Intake.spinStop),
-        )
 
     override fun onInit() {
         follower.setMaxPower(1.0)
@@ -339,36 +231,15 @@ class blueBottomHard: NextFTCOpMode() {
     }
 
     override fun onStartButtonPressed() {
-        Turret.turretActive = true
         follower.setStartingPose(startPose)
         buildPaths()
         PoseStorage.blueAlliance = false
         PoseStorage.redAlliance = true
-        GPP()
+        autoRoutine()
     }
 
     override fun onUpdate() {
-        telemetry.addData("Shooter Speed", "Current: %.0f, Target: %.0f", Shooter.shooter.velocity, Shooter.target)
-
-        val result: LLResult? = limelight.latestResult
-
-        PoseStorage.poseEnd = follower.pose
-
-        // Common Telemetry
-        if (result != null && result.isValid) {
-            // val botpose: Pose3D = result.botpose
-            telemetry.addData("tx (Horizontal Error)", "%.2f", result.tx)
-            telemetry.addData("ty (Vertical Error)", "%.2f", result.ty)
-            //    telemetry.addData("Bot pose", botpose.toString())
-        } else {
-            telemetry.addData("Limelight", "Target not found")
-        }
-
-        telemetry.addData("Mode", "TeleOp Running")
-        telemetry.update()
     }
-//     override fun onStop() {
-//    }
 }
 
 
