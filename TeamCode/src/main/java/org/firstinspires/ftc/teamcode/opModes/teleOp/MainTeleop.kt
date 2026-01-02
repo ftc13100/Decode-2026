@@ -76,6 +76,9 @@ class MainTeleop : NextFTCOpMode() {
 
     private val startPose = PoseStorage.poseEnd  //(72.0,72.0, Math.toRadians(90.0))
     private val testingPose = Pose(72.0,72.0,Math.toRadians(90.0))
+    private val parkPose = Pose(72.0,72.0,Math.toRadians(90.0))
+
+
     private var testMode: Boolean = false
     private var currentShotDistance: Double = 0.0
     private var currentShotVelocity: Double = 0.0
@@ -83,8 +86,9 @@ class MainTeleop : NextFTCOpMode() {
     private var gateOpen: Boolean = false
     private var intakeRunning: Boolean = false
     private var debugTelemetry = false
-    private var initialized = false;
 
+
+    private var initialized = false;
 
 
 
@@ -170,11 +174,9 @@ class MainTeleop : NextFTCOpMode() {
                 }
             }
 
+
         // Turret Tracking
-        button { gamepad1.x }
-            .whenBecomesTrue {
-                Turret.trackTarget()
-                }
+
 
         // Drivetrain Slow-fast speed
         button { gamepad1.y }
@@ -355,6 +357,7 @@ class MainTeleop : NextFTCOpMode() {
     }
 
     override fun onUpdate() {
+
         BindingManager.update()
         follower.update()
 
