@@ -87,17 +87,13 @@ object ShooterController {
      * If the distance is within a certain threshold it returns the entry.
      */
 
-    fun getShot(distance: Double): ShotParameters {
+    fun getShot(distance: Double): ShotParameters? {
         val keys = shooterLookupTable.keys.sorted()
         val values = shooterLookupTable.values
 
         // Clamp to bounds
-        if (distance <= keys.first()) {
-            return values.first()
-        }
-
-        if (distance >= keys.last()) {
-            return values.last()
+        if (distance !in keys.first()..keys.last()) {
+            return null
         }
 
         var low = 0

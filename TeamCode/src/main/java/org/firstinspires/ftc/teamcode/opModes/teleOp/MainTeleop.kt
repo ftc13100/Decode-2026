@@ -235,7 +235,7 @@ class MainTeleop : NextFTCOpMode() {
                 val currentShot = shooterController.getShot(goalDistance)
 
                 val commands = SequentialGroup(
-                    WaitUntil{ true },
+                    WaitUntil{ currentShot != null },
                     InstantCommand {
                         currentShotVelocity = currentShot!!.velocity
                         currentShotAngle = currentShot.angle
@@ -250,6 +250,7 @@ class MainTeleop : NextFTCOpMode() {
                         intakeRunning = true
                     }
                 )
+
                 commands()
             }
             .whenBecomesFalse {
