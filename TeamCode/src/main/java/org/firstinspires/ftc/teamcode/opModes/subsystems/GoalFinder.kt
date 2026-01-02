@@ -39,7 +39,7 @@ object GoalFinder : Subsystem {
     private val HEADING_TOLERANCE_FINE = Math.toRadians(1.0)
     private val TURRET_LL_ADJ_FACTOR = 39.75
     private val HEADING_TOLERANCE_TARGET = 5
-    private val goal = Pose(2.0, 142.0)
+    private val goal = Pose(0.0, 141.0)
     private val aprilTag = Pose(16.0, 132.0)
     private val shooterToGoalZSqrd = (46.0 - 13.5).pow(2.0)
     private val gfRuntime = ElapsedTime()

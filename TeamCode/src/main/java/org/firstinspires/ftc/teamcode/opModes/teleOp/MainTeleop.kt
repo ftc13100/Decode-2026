@@ -235,7 +235,7 @@ class MainTeleop : NextFTCOpMode() {
                 val currentShot = shooterController.getShot(goalDistance)
 
                 val commands = SequentialGroup(
-                    WaitUntil{ currentShot != null },
+                    WaitUntil{ true },
                     InstantCommand {
                         currentShotVelocity = currentShot!!.velocity
                         currentShotAngle = currentShot.angle
@@ -406,8 +406,8 @@ class MainTeleop : NextFTCOpMode() {
                 Turret.turretActive, Turret.turretReady, Turret.turretReadyMs)
 
             telemetry.addData("TurretPos",
-                "Current: %.2f, Target: %.2f, tolCount: %d",
-                (Turret.turret.currentPosition/34.14302083),(Turret.target/34.14302083), Turret.turretTolearanceCount)
+                "Current: %.2f, Target: %.2f, Ticks: %.2f, tolCount: %d",
+                (Turret.turret.currentPosition/34.14302083),(Turret.target/34.14302083), Turret.turret.currentPosition, Turret.turretTolearanceCount)
         } else {
             telemetry.addData("Pointing", "Error: %+3.1f Limelight: +%2.1f",
                 Math.toDegrees(GoalFinder.gfHeadingError), GoalFinder.gfLLTx)

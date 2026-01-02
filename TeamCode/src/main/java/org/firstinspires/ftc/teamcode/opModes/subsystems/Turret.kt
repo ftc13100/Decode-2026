@@ -44,6 +44,10 @@ object Turret : Subsystem {
         posPid(posPIDCoefficients)
     }
 
+    override fun initialize() {
+        turret.zero()
+    }
+
     fun initPos()
     {
         startPosition = turret.currentPosition
