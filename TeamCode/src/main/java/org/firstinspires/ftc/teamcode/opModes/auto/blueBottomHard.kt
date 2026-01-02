@@ -334,12 +334,12 @@ class blueBottomHard: NextFTCOpMode() {
         )
 
     override fun onInit() {
-        Turret.turretActive = true
         follower.setMaxPower(1.0)
         Gate.gate_close()
     }
 
     override fun onStartButtonPressed() {
+        Turret.turretActive = true
         follower.setStartingPose(startPose)
         buildPaths()
         PoseStorage.blueAlliance = false

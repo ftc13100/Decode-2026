@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
+import com.pedropathing.geometry.BezierCurve
+import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
+import com.pedropathing.paths.PathChain
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
@@ -11,6 +14,7 @@ import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.core.commands.delays.Delay
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
+import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.Gamepads
@@ -63,6 +67,8 @@ class MainTeleop : NextFTCOpMode() {
 //    private val imu = IMUEx("imu", Direction.LEFT, Direction.UP).zeroed()
 
     lateinit var limelight: Limelight3A
+
+
     private val startPose = PoseStorage.poseEnd  //(72.0,72.0, Math.toRadians(90.0))
     private val testingPose = Pose(72.0,72.0,Math.toRadians(90.0))
     private var testMode: Boolean = false
@@ -74,6 +80,10 @@ class MainTeleop : NextFTCOpMode() {
     private var intakeRunning: Boolean = false
     private var debugTelemetry = false
     private var initialized = false;
+
+
+
+
 
     override fun onInit() {
 
@@ -103,6 +113,7 @@ class MainTeleop : NextFTCOpMode() {
         //Gate.gate_close()
     }
     override fun onStartButtonPressed() {
+
         driverControlled = MecanumDriverControlled(
             frontLeftMotor,
             frontRightMotor,
@@ -169,6 +180,7 @@ class MainTeleop : NextFTCOpMode() {
                     follower.setPose(Pose(8.0, 9.25,Math.toRadians(-90.0)))
                 }
             }
+
 
 ////////////////////////////////////////////////////////////////////////////
 //        GamePad 2 - Operator Commands
@@ -321,6 +333,7 @@ class MainTeleop : NextFTCOpMode() {
     override fun onUpdate() {
         BindingManager.update()
         follower.update()
+
         driverControlled.update()
 
         if(!initialized)
