@@ -15,11 +15,11 @@ object Gate : Subsystem {
     }
 
     val gate_open = InstantCommand {
-        servo.position = 0.375
+        servo.position = 0.265
     }
 
     val gate_close = InstantCommand {
-        servo.position = 0.175
+        servo.position = 0.0
     }
 
 }

@@ -34,6 +34,7 @@ class ShooterTeleOp : NextFTCOpMode() {
             .setUpdate {
                 Shooter.spinning()
             }
+            .setIsDone { false }
             .requires(Shooter)
     )
     override fun onInit() {

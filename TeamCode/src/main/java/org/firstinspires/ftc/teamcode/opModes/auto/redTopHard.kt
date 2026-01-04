@@ -150,7 +150,7 @@ class redTopHard: NextFTCOpMode() {
             SequentialGroup(
                 ParallelGroup(
                 ShooterAngle.angle_kindaUP,
-                Shooter.spinAtSpeed(1170.0),
+                Shooter.spinAtSpeed(1200.0),
                 FollowPath(GoToShot),
                 TurretAuto.toLeft,
                 Gate.gate_open
@@ -173,7 +173,7 @@ class redTopHard: NextFTCOpMode() {
                 ParallelGroup(
                 FollowPath(PPGtoShotMove),
                 ShooterAngle.angle_kindaUP,
-                Shooter.spinAtSpeed(1170.0),
+                Shooter.spinAtSpeed(1200.0),
                 Gate.gate_open,
                              ),
                                 Intake.spinFast,
@@ -193,7 +193,7 @@ class redTopHard: NextFTCOpMode() {
                 ParallelGroup(
                 FollowPath(PGPtoShotMove),
                 ShooterAngle.angle_kindaUP,
-                Shooter.spinAtSpeed(1170.0),
+                Shooter.spinAtSpeed(1200.0),
                 Gate.gate_open,
                              ),
                                 Intake.spinFast,
@@ -209,7 +209,7 @@ class redTopHard: NextFTCOpMode() {
                 ParallelGroup(
                 FollowPath(Leave),
                 ShooterAngle.angle_kindaUP,
-                Shooter.spinAtSpeed(1170.0),
+                Shooter.spinAtSpeed(1185.0),
                 Gate.gate_open,
                              ),
                                 Intake.spinFast,
@@ -232,6 +232,10 @@ class redTopHard: NextFTCOpMode() {
         PoseStorage.blueAlliance = false
         PoseStorage.redAlliance = true
         autoRoutine()
+    }
+
+    override fun onStop() {
+        PoseStorage.poseEnd = follower.pose
     }
 
     override fun onUpdate() {

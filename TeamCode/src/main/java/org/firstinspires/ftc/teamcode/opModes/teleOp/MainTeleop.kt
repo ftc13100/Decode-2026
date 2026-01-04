@@ -95,7 +95,7 @@ class MainTeleop : NextFTCOpMode() {
     override fun onInit() {
 
         if(abs(startPose.x) < 0.1 && abs(startPose.y) < 0.1) {
-            follower.setStartingPose(testingPose)
+           follower.setStartingPose(testingPose)
             PoseStorage.blueAlliance = true
             testMode = true
         } else {

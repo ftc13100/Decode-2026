@@ -53,8 +53,8 @@ class blueTopHard: NextFTCOpMode() {
     private val gate = Pose(127.5, 75.40674955595027, Math.toRadians(115.0)).mirror()
 
     //path to pick up PPG motif
-    private val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0)).mirror()
-    private val pickUpPPG2= Pose(127.2, 84.0, Math.toRadians(0.0)).mirror()
+    private val pickUpPPG1 = Pose(98.35, 83.0, Math.toRadians(0.0)).mirror()
+    private val pickUpPPG2= Pose(127.2, 83.0, Math.toRadians(0.0)).mirror()
     private val PPGtoShot= Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
     //paths to pick up PGP
     private val pickUpPGP1 = Pose(96.0, 60.0, Math.toRadians(0.0)).mirror()
@@ -149,7 +149,7 @@ class blueTopHard: NextFTCOpMode() {
             SequentialGroup(
                 ParallelGroup(
                     ShooterAngle.angle_kindaUP,
-                    Shooter.spinAtSpeed(1170.0),
+                    Shooter.spinAtSpeed(1200.0),
                     FollowPath(GoToShot),
                     TurretAuto.toRight,
                     Gate.gate_open
@@ -172,7 +172,7 @@ class blueTopHard: NextFTCOpMode() {
                 ParallelGroup(
                     FollowPath(PPGtoShotMove),
                     ShooterAngle.angle_kindaUP,
-                    Shooter.spinAtSpeed(1170.0),
+                    Shooter.spinAtSpeed(1200.0),
                     Gate.gate_open,
                 ),
                 Intake.spinFast,
@@ -192,7 +192,7 @@ class blueTopHard: NextFTCOpMode() {
                 ParallelGroup(
                     FollowPath(PGPtoShotMove),
                     ShooterAngle.angle_kindaUP,
-                    Shooter.spinAtSpeed(1170.0),
+                    Shooter.spinAtSpeed(1200.0),
                     Gate.gate_open,
                 ),
                 Intake.spinFast,
@@ -208,7 +208,7 @@ class blueTopHard: NextFTCOpMode() {
                 ParallelGroup(
                     FollowPath(Leave),
                     ShooterAngle.angle_kindaUP,
-                    Shooter.spinAtSpeed(1170.0),
+                    Shooter.spinAtSpeed(1200.0),
                     Gate.gate_open,
                 ),
                 Intake.spinFast,

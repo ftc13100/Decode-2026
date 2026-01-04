@@ -83,8 +83,8 @@ class redBottomMohit: NextFTCOpMode() {
     override fun onStartButtonPressed() {
         follower.setStartingPose(startPose)
         buildPaths()
-        PoseStorage.blueAlliance = true
-        PoseStorage.redAlliance = false
+        PoseStorage.blueAlliance = false
+        PoseStorage.redAlliance = true
         autoRoutine()
     }
 
