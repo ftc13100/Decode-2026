@@ -37,8 +37,11 @@ object Turret : Subsystem {
     @JvmField var turretError = 0.0
     @JvmField var turretTolearanceCount = 0
     @JvmField var posPIDCoefficients = PIDCoefficients(0.0097, 0.0, 0.00015)
+
     val turret = MotorEx("turret").brakeMode()
     private val runtime = ElapsedTime()
+
+    private val turretConversion = (Math.PI * 2) / (1425.1 * (138/16))
 
     val controlSystem = controlSystem {
         posPid(posPIDCoefficients)
@@ -118,6 +121,10 @@ object Turret : Subsystem {
                 rightLimit
             )
         }
+    }
+
+    fun turretHeading(heading: Double) :Double {
+        return (heading - (turret.currentPosition - startPosition) * turretConversion)
     }
 
     override fun periodic() {

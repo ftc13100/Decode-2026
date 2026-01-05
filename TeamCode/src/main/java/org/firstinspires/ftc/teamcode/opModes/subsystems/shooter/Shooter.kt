@@ -20,8 +20,8 @@ import java.time.Instant
 @Configurable
 object Shooter : Subsystem {
     @JvmField var target = 0.0
-    @JvmField var velPIDCoefficients = PIDCoefficients(0.02, 0.0, 0.0)
-    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.001, 0.0, 0.0)
+    @JvmField var velPIDCoefficients = PIDCoefficients(0.0035, 0.0, 0.0)
+    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.000365, 0.0001, 0.16)
 
     val shooter = MotorEx("shooter").brakeMode().reversed()
     var shooterActive  = false

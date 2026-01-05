@@ -141,7 +141,7 @@ class MainTeleop : NextFTCOpMode() {
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 Gate.gate_close()
-                Intake.spinSlowSpeed()
+                Intake.spinFast()
                 intakeRunning = true
                 gateOpen = false
             }

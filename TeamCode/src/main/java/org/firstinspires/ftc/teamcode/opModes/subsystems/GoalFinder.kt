@@ -94,7 +94,7 @@ object GoalFinder : Subsystem {
             atan2(abs(goal.y - pose.y), abs(goal.x - adjX))
         }
 
-        gfHeadingError = normalizeAngle(gfTargetAngle - heading)
+        gfHeadingError = normalizeAngle(gfTargetAngle - Turret.turretHeading(heading))
         gfAnglesValid = true
 
         if (llResult == null || !llResult.isValid) {
