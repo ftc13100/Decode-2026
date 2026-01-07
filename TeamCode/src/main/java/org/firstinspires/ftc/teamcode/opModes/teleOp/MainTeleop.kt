@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
-import com.pedropathing.geometry.BezierCurve
-import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
 import com.qualcomm.hardware.limelightvision.LLResult
@@ -11,38 +9,32 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
 import dev.nextftc.core.commands.CommandManager
-import dev.nextftc.core.commands.delays.Delay
 import dev.nextftc.core.commands.delays.WaitUntil
 import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
-import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import dev.nextftc.hardware.driving.FieldCentric
 import dev.nextftc.hardware.driving.MecanumDriverControlled
-import dev.nextftc.hardware.impl.Direction
-import dev.nextftc.hardware.impl.IMUEx
 import dev.nextftc.hardware.impl.MotorEx
-import dev.nextftc.hardware.positionable.Positionable
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
+import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
-import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
+import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goal
+import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.shooterToGoalZSqrd
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
-import org.opencv.core.Mat
 import kotlin.math.abs
 import kotlin.math.pow
-import kotlin.math.atan2
 import kotlin.math.sqrt
-import kotlin.time.Duration.Companion.seconds
+
 @TeleOp(name = "MainTeleop")
 class MainTeleop : NextFTCOpMode() {
     init {
@@ -70,30 +62,21 @@ class MainTeleop : NextFTCOpMode() {
 
     private lateinit var driverControlled: MecanumDriverControlled
 
-//    private val imu = IMUEx("imu", Direction.LEFT, Direction.UP).zeroed()
-
     lateinit var limelight: Limelight3A
     private lateinit var Park : PathChain
 
-
-
-    private val startPose = PoseStorage.poseEnd  //(72.0,72.0, Math.toRadians(90.0))
+    private val startPose = PoseStorage.poseEnd  // Pose(72.0,72.0, Math.toRadians(90.0))
     private val testingPose = Pose(72.0,72.0,Math.toRadians(90.0))
-    private var testMode: Boolean = false
-    private var currentShotDistance: Double = 0.0
-    private var currentShotVelocity: Double = 0.0
-    private var currentShotAngle: Double = 0.0
-    private var gateOpen: Boolean = false
-    private var intakeRunning: Boolean = false
+    private var testMode = false
+    private var currentShotDistance = 0.0
+    private var currentShotVelocity = 0.0
+    private var currentShotAngle = 0.0
+    private var gateOpen = false
+    private var intakeRunning = false
     private var debugTelemetry = false
     private var initialized = false;
 
-
-
-
-
     override fun onInit() {
-
         if(abs(startPose.x) < 0.1 && abs(startPose.y) < 0.1) {
            follower.setStartingPose(testingPose)
             PoseStorage.blueAlliance = true
@@ -120,7 +103,6 @@ class MainTeleop : NextFTCOpMode() {
         //Gate.gate_close()
     }
     override fun onStartButtonPressed() {
-
         driverControlled = MecanumDriverControlled(
             frontLeftMotor,
             frontRightMotor,
@@ -132,6 +114,7 @@ class MainTeleop : NextFTCOpMode() {
 //            FieldCentric(imu)
         )
         driverControlled.scalar = 0.95
+        Shooter.stallShooter()
 
 ////////////////////////////////////////////////////////////////////////////
 //        GamePad 2 - Operator Commands
@@ -176,7 +159,7 @@ class MainTeleop : NextFTCOpMode() {
         // Point to Target
         button { gamepad1.a }
             .whenBecomesTrue {
-                if(! GoalFinder.gfActive) {
+                if(!GoalFinder.gfActive) {
                     GoalFinder.findGoal()
                 } else {
                     GoalFinder.stop()
@@ -278,7 +261,7 @@ class MainTeleop : NextFTCOpMode() {
                 commands()
             }
             .whenBecomesFalse {
-                CommandManager.scheduleCommand(Shooter.stopShooter)
+                Shooter.stallShooter()
                 Gate.gate_close()
                 Intake.spinStop()
                 gateOpen = false
@@ -464,5 +447,6 @@ class MainTeleop : NextFTCOpMode() {
     }
     override fun onStop() {
         BindingManager.reset()
+        Shooter.stopShooter()
     }
 }

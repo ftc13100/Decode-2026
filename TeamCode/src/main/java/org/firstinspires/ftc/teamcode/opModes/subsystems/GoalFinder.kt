@@ -2,18 +2,14 @@ package org.firstinspires.ftc.teamcode.opModes.subsystems
 
 import com.pedropathing.geometry.Pose
 import com.qualcomm.hardware.limelightvision.LLResult
-import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.core.subsystems.Subsystem
-import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
-import kotlin.compareTo
+import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.shooterToGoalZSqrd
 import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.sqrt
-import kotlin.text.compareTo
-import kotlin.unaryMinus
 
 object GoalFinder : Subsystem {
     var gfActive = false
@@ -33,15 +29,15 @@ object GoalFinder : Subsystem {
     var gfTurretAdj = 0.0
     var gfTurretAdjLL = 0.0
     var gfTurretAdjGoalAprilTag = 0.0
-    private val ALIGNMENT_POWER_COARSE = 0.6
-    private val ALIGNMENT_POWER_FINE = 0.2
+    private const val ALIGNMENT_POWER_COARSE = 0.6
+    private const val ALIGNMENT_POWER_FINE = 0.2
     private val HEADING_TOLERANCE_COARSE = Math.toRadians(12.0)
     private val HEADING_TOLERANCE_FINE = Math.toRadians(1.0)
-    private val TURRET_LL_ADJ_FACTOR = 39.75
-    private val HEADING_TOLERANCE_TARGET = 5
+    private const val TURRET_LL_ADJ_FACTOR = 39.75
+    private const val HEADING_TOLERANCE_TARGET = 5
     private val goal = Pose(0.0, 141.0)
     private val aprilTag = Pose(16.0, 132.0)
-    private val shooterToGoalZSqrd = (46.0 - 13.5).pow(2.0)
+
     private val gfRuntime = ElapsedTime()
 
     fun normalizeAngle(angle: Double): Double {
@@ -86,7 +82,9 @@ object GoalFinder : Subsystem {
             144.0 - pose.x
         }
 
-        gfGoalDistance = sqrt((adjX - goal.x).pow(2.0) + (pose.y - goal.y).pow(2.0) + shooterToGoalZSqrd)
+        gfGoalDistance =
+            sqrt((adjX - goal.x).pow(2.0) + (pose.y - goal.y).pow(2.0) +
+                    shooterToGoalZSqrd)
 
         gfTargetAngle = if (blueAlliance) {
             Math.PI - atan2(abs(goal.y - pose.y), abs(goal.x - adjX))
@@ -118,13 +116,13 @@ object GoalFinder : Subsystem {
 
         gfGoalAprilTagAdj = acos((aprilTagVecorX*goalVectorX+aprilTagVecorY*goalVectorY)/(sqrt(aprilTagVecorX*aprilTagVecorX+aprilTagVecorY*aprilTagVecorY)*sqrt(goalVectorX*goalVectorX+goalVectorY*goalVectorY)))
 
-        if(blueAlliance) {
-            if(gfTargetAngle < Math.PI * 3.0 / 4.0) {
+        if (blueAlliance) {
+            if (gfTargetAngle < Math.PI * 3.0 / 4.0) {
                 // Turret has to turn left for adjustment
                 gfGoalAprilTagAdj = -gfGoalAprilTagAdj;
             }
         } else {
-            if(gfTargetAngle < Math.PI / 4.0) {
+            if (gfTargetAngle < Math.PI / 4.0) {
                 // Turret has to turn left for adjustment
                 gfGoalAprilTagAdj = -gfGoalAprilTagAdj;
             }

@@ -158,7 +158,7 @@ class redTopHard: NextFTCOpMode() {
                                 Intake.spinFast,
                                 Delay(2.3.seconds),
                 ParallelGroup(
-                Shooter.spinAtSpeed(1000.0),
+                Shooter.stallShooter,
                 Intake.spinStop,
                 Gate.gate_close
                 ),
@@ -180,7 +180,7 @@ class redTopHard: NextFTCOpMode() {
                                 Intake.spinFast,
                                 Delay(1.8.seconds),
                 ParallelGroup(
-                Shooter.spinAtSpeed(1000.0),
+                Shooter.stallShooter,
                 Intake.spinStop,
                 Gate.gate_close
                              ),
@@ -200,7 +200,7 @@ class redTopHard: NextFTCOpMode() {
                                 Intake.spinFast,
                                 Delay(1.8.seconds),
                 ParallelGroup(
-                Shooter.spinAtSpeed(1000.0),
+                Shooter.stallShooter,
                 Gate.gate_close,
                 FollowPath(GPPfirst),
                 Intake.spinFast

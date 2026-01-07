@@ -2,15 +2,14 @@ package org.firstinspires.ftc.teamcode.opModes.teleOp
 
 import com.pedropathing.geometry.Pose
 import dev.nextftc.core.commands.CommandManager
-import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder.gfGoalDistance
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
-import kotlin.math.pow
 
-val goal = Pose(0.0, 141.0)
-val shooterToGoalZSqrd = (46.0 - 13.5).pow(2.0)
 
 object ShooterController {
+    val goal = Pose(0.0, 141.0)
+    const val shooterToGoalZSqrd = 1056.25 // (46.0 - 13.5).pow(2.0)
+
     data class ShotParameters(val distance: Double, val velocity: Double, val angle: Double)
 
     private val shooterLookupTable: Map<Double, ShotParameters> = mapOf(
