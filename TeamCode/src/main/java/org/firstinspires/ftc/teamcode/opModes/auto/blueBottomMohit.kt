@@ -88,6 +88,9 @@ class blueBottomMohit: NextFTCOpMode() {
         autoRoutine()
     }
 
+    override fun onStop() {
+        PoseStorage.poseEnd = follower.pose
+    }
     override fun onUpdate() {
     }
 }
