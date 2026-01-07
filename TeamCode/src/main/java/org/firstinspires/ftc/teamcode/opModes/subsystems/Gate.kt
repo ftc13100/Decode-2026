@@ -4,9 +4,6 @@ import com.qualcomm.robotcore.hardware.Servo
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode
-import dev.nextftc.hardware.controllable.RunToVelocity
-import dev.nextftc.hardware.impl.MotorEx
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter.controller
 
 object Gate : Subsystem {
     private lateinit var servo : Servo
