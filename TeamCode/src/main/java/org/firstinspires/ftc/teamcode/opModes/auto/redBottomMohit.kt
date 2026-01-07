@@ -42,13 +42,20 @@ class redBottomMohit: NextFTCOpMode() {
     }
 
     private val startPose = Pose(56.0, 7.5, Math.toRadians(90.0)).mirror()
+    private val shootPose = Pose(56.0, 10.5, Math.toRadians(90.0)).mirror()
+
     private val leavePoint = Pose(36.49261083743842, 8.20935960591133, Math.toRadians(90.0)).mirror()
     private lateinit var Leave: PathChain
+    private lateinit var shoot: PathChain
 
     private fun buildPaths() {
+        shoot = follower.pathBuilder()
+            .addPath(BezierLine(startPose,shootPose))
+            .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
+            .build()
         Leave = follower.pathBuilder()
             .addPath(BezierLine(startPose,leavePoint))
-            .setLinearHeadingInterpolation(startPose.heading, leavePoint.heading)
+            .setLinearHeadingInterpolation(shootPose.heading, leavePoint.heading)
             .build()
     }
 
@@ -57,9 +64,11 @@ class redBottomMohit: NextFTCOpMode() {
             SequentialGroup(
                 ParallelGroup(
                     ShooterAngle.angle_up,
-                    Shooter.spinAtSpeed(1575.0),
+                    Shooter.spinAtSpeed(1450.0),
                     TurretAuto.toRightMohit,
-                    Gate.gate_open
+                    Gate.gate_open,
+                    FollowPath(shoot)
+
                 ),
                 Intake.spinFast,
                 Delay(2.3.seconds),

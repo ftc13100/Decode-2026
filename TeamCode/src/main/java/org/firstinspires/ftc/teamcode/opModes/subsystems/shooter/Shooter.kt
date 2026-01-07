@@ -52,7 +52,7 @@ object Shooter : Subsystem {
             shooterReadyMs = 0.00
             runtime.reset()
         }.then(
-            RunToVelocity(controller, speed, 11.0),
+            RunToVelocity(controller, speed, 30.0),
             InstantCommand {
                 shooterReady = true
                 shooterReadyMs = runtime.milliseconds()

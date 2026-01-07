@@ -50,11 +50,11 @@ class blueTopHard: NextFTCOpMode() {
     private val startPose = Pose(125.23, 121.52, Math.toRadians(37.0)).mirror()
     private val shootPose = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
     private val leavePoint = Pose(84.0, 110.0, Math.toRadians(-16.5)).mirror()
-    private val gate = Pose(127.5, 75.40674955595027, Math.toRadians(115.0)).mirror()
+    private val gate = Pose(127.5, 75.90674955595027, Math.toRadians(125.0)).mirror()
 
     //path to pick up PPG motif
-    private val pickUpPPG1 = Pose(98.35, 83.0, Math.toRadians(0.0)).mirror()
-    private val pickUpPPG2= Pose(127.2, 83.0, Math.toRadians(0.0)).mirror()
+    private val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0)).mirror()
+    private val pickUpPPG2= Pose(127.2, 84.0, Math.toRadians(0.0)).mirror()
     private val PPGtoShot= Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
     //paths to pick up PGP
     private val pickUpPGP1 = Pose(96.0, 60.0, Math.toRadians(0.0)).mirror()
@@ -66,6 +66,7 @@ class blueTopHard: NextFTCOpMode() {
     private val pickUpGPP1 = Pose(98.25, 36.0, Math.toRadians(0.0)).mirror()
     private val pickUpGPP2= Pose(133.3, 36.0, Math.toRadians(0.0)).mirror()
     private val GPPtoShot= Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
+    private val GPPtoShotControl= Pose(87.0, 47.6, Math.toRadians(0.0)).mirror()
 
 
     //PPG path chains
@@ -110,7 +111,7 @@ class blueTopHard: NextFTCOpMode() {
             .build()
         PPGsecond = follower.pathBuilder()
             .addPath(BezierLine(pickUpPPG1, pickUpPPG2))
-            .setLinearHeadingInterpolation(pickUpPPG1.heading, pickUpPPG2.heading)
+            .setLinearHeadingInterpolation(pickUpPGP1.heading, pickUpPPG2.heading)
             .build()
         PPGtoShotMove = follower.pathBuilder()
             .addPath(BezierLine(gate, PPGtoShot))
@@ -136,7 +137,7 @@ class blueTopHard: NextFTCOpMode() {
             .build()
         GPPsecond = follower.pathBuilder()
             .addPath(BezierLine(pickUpGPP1,pickUpGPP2))
-            .setLinearHeadingInterpolation(pickUpGPP1.heading,pickUpGPP2.heading)
+            .setLinearHeadingInterpolation(pickUpGPP1.heading, pickUpGPP2.heading)
             .build()
         GPPtoShotMove = follower.pathBuilder()
             .addPath(BezierLine(pickUpGPP2, GPPtoShot))
@@ -149,7 +150,7 @@ class blueTopHard: NextFTCOpMode() {
             SequentialGroup(
                 ParallelGroup(
                     ShooterAngle.angle_kindaUP,
-                    Shooter.spinAtSpeed(1200.0),
+                    Shooter.spinAtSpeed(1150.0),
                     FollowPath(GoToShot),
                     TurretAuto.toRight,
                     Gate.gate_open
@@ -157,7 +158,7 @@ class blueTopHard: NextFTCOpMode() {
                 Intake.spinFast,
                 Delay(2.3.seconds),
                 ParallelGroup(
-                    Shooter.stopShooter,
+                    Shooter.spinAtSpeed(1000.0),
                     Intake.spinStop,
                     Gate.gate_close
                 ),
@@ -169,16 +170,17 @@ class blueTopHard: NextFTCOpMode() {
                 FollowPath(PPGsecond, holdEnd = true, maxPower = 0.65),
                 Intake.spinStop,
                 FollowPath(MohitHitGate),
+                Delay(1.0.seconds),
                 ParallelGroup(
                     FollowPath(PPGtoShotMove),
                     ShooterAngle.angle_kindaUP,
-                    Shooter.spinAtSpeed(1200.0),
+                    Shooter.spinAtSpeed(1150.0),
                     Gate.gate_open,
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
                 ParallelGroup(
-                    Shooter.stopShooter,
+                    Shooter.spinAtSpeed(1000.0),
                     Intake.spinStop,
                     Gate.gate_close
                 ),
@@ -192,13 +194,13 @@ class blueTopHard: NextFTCOpMode() {
                 ParallelGroup(
                     FollowPath(PGPtoShotMove),
                     ShooterAngle.angle_kindaUP,
-                    Shooter.spinAtSpeed(1200.0),
+                    Shooter.spinAtSpeed(1150.0),
                     Gate.gate_open,
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
                 ParallelGroup(
-                    Shooter.stopShooter,
+                    Shooter.spinAtSpeed(1000.0),
                     Gate.gate_close,
                     FollowPath(GPPfirst),
                     Intake.spinFast
@@ -208,7 +210,7 @@ class blueTopHard: NextFTCOpMode() {
                 ParallelGroup(
                     FollowPath(Leave),
                     ShooterAngle.angle_kindaUP,
-                    Shooter.spinAtSpeed(1200.0),
+                    Shooter.spinAtSpeed(1150.0),
                     Gate.gate_open,
                 ),
                 Intake.spinFast,
@@ -232,6 +234,7 @@ class blueTopHard: NextFTCOpMode() {
         PoseStorage.redAlliance = false
         autoRoutine()
     }
+
     override fun onStop() {
         PoseStorage.poseEnd = follower.pose
     }

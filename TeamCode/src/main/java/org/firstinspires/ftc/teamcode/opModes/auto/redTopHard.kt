@@ -50,7 +50,7 @@ class redTopHard: NextFTCOpMode() {
         private val startPose = Pose(125.23, 121.52, Math.toRadians(37.0))
         private val shootPose = Pose(84.0, 84.0, Math.toRadians(0.0))
         private val leavePoint = Pose(84.0, 110.0, Math.toRadians(-16.5))
-        private val gate = Pose(127.5, 75.40674955595027, Math.toRadians(115.0))
+        private val gate = Pose(127.5, 75.90674955595027, Math.toRadians(125.0))
 
     //path to pick up PPG motif
         private val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0))
@@ -150,7 +150,7 @@ class redTopHard: NextFTCOpMode() {
             SequentialGroup(
                 ParallelGroup(
                 ShooterAngle.angle_kindaUP,
-                Shooter.spinAtSpeed(1200.0),
+                Shooter.spinAtSpeed(1150.0),
                 FollowPath(GoToShot),
                 TurretAuto.toLeft,
                 Gate.gate_open
@@ -158,7 +158,7 @@ class redTopHard: NextFTCOpMode() {
                                 Intake.spinFast,
                                 Delay(2.3.seconds),
                 ParallelGroup(
-                Shooter.stopShooter,
+                Shooter.spinAtSpeed(1000.0),
                 Intake.spinStop,
                 Gate.gate_close
                 ),
@@ -170,16 +170,17 @@ class redTopHard: NextFTCOpMode() {
                                 FollowPath(PPGsecond, holdEnd = true, maxPower = 0.65),
                                 Intake.spinStop,
                                 FollowPath(MohitHitGate),
+                                Delay(1.0.seconds),
                 ParallelGroup(
                 FollowPath(PPGtoShotMove),
                 ShooterAngle.angle_kindaUP,
-                Shooter.spinAtSpeed(1200.0),
+                Shooter.spinAtSpeed(1150.0),
                 Gate.gate_open,
                              ),
                                 Intake.spinFast,
                                 Delay(1.8.seconds),
                 ParallelGroup(
-                Shooter.stopShooter,
+                Shooter.spinAtSpeed(1000.0),
                 Intake.spinStop,
                 Gate.gate_close
                              ),
@@ -193,13 +194,13 @@ class redTopHard: NextFTCOpMode() {
                 ParallelGroup(
                 FollowPath(PGPtoShotMove),
                 ShooterAngle.angle_kindaUP,
-                Shooter.spinAtSpeed(1200.0),
+                Shooter.spinAtSpeed(1150.0),
                 Gate.gate_open,
                              ),
                                 Intake.spinFast,
                                 Delay(1.8.seconds),
                 ParallelGroup(
-                Shooter.stopShooter,
+                Shooter.spinAtSpeed(1000.0),
                 Gate.gate_close,
                 FollowPath(GPPfirst),
                 Intake.spinFast
@@ -209,7 +210,7 @@ class redTopHard: NextFTCOpMode() {
                 ParallelGroup(
                 FollowPath(Leave),
                 ShooterAngle.angle_kindaUP,
-                Shooter.spinAtSpeed(1185.0),
+                Shooter.spinAtSpeed(1150.0),
                 Gate.gate_open,
                              ),
                                 Intake.spinFast,
