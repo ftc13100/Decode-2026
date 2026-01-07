@@ -145,6 +145,7 @@ class LimeLightLocal : NextFTCOpMode() {
             telemetry.addData("tx (deg)", result.tx)
             telemetry.addData("ty (deg)", result.ty)
             telemetry.addData("Vision Goal Pose", estimatedGoalPose)
+            telemetry.addData("Result Bot Pose", result.botpose)
         } else {
             telemetry.addData("Limelight", "Target Not Found")
         }
