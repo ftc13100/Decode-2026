@@ -118,7 +118,8 @@ object Turret : Subsystem {
     }
 
     fun turretHeading(heading: Double) :Double {
-        return (heading - (turret.currentPosition - startPosition) * turretConversion)
+        val curPos = turret.currentPosition.coerceIn(leftLimit + 500 , rightLimit - 500)
+        return (heading - (curPos - startPosition) * turretConversion)
     }
 
     override fun periodic() {
