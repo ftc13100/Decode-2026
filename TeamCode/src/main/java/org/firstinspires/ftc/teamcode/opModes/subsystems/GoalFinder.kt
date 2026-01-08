@@ -5,6 +5,7 @@ import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.core.subsystems.Subsystem
 import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.SHOOTER_TO_GOAL_Z_SQRD
+import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goal
 import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.atan2
@@ -38,9 +39,8 @@ object GoalFinder : Subsystem {
     private const val ALIGNMENT_POWER_FINE = 0.2
     private val HEADING_TOLERANCE_COARSE = Math.toRadians(12.0)
     private val HEADING_TOLERANCE_FINE = Math.toRadians(1.0)
-    private const val TURRET_LL_ADJ_FACTOR = 39.75
+    private const val TURRET_LL_ADJ_FACTOR = 33
     private const val HEADING_TOLERANCE_TARGET = 5
-    private val goal = Pose(0.0, 141.0)
     private val aprilTag = Pose(16.0, 132.0)
 
     private val gfRuntime = ElapsedTime()
@@ -140,7 +140,7 @@ object GoalFinder : Subsystem {
         }
 
         gfTurretAdjLL = gfLLTx * TURRET_LL_ADJ_FACTOR
-        gfTurretAdjGoalAprilTag = gfGoalAprilTagAdj / (2 * Math.PI) * 1425.1 * (138 / 16)
+        gfTurretAdjGoalAprilTag = gfGoalAprilTagAdj / Turret.TURRET_TICKS_TO_RADS
         gfTurretAdj = gfTurretAdjLL + gfTurretAdjGoalAprilTag
     }
 

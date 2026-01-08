@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 
 
 object ShooterController {
-    val goal = Pose(0.0, 147.0)
+    val goal = Pose(0.0, 141.0)
     const val SHOOTER_TO_GOAL_Z_SQRD = 1056.25 // (46.0 - 13.5).pow(2.0)
 
     data class ShotParameters(val distance: Double, val velocity: Double, val angle: Double)

@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import com.bylazar.configurables.annotations.Configurable
+import com.bylazar.telemetry.JoinedTelemetry
+import com.bylazar.telemetry.PanelsTelemetry
 import com.pedropathing.ftc.FTCCoordinates
 import com.pedropathing.geometry.Pose
 import com.qualcomm.hardware.limelightvision.LLResult
@@ -32,6 +36,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.math.abs
 
+@Configurable
 @TeleOp(name = "MainTeleop")
 class MainTeleop : NextFTCOpMode() {
     init {
@@ -95,6 +100,7 @@ class MainTeleop : NextFTCOpMode() {
         limelight.start()
         follower.update()
 
+        telemetry = JoinedTelemetry(telemetry, PanelsTelemetry.ftcTelemetry)
         //Gate.gate_close()
     }
 
@@ -185,13 +191,14 @@ class MainTeleop : NextFTCOpMode() {
         // Fine jump turret right
         button { gamepad2.right_bumper }
             .whenBecomesTrue {
-                Turret.turn(50.0)
+                Turret.turn(10.0)
             }
+
 
         // Fine jump turret left
         button { gamepad2.left_bumper }
             .whenBecomesTrue {
-                Turret.turn(-50.0)
+                Turret.turn(-10.0)
             }
 
         // Coarse jump turret right
@@ -250,8 +257,16 @@ class MainTeleop : NextFTCOpMode() {
                 Shooter.stallShooter()
                 Gate.gate_close()
                 Intake.spinStop()
+                Turret.trackTarget()
                 gateOpen = false
                 intakeRunning = false
+            }
+
+        button { gamepad2.b }
+            .whenBecomesTrue {
+                if (GoalFinder.gfLLValid) {
+                    Turret.turn(GoalFinder.gfTurretAdj)
+                }
             }
 
         // Increase shooter velocity
@@ -319,6 +334,18 @@ class MainTeleop : NextFTCOpMode() {
 
     }
 
+    @JvmField
+    var llAveX : Double = 0.0
+
+    @JvmField
+    var llAveY : Double = 0.0
+
+    @JvmField
+    var llAveH : Double = 0.0
+
+    @JvmField
+    val LL_AVE_COEFF = 0.99
+
     override fun onUpdate() {
         BindingManager.update()
         follower.update()
@@ -370,6 +397,10 @@ class MainTeleop : NextFTCOpMode() {
                     )
                 )
 
+            llAveX = llAveX * LL_AVE_COEFF + llBotpose.x * (1 - LL_AVE_COEFF)
+            llAveY = llAveY * LL_AVE_COEFF + llBotpose.y * (1 - LL_AVE_COEFF)
+            llAveH = llAveH * LL_AVE_COEFF + llBotpose.heading * (1 - LL_AVE_COEFF)
+
             llTx = llResult.tx
         }
 
@@ -381,14 +412,16 @@ class MainTeleop : NextFTCOpMode() {
             Math.toDegrees(follower.heading),
             GoalFinder.gfGoalDistance
         )
+
         telemetry.addData(
             "LL",
             "Tx: %3.1f, X: %3.1f, Y: %3.1f, Heading: %3.1f",
             llTx,
-            llBotpose.x,
-            llBotpose.y,
-            llBotpose.heading
+            llAveX,
+            llAveY,
+            llAveH
         )
+
         telemetry.addData(
             "Goal",
             "%+3.1f, Error: %+3.1f, Ready: %b",
@@ -403,6 +436,10 @@ class MainTeleop : NextFTCOpMode() {
             Turret.turretAzDeg(),
             Turret.goalTrackingActive
         )
+
+        telemetry.addData("Current Shot", "Dist: %3.1f, Vel: %4.1f, Ang: %.3f",
+            currentShotDistance, currentShotVelocity, currentShotAngle)
+
         telemetry.addData(
             "Shooter Vel",
             "%4.0f, Ready: %s, Error: %4.0f",
