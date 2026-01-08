@@ -4,8 +4,7 @@ import com.pedropathing.geometry.Pose
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.core.subsystems.Subsystem
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.heading
-import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.shooterToGoalZSqrd
+import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.SHOOTER_TO_GOAL_Z_SQRD
 import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.atan2
@@ -20,7 +19,10 @@ object GoalFinder : Subsystem {
     var gfTargetAngle = 0.0
     var gfHeadingError =
         0.0 // Current angular error of Shooter to Goal with margin for shooter adjustment. This is used to rotate robot
-    var gfTargetError = 0.0 // Current angular error of Shooter to Goal. Used for Telemetry
+
+    val gfReady: Boolean
+        get() = abs(Turret.turretErrorTicks) < 5.0
+
     var gfGoalAprilTagAdj = 0.0
     var gfAnglesValid = false
     var gfLLValid = false
@@ -87,7 +89,7 @@ object GoalFinder : Subsystem {
         gfGoalDistance =
             sqrt(
                 (adjX - goal.x).pow(2.0) + (pose.y - goal.y).pow(2.0) +
-                        shooterToGoalZSqrd
+                        SHOOTER_TO_GOAL_Z_SQRD
             )
 
         gfTargetAngle = if (blueAlliance) {
@@ -96,8 +98,8 @@ object GoalFinder : Subsystem {
             atan2(abs(goal.y - pose.y), abs(goal.x - adjX))
         }
 
-        gfHeadingError = normalizeAngle(gfTargetAngle - Turret.turretHeadingWithMargin(pose.heading))
-        gfTargetError = normalizeAngle(gfTargetAngle - Turret.turretHeading(pose.heading))
+        gfHeadingError =
+            normalizeAngle(gfTargetAngle - Turret.turretHeadingWithMargin(pose.heading))
         gfAnglesValid = true
 
         if (llResult == null || !llResult.isValid) {

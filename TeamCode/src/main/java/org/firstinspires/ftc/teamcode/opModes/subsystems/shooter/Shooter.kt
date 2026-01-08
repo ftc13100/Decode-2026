@@ -15,8 +15,10 @@ import dev.nextftc.hardware.impl.MotorEx
 object Shooter : Subsystem {
     @JvmField
     var target = 0.0
+
     @JvmField
     var velPIDCoefficients = PIDCoefficients(0.0035, 0.0, 0.0)
+
     @JvmField
     var basicFFParameters = BasicFeedforwardParameters(0.000365, 0.0001, 0.16)
 

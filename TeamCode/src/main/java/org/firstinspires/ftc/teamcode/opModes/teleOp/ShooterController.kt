@@ -2,17 +2,18 @@ package org.firstinspires.ftc.teamcode.opModes.teleOp
 
 import com.pedropathing.geometry.Pose
 import dev.nextftc.core.commands.CommandManager
+import dev.nextftc.ftc.ActiveOpMode
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 
 
 object ShooterController {
-    val goal = Pose(0.0, 141.0)
-    const val shooterToGoalZSqrd = 1056.25 // (46.0 - 13.5).pow(2.0)
+    val goal = Pose(0.0, 147.0)
+    const val SHOOTER_TO_GOAL_Z_SQRD = 1056.25 // (46.0 - 13.5).pow(2.0)
 
     data class ShotParameters(val distance: Double, val velocity: Double, val angle: Double)
 
-    private val shooterLookupTable: Map<Double, ShotParameters> = mapOf(
+    private val shooterLookupTable = mapOf(
 //Distance      to ShotParameters(Dist,            Velocity,        Angle)                   // Origin (X, Y)
         45.53 to ShotParameters(45.53, 985.0, 0.680),           // Pair(24, 120) //checked
         52.85 to ShotParameters(52.85, 1020.0, 0.620),           // Pair(36, 120) //checked v2
@@ -35,7 +36,6 @@ object ShooterController {
         return y0 + (x - x0) * (y1 - y0) / (x1 - x0)
     }
 
-
     /**
      * Finds the shot parameters for the distance closest to the target.
      * If the distance is within a certain threshold it returns the entry.
@@ -43,7 +43,6 @@ object ShooterController {
 
     fun getShot(distance: Double): ShotParameters? {
         val keys = shooterLookupTable.keys.sorted()
-        shooterLookupTable.values
 
         // Clamp to bounds
         if (distance !in keys.first()..keys.last()) {
@@ -74,6 +73,15 @@ object ShooterController {
 
         val lower = shooterLookupTable[lowerKey]!!
         val upper = shooterLookupTable[upperKey]!!
+        // 104.9 - 1260
+        // 90 - 1184
+        // 49.7 - 1020
+        // 74.3 - 1072
+        // 90.8 - 1183
+        // 113.8 - 1315
+        // 97.6 - 1195
+        // 147.4 - 1516
+        // 155 - 1544
 
         return ShotParameters(
             distance = distance,
