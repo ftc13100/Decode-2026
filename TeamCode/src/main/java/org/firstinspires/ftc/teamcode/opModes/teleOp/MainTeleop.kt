@@ -360,7 +360,6 @@ class MainTeleop : NextFTCOpMode() {
         val llResult: LLResult? = limelight.latestResult
         val turnPower = GoalFinder.calculate(
             follower.pose,
-            follower.heading,
             llResult,
             PoseStorage.blueAlliance
         )

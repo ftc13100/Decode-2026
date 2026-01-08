@@ -4,6 +4,7 @@ import com.pedropathing.geometry.Pose
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.core.subsystems.Subsystem
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.heading
 import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.shooterToGoalZSqrd
 import kotlin.math.abs
 import kotlin.math.acos
@@ -76,7 +77,7 @@ object GoalFinder : Subsystem {
         Turret.turn(posAdj)
     }
 
-    fun calculateAngles(pose: Pose, heading: Double, llResult: LLResult?, blueAlliance: Boolean) {
+    fun calculateAngles(pose: Pose, llResult: LLResult?, blueAlliance: Boolean) {
         val adjX = if (blueAlliance) {
             pose.x
         } else {
@@ -95,8 +96,8 @@ object GoalFinder : Subsystem {
             atan2(abs(goal.y - pose.y), abs(goal.x - adjX))
         }
 
-        gfHeadingError = normalizeAngle(gfTargetAngle - Turret.turretHeadingWithMargin(heading))
-        gfTargetError = normalizeAngle(gfTargetAngle - Turret.turretHeading(heading))
+        gfHeadingError = normalizeAngle(gfTargetAngle - Turret.turretHeadingWithMargin(pose.heading))
+        gfTargetError = normalizeAngle(gfTargetAngle - Turret.turretHeading(pose.heading))
         gfAnglesValid = true
 
         if (llResult == null || !llResult.isValid) {
@@ -141,14 +142,14 @@ object GoalFinder : Subsystem {
         gfTurretAdj = gfTurretAdjLL + gfTurretAdjGoalAprilTag
     }
 
-    fun calculate(pose: Pose, heading: Double, llResult: LLResult?, blueAlliance: Boolean): Double {
+    fun calculate(pose: Pose, llResult: LLResult?, blueAlliance: Boolean): Double {
         if (pose.x < 0.0 || pose.x > 144.0 || pose.y < 0.0 || pose.y > 144.0) {
             gfAnglesValid = false
             gfLLValid = false
             return 0.0
         }
 
-        calculateAngles(pose, heading, llResult, blueAlliance)
+        calculateAngles(pose, llResult, blueAlliance)
 
         if (!gfActive)
             return 0.0
