@@ -33,14 +33,6 @@ public class Constants {
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
             .xVelocity(63.025468)
             .yVelocity(49.6025969);
-
-    public static Follower createFollower(HardwareMap hardwareMap) {
-        return new FollowerBuilder(followerConstants, hardwareMap)
-                .pinpointLocalizer(localizerConstants)
-                .pathConstraints(PathConstraints.defaultConstraints)
-                .mecanumDrivetrain(driveConstants)
-                .build();
-    }
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(-4.125)
             .strafePodX(-6.75)
@@ -49,4 +41,12 @@ public class Constants {
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
+
+    public static Follower createFollower(HardwareMap hardwareMap) {
+        return new FollowerBuilder(followerConstants, hardwareMap)
+                .pinpointLocalizer(localizerConstants)
+                .pathConstraints(PathConstraints.defaultConstraints)
+                .mecanumDrivetrain(driveConstants)
+                .build();
     }
+}

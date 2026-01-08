@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
+import com.pedropathing.ftc.FTCCoordinates
+import com.pedropathing.geometry.PedroCoordinates
 import com.pedropathing.geometry.Pose
-import com.pedropathing.paths.PathChain
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
@@ -21,6 +22,7 @@ import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
@@ -63,22 +65,20 @@ class MainTeleop : NextFTCOpMode() {
     private lateinit var driverControlled: MecanumDriverControlled
 
     lateinit var limelight: Limelight3A
-    private lateinit var Park : PathChain
 
     private val startPose = PoseStorage.poseEnd  // Pose(72.0,72.0, Math.toRadians(90.0))
-    private val testingPose = Pose(72.0,72.0,Math.toRadians(90.0))
+    private val testingPose = Pose(72.0, 72.0, Math.toRadians(90.0))
     private var testMode = false
     private var currentShotDistance = 0.0
     private var currentShotVelocity = 0.0
     private var currentShotAngle = 0.0
     private var gateOpen = false
     private var intakeRunning = false
-    private var debugTelemetry = false
-    private var initialized = false;
+    private var initialized = false
 
     override fun onInit() {
-        if(abs(startPose.x) < 0.1 && abs(startPose.y) < 0.1) {
-           follower.setStartingPose(testingPose)
+        if (abs(startPose.x) < 0.1 && abs(startPose.y) < 0.1) {
+            follower.setStartingPose(testingPose)
             PoseStorage.blueAlliance = true
             testMode = true
         } else {
@@ -102,6 +102,7 @@ class MainTeleop : NextFTCOpMode() {
 
         //Gate.gate_close()
     }
+
     override fun onStartButtonPressed() {
         driverControlled = MecanumDriverControlled(
             frontLeftMotor,
@@ -159,7 +160,7 @@ class MainTeleop : NextFTCOpMode() {
         // Point to Target
         button { gamepad1.a }
             .whenBecomesTrue {
-                if(!GoalFinder.gfActive) {
+                if (!GoalFinder.gfActive) {
                     GoalFinder.findGoal()
                 } else {
                     GoalFinder.stop()
@@ -175,9 +176,9 @@ class MainTeleop : NextFTCOpMode() {
         Gamepads.gamepad1.leftTrigger.asButton { it > 0.5 } and Gamepads.gamepad1.rightTrigger.asButton { it > 0.5 }
             .whenBecomesTrue {
                 if (PoseStorage.blueAlliance) {
-                    follower.setPose(Pose(135.75, 8.5, Math.toRadians(-90.0)))
+                    follower.pose = Pose(135.75, 8.5, Math.toRadians(-90.0))
                 } else {
-                    follower.setPose(Pose(8.25, 8.5,Math.toRadians(-90.0)))
+                    follower.pose = Pose(8.25, 8.5, Math.toRadians(-90.0))
                 }
             }
 
@@ -187,25 +188,25 @@ class MainTeleop : NextFTCOpMode() {
 ////////////////////////////////////////////////////////////////////////////
 
         // Fine jump turret right
-        button {gamepad2.right_bumper}
+        button { gamepad2.right_bumper }
             .whenBecomesTrue {
                 Turret.turn(50.0)
             }
 
         // Fine jump turret left
-        button {gamepad2.left_bumper}
+        button { gamepad2.left_bumper }
             .whenBecomesTrue {
                 Turret.turn(-50.0)
             }
 
         // Coarse jump turret right
-        button {gamepad2.right_trigger > 0.5 }
+        button { gamepad2.right_trigger > 0.5 }
             .whenBecomesTrue {
                 Turret.turn(500.0)
             }
 
         // Coarse jump turret left
-        button {gamepad2.left_trigger > 0.5}
+        button { gamepad2.left_trigger > 0.5 }
             .whenBecomesTrue {
                 Turret.turn(-500.0)
             }
@@ -223,7 +224,6 @@ class MainTeleop : NextFTCOpMode() {
 
         button { gamepad2.x }
             .whenBecomesTrue {
-                debugTelemetry = ! debugTelemetry
                 Gate.gate_open()
                 gateOpen = true
             }
@@ -238,11 +238,12 @@ class MainTeleop : NextFTCOpMode() {
                     adjX = 144.0 - adjX
                 }
                 // Calculate 3D Distance to Goal
-                val goalDistance = sqrt((adjX - goal.x).pow(2.0) + (y - goal.y).pow(2.0) + shooterToGoalZSqrd)
+                val goalDistance =
+                    sqrt((adjX - goal.x).pow(2.0) + (y - goal.y).pow(2.0) + shooterToGoalZSqrd)
                 val currentShot = shooterController.getShot(goalDistance)
 
                 val commands = SequentialGroup(
-                    WaitUntil{ currentShot != null },
+                    WaitUntil { currentShot != null },
                     InstantCommand {
                         currentShotVelocity = currentShot!!.velocity
                         currentShotAngle = currentShot.angle
@@ -283,25 +284,25 @@ class MainTeleop : NextFTCOpMode() {
         // Increase shooter velocity
         button { gamepad2.dpad_up }
             .whenBecomesTrue {
-                if (currentShotVelocity < 1800 ) {
+                if (currentShotVelocity < 1800) {
                     currentShotVelocity += 10.0
-                    CommandManager.scheduleCommand(Shooter.spinAtSpeed(currentShotVelocity))
+                    Shooter.spinAtSpeed(currentShotVelocity).schedule()
                 }
             }
 
         // Decrease shooter velocity
         button { gamepad2.dpad_down }
             .whenBecomesTrue {
-                if (currentShotVelocity > 800 ) {
+                if (currentShotVelocity > 800) {
                     currentShotVelocity -= 10.0
-                    CommandManager.scheduleCommand(Shooter.spinAtSpeed(currentShotVelocity))
+                    Shooter.spinAtSpeed(currentShotVelocity).schedule()
                 }
             }
 
         // lower shooting hood
         button { gamepad2.dpad_left }
             .whenBecomesTrue {
-                if (currentShotAngle > 0.0 && currentShotAngle <= 0.681 ) {
+                if (currentShotAngle > 0.0 && currentShotAngle <= 0.681) {
                     currentShotAngle += 0.02
                     ShooterAngle.targetPosition = currentShotAngle
                     CommandManager.scheduleCommand(
@@ -313,7 +314,7 @@ class MainTeleop : NextFTCOpMode() {
         // raise shooting hood
         button { gamepad2.dpad_right }
             .whenBecomesTrue {
-                if (currentShotAngle > 0.0 && currentShotAngle >= 0.519 ) {
+                if (currentShotAngle > 0.0 && currentShotAngle >= 0.519) {
                     currentShotAngle -= 0.02
                     ShooterAngle.targetPosition = currentShotAngle
                     CommandManager.scheduleCommand(
@@ -343,10 +344,6 @@ class MainTeleop : NextFTCOpMode() {
                 Turret.resetToStartPosition()
             }
 
-//        button { gamepad2.back }
-//            .whenBecomesTrue {
-//                debugTelemetry = ! debugTelemetry
-//            }
     }
 
     override fun onUpdate() {
@@ -355,17 +352,20 @@ class MainTeleop : NextFTCOpMode() {
 
         driverControlled.update()
 
-        if(!initialized)
-        {
+        if (!initialized) {
             Turret.initPos()
             initialized = true
         }
 
         val llResult: LLResult? = limelight.latestResult
-        val turnPower = GoalFinder.calculate(follower.pose, follower.heading, llResult, PoseStorage.blueAlliance)
+        val turnPower = GoalFinder.calculate(
+            follower.pose,
+            follower.heading,
+            llResult,
+            PoseStorage.blueAlliance
+        )
 
-        if(GoalFinder.gfActive)
-        {
+        if (GoalFinder.gfActive) {
             frontLeftMotor.power = turnPower
             frontRightMotor.power = -turnPower
             backLeftMotor.power = turnPower
@@ -375,78 +375,92 @@ class MainTeleop : NextFTCOpMode() {
             driverControlled.update()
         } // end tracking goal
 
-        if(PoseStorage.blueAlliance) { telemetry.addData("Alliance", "BLUE") }
-        else {telemetry.addData("Alliance", "RED") }
+        if (PoseStorage.blueAlliance) {
+            telemetry.addData("Alliance", "BLUE")
+        } else {
+            telemetry.addData("Alliance", "RED")
+        }
 
-        if(debugTelemetry) {
-            telemetry.addData(
-                "X",
-                "%.1f, Y: %.1f, Heading: %.1f, Goal: %.1f",
-                follower.pose.x,follower.pose.y,Math.toDegrees(follower.heading),Math.toDegrees(GoalFinder.gfTargetAngle)
+        var llBotpose = Pose(Double.NaN, Double.NaN, Double.NaN)
+        var llTx = Double.NaN
+
+        if (llResult != null && llResult.isValid) {
+            // botpose gives in meters with 0,0 at center of field.
+            val position = llResult.botpose.position.toUnit(DistanceUnit.INCH)
+            val orientation = llResult.botpose.orientation
+
+            llBotpose = Pose(
+                position.x,
+                position.y,
+                orientation.yaw,
+                FTCCoordinates.INSTANCE
             )
-        } else {
-            telemetry.addData("X",
-                "%.1f, Y: %.1f, Heading: %.1f",
-                follower.pose.x, follower.pose.y, Math.toDegrees(follower.heading))
+                .getAsCoordinateSystem(PedroCoordinates.INSTANCE)
 
-            telemetry.addData("Distance", "%.2f", GoalFinder.gfGoalDistance)
-        }
-
-        if(debugTelemetry) {
-            telemetry.addData(
-                "Pointing",
-                "Active: %b, Done: %b, DoneMs: %.0f",
-                GoalFinder.gfActive,GoalFinder.gfDone, GoalFinder.gfDoneMs)
-            telemetry.addData(
-                "PointingVals",
-                "Error: %.1f, Limelight: (%.1f, %.1f, %.2f), Dist: %.2f",
-                Math.toDegrees(GoalFinder.gfHeadingError),GoalFinder.gfLLTx,GoalFinder.gfLLTy,GoalFinder.gfLLTa, GoalFinder.gfGoalDistance)
-            telemetry.addData(
-                "PointingDbg",
-                "AnglesValid: %b, LLValid: %b, GoalAprilTagAdj: %.2f",
-                GoalFinder.gfAnglesValid,GoalFinder.gfLLValid, Math.toDegrees(GoalFinder.gfGoalAprilTagAdj))
-
-            telemetry.addData("PointingDbg2",
-                "TurretAdjLL: %.0f, TurretAdjGoalAT: %.0f, Total: %.0f",
-                GoalFinder.gfTurretAdjLL,GoalFinder.gfTurretAdjGoalAprilTag, GoalFinder.gfTurretAdj)
-
-            telemetry.addData("Turret",
-                "Active: %b, Ready: %b, ReadyMs: %.0f",
-                Turret.turretActive, Turret.turretReady, Turret.turretReadyMs)
-
-            telemetry.addData("TurretPos",
-                "Current: %.2f, Target: %.2f, Ticks: %.2f, tolCount: %d",
-                (Turret.turret.currentPosition/34.14302083),(Turret.target/34.14302083), Turret.turret.currentPosition, Turret.turretTolearanceCount)
-        } else {
-            telemetry.addData("Pointing", "Error: %+3.1f Limelight: +%2.1f",
-                Math.toDegrees(GoalFinder.gfHeadingError), GoalFinder.gfLLTx)
-        }
-        if(debugTelemetry) {
-            telemetry.addData("Shot Lookup", "Distance: %.2f", currentShotDistance)
+            llBotpose.heading += Turret.turretAzDeg()
+            llTx = llResult.tx
         }
         telemetry.addData(
-            "Shooter",
-            "Target: %4.0f, Current: %4.0f, ShotDistance: %.2f, Ready: %s,",
-            Shooter.target, Shooter.shooter.velocity, currentShotDistance, if(Shooter.shooterReady) { "Yes" } else { "No" })
-        if(debugTelemetry) {
-            telemetry.addData("Shooter",
-                "ReadyMs: %.0f, Active: %b, Power: %.2f",
-                Shooter.shooterReadyMs, Shooter.shooterActive, Shooter.shooter.power)
-        }
-        telemetry.addData("Shooter Angle:","%.3f", currentShotAngle)
-
-        telemetry.addData("Gate",
-            "%s",
-            if(gateOpen) { "Open" } else { "Closed" })
-
-        telemetry.addData("Intake",
-            "%s (Power: %+1.1f)",
-            if (intakeRunning) { "Running" } else { "Stopped" }, Intake.intake.power)
+            "X",
+            "%.1f, Y: %.1f, Heading: %.1f, Dist: %.1f",
+            follower.pose.x,
+            follower.pose.y,
+            Math.toDegrees(follower.heading),
+            GoalFinder.gfGoalDistance
+        )
+        telemetry.addData(
+            "LL",
+            "Tx: %.1f, X: %.1f, Y: %.1f, Heading: %.1f",
+            llTx,
+            llBotpose.x,
+            llBotpose.y,
+            llBotpose.heading
+        )
+        telemetry.addData(
+            "Goal",
+            "%+3.1f, Error: %+3.1f",
+            Math.toDegrees(GoalFinder.gfTargetAngle),
+            Math.toDegrees(GoalFinder.gfTargetError)
+        )
+        telemetry.addData(
+            "TurretPos",
+            "%.0f, Az: %.1f",
+            Turret.turret.currentPosition,
+            Turret.turretAzDeg()
+        )
+        telemetry.addData(
+            "Shooter Vel",
+            "%4.0f, Error: %.0f, Ready: %s,",
+            Shooter.target,
+            Shooter.target - Shooter.shooter.velocity,
+            if (Shooter.shooterReady) {
+                "Yes"
+            } else {
+                "No"
+            }
+        )
+        telemetry.addData("Shooter Angle", "%.3f", currentShotAngle)
+        telemetry.addData(
+            "Gate", "%s", if (gateOpen) {
+                "Open"
+            } else {
+                "Closed"
+            }
+        )
+        telemetry.addData(
+            "Intake", "%s (Power: %+1.1f)", if (intakeRunning) {
+                "Running"
+            } else {
+                "Stopped"
+            }, Intake.intake.power
+        )
 
         telemetry.update()
     }
+
     override fun onStop() {
         BindingManager.reset()
         Shooter.stopShooter()
+        PoseStorage.poseEnd = follower.pose
     }
 }

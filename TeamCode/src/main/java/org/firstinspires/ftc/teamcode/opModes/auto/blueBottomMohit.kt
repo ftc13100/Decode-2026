@@ -25,11 +25,13 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
 @Autonomous(name = "blueBottomMohit")
-class blueBottomMohit: NextFTCOpMode() {
+class blueBottomMohit : NextFTCOpMode() {
     init {
         addComponents(
-            SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
-                TurretAuto),
+            SubsystemComponent(
+                MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
+                TurretAuto
+            ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
@@ -44,11 +46,11 @@ class blueBottomMohit: NextFTCOpMode() {
 
     private fun buildPaths() {
         shoot = follower.pathBuilder()
-            .addPath(BezierLine(startPose,shootPose))
+            .addPath(BezierLine(startPose, shootPose))
             .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
             .build()
         Leave = follower.pathBuilder()
-            .addPath(BezierLine(startPose,leavePoint))
+            .addPath(BezierLine(startPose, leavePoint))
             .setLinearHeadingInterpolation(shootPose.heading, leavePoint.heading)
             .build()
     }
@@ -94,6 +96,7 @@ class blueBottomMohit: NextFTCOpMode() {
     override fun onStop() {
         PoseStorage.poseEnd = follower.pose
     }
+
     override fun onUpdate() {
     }
 }

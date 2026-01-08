@@ -21,6 +21,7 @@ class ShooterTeleOp : NextFTCOpMode() {
             PedroComponent(Constants::createFollower)
         )
     }
+
     private val panelsTelemetry = PanelsTelemetry.telemetry
     private val timer = ElapsedTime()
     val shooterCommand = PerpetualCommand(
@@ -31,6 +32,7 @@ class ShooterTeleOp : NextFTCOpMode() {
             .setIsDone { false }
             .requires(Shooter)
     )
+
     override fun onInit() {
         shooterCommand()
         timer.reset()

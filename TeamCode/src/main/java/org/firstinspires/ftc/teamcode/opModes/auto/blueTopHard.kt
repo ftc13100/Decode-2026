@@ -26,11 +26,13 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
 @Autonomous(name = "blueTopHard")
-class blueTopHard: NextFTCOpMode() {
+class blueTopHard : NextFTCOpMode() {
     init {
         addComponents(
-            SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
-                TurretAuto),
+            SubsystemComponent(
+                MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
+                TurretAuto
+            ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
@@ -56,19 +58,21 @@ class blueTopHard: NextFTCOpMode() {
 
     //path to pick up PPG motif
     private val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0)).mirror()
-    private val pickUpPPG2= Pose(127.2, 84.0, Math.toRadians(0.0)).mirror()
-    private val PPGtoShot= Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
+    private val pickUpPPG2 = Pose(127.2, 84.0, Math.toRadians(0.0)).mirror()
+    private val PPGtoShot = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
+
     //paths to pick up PGP
     private val pickUpPGP1 = Pose(96.0, 60.0, Math.toRadians(0.0)).mirror()
     private val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0)).mirror()
-    private val pickUpPGP2= Pose(133.3, 60.0, Math.toRadians(0.0)).mirror()
-    private val PGPtoShot= Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
-    private val PGPtoShotControl= Pose(77.485, 53.68, Math.toRadians(0.0)).mirror()
+    private val pickUpPGP2 = Pose(133.3, 60.0, Math.toRadians(0.0)).mirror()
+    private val PGPtoShot = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
+    private val PGPtoShotControl = Pose(77.485, 53.68, Math.toRadians(0.0)).mirror()
+
     //path to pick up GPP motif
     private val pickUpGPP1 = Pose(98.25, 36.0, Math.toRadians(0.0)).mirror()
-    private val pickUpGPP2= Pose(133.3, 36.0, Math.toRadians(0.0)).mirror()
-    private val GPPtoShot= Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
-    private val GPPtoShotControl= Pose(87.0, 47.6, Math.toRadians(0.0)).mirror()
+    private val pickUpGPP2 = Pose(133.3, 36.0, Math.toRadians(0.0)).mirror()
+    private val GPPtoShot = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
+    private val GPPtoShotControl = Pose(87.0, 47.6, Math.toRadians(0.0)).mirror()
 
 
     //PPG path chains
@@ -93,35 +97,34 @@ class blueTopHard: NextFTCOpMode() {
     private lateinit var Wiggle: PathChain
 
 
-
     private fun buildPaths() {
         //Universal Paths
         GoToShot = follower.pathBuilder()
-            .addPath(BezierLine(startPose,shootPose))
+            .addPath(BezierLine(startPose, shootPose))
             .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
             .build()
         Leave = follower.pathBuilder()
-            .addPath(BezierLine(pickUpGPP2,leavePoint))
+            .addPath(BezierLine(pickUpGPP2, leavePoint))
             .setLinearHeadingInterpolation(shootPose.heading, leavePoint.heading)
             .build()
         MohitHitGate = follower.pathBuilder()
             .addPath(BezierLine(pickUpPPG2, gate))
-            .setLinearHeadingInterpolation(pickUpPPG2.heading,gate.heading)
+            .setLinearHeadingInterpolation(pickUpPPG2.heading, gate.heading)
             .build()
         Wiggle = follower.pathBuilder()
             .addPath(BezierLine(shootPose, wigglePoint))
-            .setLinearHeadingInterpolation(shootPose.heading,wigglePoint.heading)
+            .setLinearHeadingInterpolation(shootPose.heading, wigglePoint.heading)
             .addPath(BezierLine(wigglePoint, shootPose))
-            .setLinearHeadingInterpolation(shootPose.heading,wigglePoint.heading)
+            .setLinearHeadingInterpolation(shootPose.heading, wigglePoint.heading)
             .addPath(BezierLine(shootPose, wigglePoint))
-            .setLinearHeadingInterpolation(shootPose.heading,wigglePoint.heading)
+            .setLinearHeadingInterpolation(shootPose.heading, wigglePoint.heading)
             .addPath(BezierLine(wigglePoint, shootPose))
-            .setLinearHeadingInterpolation(shootPose.heading,wigglePoint.heading)
+            .setLinearHeadingInterpolation(shootPose.heading, wigglePoint.heading)
             .build()
         //PPG paths
         PPGfirst = follower.pathBuilder()
             .addPath(BezierLine(shootPose, pickUpPPG1))
-            .setLinearHeadingInterpolation(shootPose.heading,pickUpPPG1.heading)
+            .setLinearHeadingInterpolation(shootPose.heading, pickUpPPG1.heading)
             .build()
         PPGsecond = follower.pathBuilder()
             .addPath(BezierLine(pickUpPPG1, pickUpPPG2))
@@ -129,28 +132,28 @@ class blueTopHard: NextFTCOpMode() {
             .build()
         PPGtoShotMove = follower.pathBuilder()
             .addPath(BezierLine(gate, PPGtoShot))
-            .setLinearHeadingInterpolation(gate.heading,PPGtoShot.heading)
+            .setLinearHeadingInterpolation(gate.heading, PPGtoShot.heading)
             .build()
         //PGP paths
         PGPfirst = follower.pathBuilder()
-            .addPath(BezierCurve(shootPose, pickUpPGPControl,pickUpPGP1))
-            .setLinearHeadingInterpolation(shootPose.heading,pickUpPGP1.heading)
+            .addPath(BezierCurve(shootPose, pickUpPGPControl, pickUpPGP1))
+            .setLinearHeadingInterpolation(shootPose.heading, pickUpPGP1.heading)
             .build()
         PGPsecond = follower.pathBuilder()
             .addPath(BezierLine(pickUpPGP1, pickUpPGP2))
             .setConstantHeadingInterpolation(0.0)
             .build()
         PGPtoShotMove = follower.pathBuilder()
-            .addPath(BezierCurve(pickUpPGP2,PGPtoShotControl, PGPtoShot))
-            .setLinearHeadingInterpolation(pickUpPGP2.heading,PGPtoShot.heading)
+            .addPath(BezierCurve(pickUpPGP2, PGPtoShotControl, PGPtoShot))
+            .setLinearHeadingInterpolation(pickUpPGP2.heading, PGPtoShot.heading)
             .build()
         //GPP paths
         GPPfirst = follower.pathBuilder()
-            .addPath(BezierLine(shootPose,pickUpGPP1))
-            .setLinearHeadingInterpolation(shootPose.heading,pickUpGPP1.heading)
+            .addPath(BezierLine(shootPose, pickUpGPP1))
+            .setLinearHeadingInterpolation(shootPose.heading, pickUpGPP1.heading)
             .build()
         GPPsecond = follower.pathBuilder()
-            .addPath(BezierLine(pickUpGPP1,pickUpGPP2))
+            .addPath(BezierLine(pickUpGPP1, pickUpGPP2))
             .setConstantHeadingInterpolation(0.0)
             .build()
         GPPtoShotMove = follower.pathBuilder()
@@ -170,8 +173,8 @@ class blueTopHard: NextFTCOpMode() {
                     Gate.gate_open
                 ),
                 Intake.spinFast,
-                Delay(1.seconds),
-                FollowPath(Wiggle),
+                Delay(2.3.seconds),
+                //FollowPath(Wiggle),
                 ParallelGroup(
                     Shooter.stallShooter,
                     Intake.spinStop,
@@ -193,8 +196,8 @@ class blueTopHard: NextFTCOpMode() {
                     Gate.gate_open,
                 ),
                 Intake.spinFast,
-                Delay(0.6.seconds),
-                FollowPath(Wiggle),
+                Delay(1.8.seconds),
+                //FollowPath(Wiggle),
                 ParallelGroup(
                     Shooter.stallShooter,
                     Intake.spinStop,
@@ -214,8 +217,8 @@ class blueTopHard: NextFTCOpMode() {
                     Gate.gate_open,
                 ),
                 Intake.spinFast,
-                Delay(0.6.seconds),
-                FollowPath(Wiggle),
+                Delay(1.8.seconds),
+                //FollowPath(Wiggle),
                 ParallelGroup(
                     Shooter.stallShooter,
                     Gate.gate_close,
@@ -231,13 +234,14 @@ class blueTopHard: NextFTCOpMode() {
                     Gate.gate_open,
                 ),
                 Intake.spinFast,
-                Delay(0.6.seconds),
-                FollowPath(Wiggle),
+                Delay(1.8.seconds),
+                //FollowPath(Wiggle),
                 ParallelGroup(
                     Shooter.stopShooter,
                     TurretAuto.toMid,
                     Gate.gate_close,
-                    Intake.spinStop),
+                    Intake.spinStop
+                ),
             )
 
     override fun onInit() {

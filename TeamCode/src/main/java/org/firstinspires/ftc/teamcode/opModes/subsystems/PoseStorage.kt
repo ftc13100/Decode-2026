@@ -9,10 +9,11 @@ object PoseStorage : Subsystem {
     var blueAlliance: Boolean = false
     var redAlliance: Boolean = false
 
-     fun endPose() {
-        val yEndPose =  follower.pose.y
-        val xEndPose =  follower.pose.x
-        val headingEndPose = follower.pose.heading
+    fun endPose() {
+        follower.pose.y
+        follower.pose.x
+        follower.pose.heading
 
-    }}
+    }
+}
 

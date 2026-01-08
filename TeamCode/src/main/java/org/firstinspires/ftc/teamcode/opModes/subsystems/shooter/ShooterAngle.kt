@@ -5,8 +5,8 @@ import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode
 
-object ShooterAngle: Subsystem {
-    private lateinit var servo : Servo
+object ShooterAngle : Subsystem {
+    private lateinit var servo: Servo
     override fun initialize() {
         servo = ActiveOpMode.hardwareMap.get(Servo::class.java, "angle")
     }
@@ -29,10 +29,11 @@ object ShooterAngle: Subsystem {
     val angle_down = InstantCommand {
         servo.position = 0.7
     }
-    fun toAngle (angle : Double)=
+
+    fun toAngle(angle: Double) =
         InstantCommand {
             servo.position = angle
 
         }
-    }
+}
 

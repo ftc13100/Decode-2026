@@ -13,11 +13,8 @@ object blueLime : Subsystem {
 
         limelight.start()
     }
+
     lateinit var limelight: Limelight3A
-
-
-
-
 
 
 }

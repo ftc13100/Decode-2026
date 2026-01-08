@@ -25,11 +25,13 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
 @Autonomous(name = "redBottomMohit")
-class redBottomMohit: NextFTCOpMode() {
+class redBottomMohit : NextFTCOpMode() {
     init {
         addComponents(
-            SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
-                TurretAuto),
+            SubsystemComponent(
+                MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
+                TurretAuto
+            ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
@@ -38,17 +40,18 @@ class redBottomMohit: NextFTCOpMode() {
     private val startPose = Pose(56.0, 7.5, Math.toRadians(90.0)).mirror()
     private val shootPose = Pose(56.0, 10.5, Math.toRadians(90.0)).mirror()
 
-    private val leavePoint = Pose(36.49261083743842, 8.20935960591133, Math.toRadians(90.0)).mirror()
+    private val leavePoint =
+        Pose(36.49261083743842, 8.20935960591133, Math.toRadians(90.0)).mirror()
     private lateinit var Leave: PathChain
     private lateinit var shoot: PathChain
 
     private fun buildPaths() {
         shoot = follower.pathBuilder()
-            .addPath(BezierLine(startPose,shootPose))
+            .addPath(BezierLine(startPose, shootPose))
             .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
             .build()
         Leave = follower.pathBuilder()
-            .addPath(BezierLine(startPose,leavePoint))
+            .addPath(BezierLine(startPose, leavePoint))
             .setLinearHeadingInterpolation(shootPose.heading, leavePoint.heading)
             .build()
     }
@@ -94,6 +97,7 @@ class redBottomMohit: NextFTCOpMode() {
     override fun onStop() {
         PoseStorage.poseEnd = follower.pose
     }
+
     override fun onUpdate() {
     }
 }

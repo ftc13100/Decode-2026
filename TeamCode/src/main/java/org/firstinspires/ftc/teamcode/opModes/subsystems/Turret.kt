@@ -15,25 +15,39 @@ import kotlin.math.atan2
 
 @Configurable
 object Turret : Subsystem {
-    @JvmField var target = 0.0
-    @JvmField var turretActive = false
-    @JvmField var goalTrackingActive = false
-    @JvmField var turretReady = false
-    @JvmField var turretReadyMs = 0.0
-    @JvmField var startPosition = 0.0
-    @JvmField var leftLimit = -3000.0
-    @JvmField var rightLimit = 3000.0
-    @JvmField var targetAngle = 0.0
-    @JvmField var turretAngle = 0.0
-    @JvmField var heading = 0.0
-    @JvmField var turretError = 0.0
-    @JvmField var turretTolearanceCount = 0
-    @JvmField var posPIDCoefficients = PIDCoefficients(0.0097, 0.0, 0.00015)
+    @JvmField
+    var target = 0.0
+    @JvmField
+    var turretActive = false
+    @JvmField
+    var goalTrackingActive = false
+    @JvmField
+    var turretReady = false
+    @JvmField
+    var turretReadyMs = 0.0
+    @JvmField
+    var startPosition = 0.0
+    @JvmField
+    var leftLimit = -3000.0
+    @JvmField
+    var rightLimit = 3000.0
+    @JvmField
+    var targetAngle = 0.0
+    @JvmField
+    var turretAngle = 0.0
+    @JvmField
+    var heading = 0.0
+    @JvmField
+    var turretError = 0.0
+    @JvmField
+    var turretTolearanceCount = 0
+    @JvmField
+    var posPIDCoefficients = PIDCoefficients(0.0097, 0.0, 0.00015)
 
     val turret = MotorEx("turret").brakeMode()
     private val runtime = ElapsedTime()
 
-    private val turretConversion = (Math.PI * 2) / (1425.1 * (138/16))
+    private val turretConversion = (Math.PI * 2) / (1425.1 * (138 / 16))
 
     val controlSystem = controlSystem {
         posPid(posPIDCoefficients)
@@ -45,14 +59,14 @@ object Turret : Subsystem {
         turret.motor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
-    fun initPos()
-    {
+    fun initPos() {
         startPosition = turret.currentPosition
         target = startPosition
         rightLimit = startPosition + 3000.0
         leftLimit = startPosition - 3000.0
         turn(0.0)
     }
+
     /**
      * PID-Only turn: updates target and turret logic handles the rest.
      */
@@ -104,22 +118,32 @@ object Turret : Subsystem {
             atan2(abs(goal.y - y), abs(goal.x - (144 - x)))
         }
 
-        turretAngle = heading - (2 * Math.PI * (turret.currentPosition - startPosition) / (1425.1 * (138/16)))
+        turretAngle =
+            heading - (2 * Math.PI * (turret.currentPosition - startPosition) / (1425.1 * (138 / 16)))
 
         turretError = targetAngle - turretAngle
         if (turretError > Math.PI) turretError -= 2 * Math.PI
 
-        if(goalTrackingActive) {
-            target = (turret.currentPosition - (turretError / (2 * Math.PI) * (1425.1 * (138/16)))).coerceIn(
-                leftLimit,
-                rightLimit
-            )
+        if (goalTrackingActive) {
+            target =
+                (turret.currentPosition - (turretError / (2 * Math.PI) * (1425.1 * (138 / 16)))).coerceIn(
+                    leftLimit,
+                    rightLimit
+                )
         }
     }
 
-    fun turretHeading(heading: Double) :Double {
-        val curPos = turret.currentPosition.coerceIn(leftLimit + 500 , rightLimit - 500)
+    fun turretHeadingWithMargin(heading: Double): Double {
+        val curPos = turret.currentPosition.coerceIn(leftLimit + 500, rightLimit - 500)
         return (heading - (curPos - startPosition) * turretConversion)
+    }
+
+    fun turretHeading(heading: Double): Double {
+        return (heading - (turret.currentPosition - startPosition) * turretConversion)
+    }
+
+    fun turretAzDeg(): Double {
+        return Math.toDegrees((turret.currentPosition - startPosition) * turretConversion)
     }
 
     override fun periodic() {

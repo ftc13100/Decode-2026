@@ -6,7 +6,7 @@ import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode
 
 object Gate : Subsystem {
-    private lateinit var servo : Servo
+    private lateinit var servo: Servo
     override fun initialize() {
         servo = ActiveOpMode.hardwareMap.get(Servo::class.java, "gate")
     }

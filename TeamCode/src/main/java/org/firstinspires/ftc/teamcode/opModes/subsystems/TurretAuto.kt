@@ -9,8 +9,10 @@ import dev.nextftc.hardware.impl.MotorEx
 
 @Configurable
 object TurretAuto : Subsystem {
-    @JvmField var target = 0.0
-    @JvmField var posPIDCoefficients = PIDCoefficients(0.0097, 0.0, 0.00015)
+    @JvmField
+    var target = 0.0
+    @JvmField
+    var posPIDCoefficients = PIDCoefficients(0.0097, 0.0, 0.00015)
     val turret = MotorEx("turret").brakeMode().zeroed()
 
     override fun initialize() {

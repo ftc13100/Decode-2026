@@ -14,21 +14,21 @@ object ShooterController {
 
     private val shooterLookupTable: Map<Double, ShotParameters> = mapOf(
 //Distance      to ShotParameters(Dist,            Velocity,        Angle)                   // Origin (X, Y)
-        45.53   to ShotParameters(45.53, 985.0, 0.680),           // Pair(24, 120) //checked
-        52.85   to ShotParameters(52.85, 1020.0,0.620),           // Pair(36, 120) //checked v2
-        61.65   to ShotParameters(61.65, 1000.0, 0.560),          // Pair(48, 120) //checked
-        66.70   to ShotParameters(66.70, 1020.0, 0.550),          // Pair(48, 108) //checked v2
-        73.38   to ShotParameters(73.38, 1065.0, 0.580),          // Pair(48, 96) //checked
-        81.74   to ShotParameters(81.74, 1080.0, 0.540),          // Pair(72, 120) // checked
-        85.61   to ShotParameters(85.61, 1150.0, 0.530),          // Pair(72, 108) //checked v2
-        90.91   to ShotParameters(90.91, 1180.0, 0.530),          // Pair(72, 96) //checked
-        103.50  to ShotParameters(103.50, 1200.0, 0.500),         // Pair(96, 120) //checked
-        104.89  to ShotParameters(104.89, 1200.0, 0.510),         // Pair(72, 72) //checked
-        110.89  to ShotParameters(110.89, 1290.0, 0.500),         // Pair(96, 96) //checked
-        141.17  to ShotParameters(141.17, 1460.0, 0.500),         // Pair(72, 24) //checked
-        141.43  to ShotParameters(141.43, 1460.0, 0.500),         // Pair(48, 12) //checked
-        151.27  to ShotParameters(151.27, 1510.0, 0.520),         // Pair(72, 12) //checked
-        164.05  to ShotParameters(164.05, 1560.0, 0.520),         // Pair(96, 12) //checked
+        45.53 to ShotParameters(45.53, 985.0, 0.680),           // Pair(24, 120) //checked
+        52.85 to ShotParameters(52.85, 1020.0, 0.620),           // Pair(36, 120) //checked v2
+        61.65 to ShotParameters(61.65, 1000.0, 0.560),          // Pair(48, 120) //checked
+        66.70 to ShotParameters(66.70, 1020.0, 0.550),          // Pair(48, 108) //checked v2
+        73.38 to ShotParameters(73.38, 1065.0, 0.580),          // Pair(48, 96) //checked
+        81.74 to ShotParameters(81.74, 1080.0, 0.540),          // Pair(72, 120) // checked
+        85.61 to ShotParameters(85.61, 1150.0, 0.530),          // Pair(72, 108) //checked v2
+        90.91 to ShotParameters(90.91, 1180.0, 0.530),          // Pair(72, 96) //checked
+        103.50 to ShotParameters(103.50, 1200.0, 0.500),         // Pair(96, 120) //checked
+        104.89 to ShotParameters(104.89, 1200.0, 0.510),         // Pair(72, 72) //checked
+        110.89 to ShotParameters(110.89, 1290.0, 0.500),         // Pair(96, 96) //checked
+        141.17 to ShotParameters(141.17, 1460.0, 0.500),         // Pair(72, 24) //checked
+        141.43 to ShotParameters(141.43, 1460.0, 0.500),         // Pair(48, 12) //checked
+        151.27 to ShotParameters(151.27, 1510.0, 0.520),         // Pair(72, 12) //checked
+        164.05 to ShotParameters(164.05, 1560.0, 0.520),         // Pair(96, 12) //checked
     ).toSortedMap()
 
     private fun lerp(x: Double, x0: Double, x1: Double, y0: Double, y1: Double): Double {
@@ -43,7 +43,7 @@ object ShooterController {
 
     fun getShot(distance: Double): ShotParameters? {
         val keys = shooterLookupTable.keys.sorted()
-        val values = shooterLookupTable.values
+        shooterLookupTable.values
 
         // Clamp to bounds
         if (distance !in keys.first()..keys.last()) {

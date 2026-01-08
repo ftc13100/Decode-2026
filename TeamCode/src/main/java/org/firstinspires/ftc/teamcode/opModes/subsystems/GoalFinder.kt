@@ -13,11 +13,13 @@ import kotlin.math.sqrt
 
 object GoalFinder : Subsystem {
     var gfActive = false
-    var gfDone  = false
+    var gfDone = false
     var gfDoneMs = 0.0
 
     var gfTargetAngle = 0.0
-    var gfHeadingError = 0.0
+    var gfHeadingError =
+        0.0 // Current angular error of Shooter to Goal with margin for shooter adjustment. This is used to rotate robot
+    var gfTargetError = 0.0 // Current angular error of Shooter to Goal. Used for Telemetry
     var gfGoalAprilTagAdj = 0.0
     var gfAnglesValid = false
     var gfLLValid = false
@@ -42,7 +44,7 @@ object GoalFinder : Subsystem {
 
     fun normalizeAngle(angle: Double): Double {
         var a = angle
-        while (a > Math.PI)  a -= 2 * Math.PI
+        while (a > Math.PI) a -= 2 * Math.PI
         while (a < -Math.PI) a += 2 * Math.PI
         return a
     }
@@ -66,8 +68,7 @@ object GoalFinder : Subsystem {
         gfDone = false
     }
 
-    fun stop()
-    {
+    fun stop() {
         gfActive = false
         gfDone = false
 
@@ -76,15 +77,17 @@ object GoalFinder : Subsystem {
     }
 
     fun calculateAngles(pose: Pose, heading: Double, llResult: LLResult?, blueAlliance: Boolean) {
-        val adjX = if(blueAlliance) {
+        val adjX = if (blueAlliance) {
             pose.x
         } else {
             144.0 - pose.x
         }
 
         gfGoalDistance =
-            sqrt((adjX - goal.x).pow(2.0) + (pose.y - goal.y).pow(2.0) +
-                    shooterToGoalZSqrd)
+            sqrt(
+                (adjX - goal.x).pow(2.0) + (pose.y - goal.y).pow(2.0) +
+                        shooterToGoalZSqrd
+            )
 
         gfTargetAngle = if (blueAlliance) {
             Math.PI - atan2(abs(goal.y - pose.y), abs(goal.x - adjX))
@@ -92,7 +95,8 @@ object GoalFinder : Subsystem {
             atan2(abs(goal.y - pose.y), abs(goal.x - adjX))
         }
 
-        gfHeadingError = normalizeAngle(gfTargetAngle - Turret.turretHeading(heading))
+        gfHeadingError = normalizeAngle(gfTargetAngle - Turret.turretHeadingWithMargin(heading))
+        gfTargetError = normalizeAngle(gfTargetAngle - Turret.turretHeading(heading))
         gfAnglesValid = true
 
         if (llResult == null || !llResult.isValid) {
@@ -114,26 +118,31 @@ object GoalFinder : Subsystem {
         val goalVectorX = goal.x - adjX
         val goalVectorY = goal.y - pose.y
 
-        gfGoalAprilTagAdj = acos((aprilTagVecorX*goalVectorX+aprilTagVecorY*goalVectorY)/(sqrt(aprilTagVecorX*aprilTagVecorX+aprilTagVecorY*aprilTagVecorY)*sqrt(goalVectorX*goalVectorX+goalVectorY*goalVectorY)))
+        gfGoalAprilTagAdj = acos(
+            (aprilTagVecorX * goalVectorX + aprilTagVecorY * goalVectorY) / (sqrt(aprilTagVecorX * aprilTagVecorX + aprilTagVecorY * aprilTagVecorY) * sqrt(
+                goalVectorX * goalVectorX + goalVectorY * goalVectorY
+            ))
+        )
 
         if (blueAlliance) {
             if (gfTargetAngle < Math.PI * 3.0 / 4.0) {
                 // Turret has to turn left for adjustment
-                gfGoalAprilTagAdj = -gfGoalAprilTagAdj;
+                gfGoalAprilTagAdj = -gfGoalAprilTagAdj
             }
         } else {
             if (gfTargetAngle < Math.PI / 4.0) {
                 // Turret has to turn left for adjustment
-                gfGoalAprilTagAdj = -gfGoalAprilTagAdj;
+                gfGoalAprilTagAdj = -gfGoalAprilTagAdj
             }
         }
 
         gfTurretAdjLL = gfLLTx * TURRET_LL_ADJ_FACTOR
-        gfTurretAdjGoalAprilTag = gfGoalAprilTagAdj / (2 * Math.PI) * 1425.1 * (138/16)
+        gfTurretAdjGoalAprilTag = gfGoalAprilTagAdj / (2 * Math.PI) * 1425.1 * (138 / 16)
         gfTurretAdj = gfTurretAdjLL + gfTurretAdjGoalAprilTag
     }
+
     fun calculate(pose: Pose, heading: Double, llResult: LLResult?, blueAlliance: Boolean): Double {
-        if(pose.x < 0.0 || pose.x > 144.0 || pose.y < 0.0 || pose.y > 144.0) {
+        if (pose.x < 0.0 || pose.x > 144.0 || pose.y < 0.0 || pose.y > 144.0) {
             gfAnglesValid = false
             gfLLValid = false
             return 0.0
@@ -141,7 +150,7 @@ object GoalFinder : Subsystem {
 
         calculateAngles(pose, heading, llResult, blueAlliance)
 
-        if(!gfActive)
+        if (!gfActive)
             return 0.0
 
         if (gfBelowToleranceCount == 0 && abs(gfHeadingError) < HEADING_TOLERANCE_FINE) {
@@ -170,7 +179,7 @@ object GoalFinder : Subsystem {
     }
 
     fun adjustToLL() {
-        if(!gfAnglesValid || !gfLLValid) {
+        if (!gfAnglesValid || !gfLLValid) {
             return
         }
 
