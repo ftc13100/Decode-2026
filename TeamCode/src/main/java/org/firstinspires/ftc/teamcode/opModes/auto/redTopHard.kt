@@ -174,7 +174,6 @@ class redTopHard : NextFTCOpMode() {
                 ),
                 Intake.spinFast,
                 Delay(2.3.seconds),
-                //FollowPath(Wiggle),
                 ParallelGroup(
                     Shooter.stallShooter,
                     Intake.spinStop,
@@ -197,7 +196,6 @@ class redTopHard : NextFTCOpMode() {
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
-                //FollowPath(Wiggle),
                 ParallelGroup(
                     Shooter.stallShooter,
                     Intake.spinStop,
@@ -218,7 +216,6 @@ class redTopHard : NextFTCOpMode() {
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
-                //FollowPath(Wiggle),
                 ParallelGroup(
                     Shooter.stallShooter,
                     Gate.gate_close,
@@ -235,7 +232,6 @@ class redTopHard : NextFTCOpMode() {
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
-                //FollowPath(Wiggle),
                 ParallelGroup(
                     Shooter.stopShooter,
                     TurretAuto.toMid,
@@ -259,9 +255,6 @@ class redTopHard : NextFTCOpMode() {
 
     override fun onStop() {
         PoseStorage.poseEnd = follower.pose
-    }
-
-    override fun onUpdate() {
     }
 }
 

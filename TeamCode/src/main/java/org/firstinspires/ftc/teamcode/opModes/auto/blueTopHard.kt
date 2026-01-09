@@ -111,16 +111,6 @@ class blueTopHard : NextFTCOpMode() {
             .addPath(BezierLine(pickUpPPG2, gate))
             .setLinearHeadingInterpolation(pickUpPPG2.heading, gate.heading)
             .build()
-        Wiggle = follower.pathBuilder()
-            .addPath(BezierLine(shootPose, wigglePoint))
-            .setLinearHeadingInterpolation(shootPose.heading, wigglePoint.heading)
-            .addPath(BezierLine(wigglePoint, shootPose))
-            .setLinearHeadingInterpolation(shootPose.heading, wigglePoint.heading)
-            .addPath(BezierLine(shootPose, wigglePoint))
-            .setLinearHeadingInterpolation(shootPose.heading, wigglePoint.heading)
-            .addPath(BezierLine(wigglePoint, shootPose))
-            .setLinearHeadingInterpolation(shootPose.heading, wigglePoint.heading)
-            .build()
         //PPG paths
         PPGfirst = follower.pathBuilder()
             .addPath(BezierLine(shootPose, pickUpPPG1))
@@ -174,7 +164,6 @@ class blueTopHard : NextFTCOpMode() {
                 ),
                 Intake.spinFast,
                 Delay(2.3.seconds),
-                //FollowPath(Wiggle),
                 ParallelGroup(
                     Shooter.stallShooter,
                     Intake.spinStop,
@@ -197,7 +186,6 @@ class blueTopHard : NextFTCOpMode() {
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
-                //FollowPath(Wiggle),
                 ParallelGroup(
                     Shooter.stallShooter,
                     Intake.spinStop,
@@ -218,7 +206,6 @@ class blueTopHard : NextFTCOpMode() {
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
-                //FollowPath(Wiggle),
                 ParallelGroup(
                     Shooter.stallShooter,
                     Gate.gate_close,
@@ -235,7 +222,6 @@ class blueTopHard : NextFTCOpMode() {
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
-                //FollowPath(Wiggle),
                 ParallelGroup(
                     Shooter.stopShooter,
                     TurretAuto.toMid,
@@ -259,9 +245,6 @@ class blueTopHard : NextFTCOpMode() {
 
     override fun onStop() {
         PoseStorage.poseEnd = follower.pose
-    }
-
-    override fun onUpdate() {
     }
 }
 
