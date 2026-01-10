@@ -73,13 +73,18 @@ object Turret : Subsystem {
     }
 
     override fun initialize() {
-        turret.zero()
-        turret.motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        turret.motor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+//        turret.zero()
+//        turret.motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+//        turret.motor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
     fun initPos() {
-        startPosition = turret.currentPosition
+        startPosition =
+            if (PoseStorage.turretStartPos != Double.NaN)
+                PoseStorage.turretStartPos
+            else
+                turret.currentPosition
+
         target = startPosition
         rightLimit = startPosition + 3000.0
         leftLimit = startPosition - 3000.0

@@ -18,6 +18,7 @@ object TurretAuto : Subsystem {
 
     override fun initialize() {
         turret.zero()
+        PoseStorage.turretStartPos = turret.currentPosition
     }
 
     val controlSystem = controlSystem {
