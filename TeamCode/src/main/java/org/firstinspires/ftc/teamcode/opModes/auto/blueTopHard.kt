@@ -51,7 +51,7 @@ class blueTopHard : NextFTCOpMode() {
     //universal paths
     private val startPose = Pose(125.23, 121.52, Math.toRadians(37.0)).mirror()
     private val shootPose = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
-    private val leavePoint = Pose(84.0, 110.0, Math.toRadians(-16.5)).mirror()
+    private val leavePoint = Pose(84.0, 110.0, Math.toRadians(31.0)).mirror()
 
     private val wigglePoint = Pose(87.0, 113.0, Math.toRadians(-16.5)).mirror()
     private val gate = Pose(127.5, 75.90674955595027, Math.toRadians(125.0)).mirror()
@@ -118,7 +118,7 @@ class blueTopHard : NextFTCOpMode() {
             .build()
         PPGsecond = follower.pathBuilder()
             .addPath(BezierLine(pickUpPPG1, pickUpPPG2))
-            .setConstantHeadingInterpolation(0.0)
+            .setLinearHeadingInterpolation(pickUpPPG1.heading, pickUpPPG2.heading)
             .build()
         PPGtoShotMove = follower.pathBuilder()
             .addPath(BezierLine(gate, PPGtoShot))
@@ -131,7 +131,7 @@ class blueTopHard : NextFTCOpMode() {
             .build()
         PGPsecond = follower.pathBuilder()
             .addPath(BezierLine(pickUpPGP1, pickUpPGP2))
-            .setConstantHeadingInterpolation(0.0)
+            .setLinearHeadingInterpolation(pickUpPGP1.heading, pickUpPGP2.heading)
             .build()
         PGPtoShotMove = follower.pathBuilder()
             .addPath(BezierCurve(pickUpPGP2, PGPtoShotControl, PGPtoShot))
@@ -144,7 +144,7 @@ class blueTopHard : NextFTCOpMode() {
             .build()
         GPPsecond = follower.pathBuilder()
             .addPath(BezierLine(pickUpGPP1, pickUpGPP2))
-            .setConstantHeadingInterpolation(0.0)
+            .setLinearHeadingInterpolation(pickUpGPP1.heading, pickUpGPP2.heading)
             .build()
         GPPtoShotMove = follower.pathBuilder()
             .addPath(BezierLine(pickUpGPP2, GPPtoShot))
@@ -215,6 +215,7 @@ class blueTopHard : NextFTCOpMode() {
                 FollowPath(GPPsecond, holdEnd = true, maxPower = 0.65),
                 Intake.spinStop,
                 ParallelGroup(
+                    TurretAuto.toMid,
                     FollowPath(Leave),
                     ShooterAngle.angle_kindaUP,
                     Shooter.spinAtSpeed(1150.0),

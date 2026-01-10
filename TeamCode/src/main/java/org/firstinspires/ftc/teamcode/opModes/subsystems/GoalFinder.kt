@@ -22,7 +22,7 @@ object GoalFinder : Subsystem {
         0.0 // Current angular error of Shooter to Goal with margin for shooter adjustment. This is used to rotate robot
 
     val gfReady: Boolean
-        get() = abs(Turret.turretErrorTicks) < 5.0
+        get() = if (Turret.goalTrackingActive) abs(Turret.turretErrorTicks) < 5.0 else true
 
     var gfGoalAprilTagAdj = 0.0
     var gfAnglesValid = false

@@ -51,7 +51,7 @@ class redTopHard : NextFTCOpMode() {
     //universal paths
     private val startPose = Pose(125.23, 121.52, Math.toRadians(37.0))
     private val shootPose = Pose(84.0, 84.0, Math.toRadians(0.0))
-    private val leavePoint = Pose(84.0, 110.0, Math.toRadians(-16.5))
+    private val leavePoint = Pose(84.0, 110.0, Math.toRadians(31.5))
 
     private val wigglePoint = Pose(87.0, 113.0, Math.toRadians(-16.5))
     private val gate = Pose(127.5, 75.90674955595027, Math.toRadians(125.0))
@@ -225,6 +225,7 @@ class redTopHard : NextFTCOpMode() {
                 FollowPath(GPPsecond, holdEnd = true, maxPower = 0.65),
                 Intake.spinStop,
                 ParallelGroup(
+                    TurretAuto.toMid,
                     FollowPath(Leave),
                     ShooterAngle.angle_kindaUP,
                     Shooter.spinAtSpeed(1150.0),
