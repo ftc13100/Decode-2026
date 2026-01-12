@@ -62,9 +62,9 @@ class blueTopHard : NextFTCOpMode() {
     private val PPGtoShot = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
 
     //paths to pick up PGP
-    private val pickUpPGP1 = Pose(96.0, 60.0, Math.toRadians(0.0)).mirror()
+    private val pickUpPGP1 = Pose(96.0, 58.0, Math.toRadians(0.0)).mirror()
     private val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0)).mirror()
-    private val pickUpPGP2 = Pose(133.3, 60.0, Math.toRadians(0.0)).mirror()
+    private val pickUpPGP2 = Pose(133.3, 58.0, Math.toRadians(0.0)).mirror()
     private val PGPtoShot = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
     private val PGPtoShotControl = Pose(77.485, 53.68, Math.toRadians(0.0)).mirror()
 
@@ -118,7 +118,7 @@ class blueTopHard : NextFTCOpMode() {
             .build()
         PPGsecond = follower.pathBuilder()
             .addPath(BezierLine(pickUpPPG1, pickUpPPG2))
-            .setConstantHeadingInterpolation(-180.0)
+            .setLinearHeadingInterpolation(pickUpPGP1.heading, pickUpPGP2.heading)
             .build()
         PPGtoShotMove = follower.pathBuilder()
             .addPath(BezierLine(gate, PPGtoShot))
@@ -131,7 +131,7 @@ class blueTopHard : NextFTCOpMode() {
             .build()
         PGPsecond = follower.pathBuilder()
             .addPath(BezierLine(pickUpPGP1, pickUpPGP2))
-            .setConstantHeadingInterpolation(-180.0)
+            .setLinearHeadingInterpolation(pickUpPGP1.heading, pickUpPGP2.heading)
      //       .setLinearHeadingInterpolation(pickUpPGP1.heading, pickUpPGP2.heading)
             .build()
         PGPtoShotMove = follower.pathBuilder()
@@ -145,7 +145,7 @@ class blueTopHard : NextFTCOpMode() {
             .build()
         GPPsecond = follower.pathBuilder()
             .addPath(BezierLine(pickUpGPP1, pickUpGPP2))
-            .setConstantHeadingInterpolation(-180.0)
+            .setLinearHeadingInterpolation(pickUpGPP1.heading, pickUpGPP2.heading)
             .build()
         GPPtoShotMove = follower.pathBuilder()
             .addPath(BezierLine(pickUpGPP2, GPPtoShot))
@@ -208,28 +208,11 @@ class blueTopHard : NextFTCOpMode() {
                 Intake.spinFast,
                 Delay(1.8.seconds),
                 ParallelGroup(
-                    Shooter.stallShooter,
-                    Gate.gate_close,
-                    FollowPath(GPPfirst),
-                    Intake.spinFast
-                ),
-                FollowPath(GPPsecond, holdEnd = true, maxPower = 0.65),
-                Intake.spinStop,
-                ParallelGroup(
-                    TurretAuto.toMid,
-                    FollowPath(Leave),
-                    ShooterAngle.angle_kindaUP,
-                    Shooter.spinAtSpeed(1150.0),
-                    Gate.gate_open,
-                ),
-                Intake.spinFast,
-                Delay(1.8.seconds),
-                ParallelGroup(
                     Shooter.stopShooter,
-                    TurretAuto.toMid,
                     Gate.gate_close,
-                    Intake.spinStop
-                ),
+                    FollowPath(Leave),
+                    Intake.spinFast
+                )
             )
 
     override fun onInit() {
