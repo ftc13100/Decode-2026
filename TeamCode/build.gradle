@@ -10,11 +10,24 @@
 
 
 // Custom definitions may go here
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://repo.dairy.foundation/releases"
+        }
+    }
+    dependencies {
+        classpath "dev.frozenmilk:Load:0.2.4"
+    }
+}
 
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
 apply plugin: 'kotlin-android'
+apply plugin: 'dev.frozenmilk.sinister.sloth.load'
+
 
 kotlin {
     jvmToolchain(17)
@@ -28,8 +41,20 @@ android {
     }
 }
 
+repositories {
+    // Dairy releases repository
+    maven {
+        url = "https://repo.dairy.foundation/releases"
+    }
+    // Dairy snapshots repository
+    maven {
+        url = "https://repo.dairy.foundation/snapshots"
+    }
+}
+
 dependencies {
     implementation project(':FtcRobotController')
+    implementation("dev.frozenmilk.sinister:Sloth:0.2.4")
 
     implementation 'dev.nextftc:ftc:1.0.1'
     implementation 'dev.nextftc:hardware:1.0.1'
@@ -38,5 +63,5 @@ dependencies {
     implementation 'dev.nextftc.extensions:pedro:1.0.0'
 
     implementation 'androidx.core:core-ktx:1.15.0'
-    implementation 'com.acmerobotics.dashboard:dashboard:0.5.0'
+    implementation 'com.bylazar:fullpanels:1.0.9'
 }
