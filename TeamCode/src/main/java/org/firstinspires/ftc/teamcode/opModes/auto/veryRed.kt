@@ -58,9 +58,9 @@ class veryRed : NextFTCOpMode() {
     private val PPGtoShot = Pose(84.0, 84.0, Math.toRadians(0.0))
 
     //paths to pick up PGP
-    private val pickUpPGP1 = Pose(96.0, 58.0, Math.toRadians(0.0))
+    private val pickUpPGP1 = Pose(96.0, 57.0, Math.toRadians(0.0))
     private val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0))
-    private val pickUpPGP2 = Pose(134.3, 58.0, Math.toRadians(0.0))
+    private val pickUpPGP2 = Pose(134.3, 57.0, Math.toRadians(0.0))
     private val pickUpPGP = Pose(134.3, 58.0, Math.toRadians(0.0))
 
 
@@ -214,7 +214,7 @@ class veryRed : NextFTCOpMode() {
                     FollowPath(TheGate),
                     Gate.gate_close
                 ),
-                Delay(1.8.seconds),
+                Delay(4.seconds),
                 ParallelGroup(
                     Intake.spinStop,
                     FollowPath(PGPtoShotMove),
