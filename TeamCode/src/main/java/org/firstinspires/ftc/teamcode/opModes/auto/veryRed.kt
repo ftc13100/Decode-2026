@@ -60,11 +60,14 @@ class veryRed : NextFTCOpMode() {
     //paths to pick up PGP
     private val pickUpPGP1 = Pose(96.0, 57.0, Math.toRadians(0.0))
     private val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0))
-    private val pickUpPGP2 = Pose(134.3, 57.0, Math.toRadians(0.0))
+    private val pickUpPGP2 = Pose(135.8, 57.0, Math.toRadians(0.0))
     private val pickUpPGP = Pose(134.3, 58.0, Math.toRadians(0.0))
 
 
-    private val HitGate = Pose(134.50847457627117, 60.203389830508485, Math.toRadians(45.0))
+    private val HitGate = Pose(135.50847457627117, 60.203389830508485, Math.toRadians(45.0))
+
+    private val HitGateControl = Pose(90.7627118644068, 61.42372881355935, Math.toRadians(45.0))
+
 
 
 
@@ -78,6 +81,9 @@ class veryRed : NextFTCOpMode() {
     private val GPPtoShot = Pose(84.0, 84.0, Math.toRadians(0.0))
 
     private val pickUpHP = Pose(132.27118644067792, 9.152542372881353, Math.toRadians(-90.0))
+
+    private val Leavepoint = Pose(87.72881355932205, 110.42372881355934, Math.toRadians(45.0))
+
     private val pickUpHPControl = Pose(134.3, 36.0, Math.toRadians(0.0))
 
 
@@ -99,6 +105,9 @@ class veryRed : NextFTCOpMode() {
     private lateinit var HPfirst: PathChain
     private lateinit var HPtoShoot: PathChain
 
+    private lateinit var Leave: PathChain
+
+
 
 
     //Move a bit
@@ -111,6 +120,11 @@ class veryRed : NextFTCOpMode() {
         GoToShot = follower.pathBuilder()
             .addPath(BezierLine(startPose, shootPose))
             .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
+            .build()
+
+        Leave = follower.pathBuilder()
+            .addPath(BezierLine(pickUpGPP2, Leavepoint))
+            .setLinearHeadingInterpolation(startPose.heading, Leavepoint.heading)
             .build()
 
         //PPG paths
@@ -136,7 +150,7 @@ class veryRed : NextFTCOpMode() {
             .setConstantHeadingInterpolation(0.0)
             .build()
         TheGate = follower.pathBuilder()
-            .addPath(BezierCurve(PPGtoShot, HitGate))
+            .addPath(BezierCurve(PPGtoShot, HitGateControl, HitGate))
             .setLinearHeadingInterpolation(pickUpPGP2.heading, HitGate.heading)
             .build()
         PGPtoShotMove = follower.pathBuilder()
@@ -194,9 +208,18 @@ class veryRed : NextFTCOpMode() {
                 Intake.spinFast,
                 Delay(1.8.seconds),
                 ParallelGroup(
-                    Intake.spinStop,
+                    FollowPath(TheGate),
                     Gate.gate_close
                 ),
+                Delay(2.2.seconds),
+                ParallelGroup(
+                    Intake.spinStop,
+                    FollowPath(PGPtoShotMove),
+                    ShooterAngle.angle_kindaUP,
+                    Gate.gate_open,
+                ),
+                Intake.spinFast,
+                Delay(1.8.seconds),
                 ParallelGroup(
                     FollowPath(PPGsecond, holdEnd = true, maxPower = 0.8),
                     Gate.gate_close,
@@ -210,19 +233,7 @@ class veryRed : NextFTCOpMode() {
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
-                ParallelGroup(
-                    FollowPath(TheGate),
-                    Gate.gate_close
-                ),
-                Delay(4.seconds),
-                ParallelGroup(
-                    Intake.spinStop,
-                    FollowPath(PGPtoShotMove),
-                    ShooterAngle.angle_kindaUP,
-                    Gate.gate_open,
-                ),
-                Intake.spinFast,
-                Delay(1.8.seconds),
+
                 ParallelGroup(
                     FollowPath(GPPfirst),
                     Gate.gate_close,
@@ -231,9 +242,10 @@ class veryRed : NextFTCOpMode() {
                 FollowPath(GPPsecond, holdEnd = true, maxPower = 0.8),
                 Intake.spinStop,
                 ParallelGroup(
-                    FollowPath(GPPtoShotMove),
+                    FollowPath(Leave),
                     ShooterAngle.angle_kindaUP,
                     Gate.gate_open,
+                    TurretAuto.toMid
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
@@ -241,9 +253,6 @@ class veryRed : NextFTCOpMode() {
                     Shooter.stopShooter,
                     Gate.gate_close,
                     Intake.spinStop,
-                    TurretAuto.toMid,
-                    FollowPath(PGPfirst)
-
                     )
             )
 
