@@ -24,8 +24,8 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
-@Autonomous(name = "blueBottomMohit")
-class blueBottomMohit : NextFTCOpMode() {
+@Autonomous(name = "redBottom3")
+class redBottom3 : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
@@ -37,10 +37,11 @@ class blueBottomMohit : NextFTCOpMode() {
         )
     }
 
-    private val startPose = Pose(56.0, 7.5, Math.toRadians(90.0))
-    private val shootPose = Pose(56.0, 10.5, Math.toRadians(90.0))
+    private val startPose = Pose(56.0, 7.5, Math.toRadians(90.0)).mirror()
+    private val shootPose = Pose(56.0, 10.5, Math.toRadians(90.0)).mirror()
 
-    private val leavePoint = Pose(36.49261083743842, 8.20935960591133, Math.toRadians(90.0))
+    private val leavePoint =
+        Pose(36.49261083743842, 8.20935960591133, Math.toRadians(90.0)).mirror()
     private lateinit var Leave: PathChain
     private lateinit var shoot: PathChain
 
@@ -61,7 +62,7 @@ class blueBottomMohit : NextFTCOpMode() {
                 ParallelGroup(
                     ShooterAngle.angle_up,
                     Shooter.spinAtSpeed(1450.0),
-                    TurretAuto.toLeftMohit,
+                    TurretAuto.toRightMohit,
                     Gate.gate_open,
                     FollowPath(shoot)
 
@@ -88,8 +89,8 @@ class blueBottomMohit : NextFTCOpMode() {
     override fun onStartButtonPressed() {
         follower.setStartingPose(startPose)
         buildPaths()
-        PoseStorage.blueAlliance = true
-        PoseStorage.redAlliance = false
+        PoseStorage.blueAlliance = false
+        PoseStorage.redAlliance = true
         autoRoutine()
     }
 

@@ -25,8 +25,8 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
-@Autonomous(name = "redTopHard")
-class redTopHard : NextFTCOpMode() {
+@Autonomous(name = "redTop9")
+class redTop9 : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
