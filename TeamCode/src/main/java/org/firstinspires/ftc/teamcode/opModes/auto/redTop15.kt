@@ -51,8 +51,6 @@ class redTop15 : NextFTCOpMode() {
     private val pickUpPGP1 = Pose(96.0, 57.0, Math.toRadians(0.0))
     private val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0))
     private val pickUpPGP2 = Pose(135.8, 57.0, Math.toRadians(0.0))
-    private val pickUpPGP = Pose(134.3, 58.0, Math.toRadians(0.0))
-
 
     private val HitGate = Pose(135.50847457627117, 60.203389830508485, Math.toRadians(45.0))
 
@@ -62,7 +60,6 @@ class redTop15 : NextFTCOpMode() {
 
 
     private val PGPtoShot = Pose(84.0, 84.0, Math.toRadians(0.0))
-    private val PGPtoShotControl = Pose(97.85932203389831, 57.64406779661017, Math.toRadians(0.0))
 
 
     //path to pick up GPP motif
@@ -74,7 +71,6 @@ class redTop15 : NextFTCOpMode() {
 
     private val Leavepoint = Pose(87.72881355932205, 110.42372881355934, Math.toRadians(45.0))
 
-    private val pickUpHPControl = Pose(134.3, 36.0, Math.toRadians(0.0))
 
 
     //PPG path chains
