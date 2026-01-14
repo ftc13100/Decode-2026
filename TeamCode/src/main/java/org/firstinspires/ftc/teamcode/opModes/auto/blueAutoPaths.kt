@@ -4,19 +4,10 @@ import com.pedropathing.geometry.BezierCurve
 import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
-import com.qualcomm.hardware.limelightvision.LLResult
-import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
-import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.SHOOTER_TO_GOAL_Z_SQRD
-import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goal
-import kotlin.math.abs
-import kotlin.math.acos
-import kotlin.math.atan2
-import kotlin.math.pow
-import kotlin.math.sqrt
 
-object AutoPaths : Subsystem {
+object blueAutoPaths : Subsystem {
     ////////KEY//////////
     //pickUp_____1 == Getting to pick up motif row
     //pickUp_____2 == Ramming into the motif
@@ -26,41 +17,67 @@ object AutoPaths : Subsystem {
     ///////DOCS//////////
     //Parallel Groups    == Everything within happens at the same time
     //Sequential Groups  == Everything within happens chronologically
-    private val startPose = Pose(125.23, 121.52, Math.toRadians(37.0)).mirror()
-    private val shootPose = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
-    private val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0)).mirror()
-    private val pickUpPPG2 = Pose(127.2, 84.0, Math.toRadians(0.0)).mirror()
-    private val PPGtoShot = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
-    private val pickUpPGP1 = Pose(96.0, 57.0, Math.toRadians(0.0)).mirror()
-    private val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0))
-    private val pickUpPGP2 = Pose(135.8, 57.0, Math.toRadians(0.0))
-    private val PGPtoShot = Pose(84.0, 84.0, Math.toRadians(0.0))
-    private val pickUpGPP1 = Pose(98.25, 36.0, Math.toRadians(0.0)).mirror()
-    private val pickUpGPP2 = Pose(134.3, 36.0, Math.toRadians(0.0)).mirror()
-    private val GPPtoShot = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
-    private val pickUpHP = Pose(132.27, 9.15, Math.toRadians(-90.0)).mirror()
-    private val leavePoint = Pose(87.73, 110.42, Math.toRadians(45.0)).mirror()
-    private val hitGate = Pose(135.51, 60.203, Math.toRadians(45.0)).mirror()
-    private val hitGateControl = Pose(90.76, 61.42, Math.toRadians(45.0)).mirror()
-    private lateinit var PPGfirst: PathChain
-    private lateinit var PPGsecond: PathChain
-    private lateinit var PPGtoShotMove: PathChain
-    private lateinit var PGPfirst: PathChain
-    private lateinit var PGPsecond: PathChain
-    private lateinit var PGPtoShotMove: PathChain
-    private lateinit var GPPfirst: PathChain
-    private lateinit var GPPsecond: PathChain
-    private lateinit var GPPtoShotMove: PathChain
-    private lateinit var TheGate: PathChain
-    private lateinit var Leave: PathChain
-    private lateinit var GoToShot: PathChain
+    public val startPose = Pose(125.23, 121.52, Math.toRadians(37.0)).mirror()
+    public val shootPose = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
+    public val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0)).mirror()
+    public val pickUpPPG2 = Pose(127.2, 84.0, Math.toRadians(0.0)).mirror()
+    public val PPGtoShot = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
+    public val pickUpPGP1 = Pose(96.0, 57.0, Math.toRadians(0.0)).mirror()
+    public val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0)).mirror()
+    public val pickUpPGP2 = Pose(135.8, 57.0, Math.toRadians(0.0)).mirror()
+    public val PGPtoShot = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
+    public val pickUpGPP1 = Pose(98.25, 36.0, Math.toRadians(0.0)).mirror()
+    public val pickUpGPP2 = Pose(134.3, 36.0, Math.toRadians(0.0)).mirror()
+    public val GPPtoShot = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
 
-    private fun buildPaths() {
+    public val gate = Pose(127.5, 75.90674955595027, Math.toRadians(125.0))
+
+    public val pickUpHP = Pose(132.27, 9.15, Math.toRadians(-90.0)).mirror()
+    public val leavePoint = Pose(87.73, 110.42, Math.toRadians(45.0)).mirror()
+    public val hitGate = Pose(135.51, 60.203, Math.toRadians(45.0)).mirror()
+    public val hitGateControl = Pose(90.76, 61.42, Math.toRadians(45.0)).mirror()
+
+    public val bottomstartPose = Pose(56.0, 7.5, Math.toRadians(90.0))
+    public val bottomshootPose = Pose(56.0, 10.5, Math.toRadians(90.0))
+
+    public val bottomleavePoint = Pose(36.49261083743842, 8.20935960591133, Math.toRadians(90.0))
+    
+    public lateinit var PPGfirst: PathChain
+    public lateinit var PPGsecond: PathChain
+    public lateinit var PPGtoShotMove: PathChain
+    public lateinit var PGPfirst: PathChain
+    public lateinit var PGPsecond: PathChain
+    public lateinit var PGPtoShotMove: PathChain
+    public lateinit var GPPfirst: PathChain
+    public lateinit var GPPsecond: PathChain
+    public lateinit var GPPtoShotMove: PathChain
+    public lateinit var TheGate: PathChain
+    public lateinit var Leave: PathChain
+    public lateinit var GoToShot: PathChain
+    public lateinit var MohitHitGate: PathChain
+    public lateinit var bottomshoot: PathChain
+    public lateinit var bottomLeave: PathChain
+
+
+
+
+
+    public fun buildPaths() {
+    bottomshoot = follower.pathBuilder()
+        .addPath(BezierLine(bottomstartPose, bottomshootPose))
+        .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
+        .build()
+    bottomLeave = follower.pathBuilder()
+         .addPath(BezierLine(bottomstartPose, bottomleavePoint))
+         .setLinearHeadingInterpolation(shootPose.heading, leavePoint.heading)
+         .build()
+
 
     GoToShot = follower.pathBuilder()
         .addPath(BezierLine(startPose, shootPose))
         .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
         .build()
+
     Leave = follower.pathBuilder()
         .addPath(BezierLine(pickUpGPP2, leavePoint))
         .setLinearHeadingInterpolation(startPose.heading, leavePoint.heading)
@@ -107,6 +124,10 @@ object AutoPaths : Subsystem {
         .addPath(BezierLine(pickUpGPP2, GPPtoShot))
         .setLinearHeadingInterpolation(pickUpGPP2.heading, GPPtoShot.heading)
         .build()
+    MohitHitGate = follower.pathBuilder()
+            .addPath(BezierLine(pickUpPPG2, gate))
+            .setLinearHeadingInterpolation(pickUpPPG2.heading,gate.heading)
+            .build()
 
 }
 

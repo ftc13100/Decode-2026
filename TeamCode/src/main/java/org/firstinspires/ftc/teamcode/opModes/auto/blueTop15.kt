@@ -20,6 +20,19 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.TurretAuto
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.GPPfirst
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.GPPsecond
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.GoToShot
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.Leave
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.PGPfirst
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.PGPsecond
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.PGPtoShotMove
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.PPGsecond
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.PPGtoShotMove
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.TheGate
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.buildPaths
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.startPose
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
@@ -31,133 +44,12 @@ class blueTop15 : NextFTCOpMode() {
         addComponents(
             SubsystemComponent(
                 MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
-                TurretAuto
+                TurretAuto, blueAutoPaths
             ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
     }
-
-    //universal paths
-    private val startPose = Pose(125.23, 121.52, Math.toRadians(37.0)).mirror()
-    private val shootPose = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
-
-    //path to pick up PPG motif
-    private val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0)).mirror()
-    private val pickUpPPG2 = Pose(127.2, 84.0, Math.toRadians(0.0)).mirror()
-    private val PPGtoShot = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
-    //paths to pick up PGP
-    private val pickUpPGP1 = Pose(96.0, 57.0, Math.toRadians(0.0)).mirror()
-    private val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0))
-    private val pickUpPGP2 = Pose(135.8, 57.0, Math.toRadians(0.0))
-    private val HitGate = Pose(135.50847457627117, 60.203389830508485, Math.toRadians(45.0)).mirror()
-    private val HitGateControl = Pose(90.7627118644068, 61.42372881355935, Math.toRadians(45.0)).mirror()
-    private val PGPtoShot = Pose(84.0, 84.0, Math.toRadians(0.0))
-
-    //path to pick up GPP motif
-    private val pickUpGPP1 = Pose(98.25, 36.0, Math.toRadians(0.0)).mirror()
-    private val pickUpGPP2 = Pose(134.3, 36.0, Math.toRadians(0.0)).mirror()
-    private val GPPtoShot = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
-    private val pickUpHP = Pose(132.27118644067792, 9.152542372881353, Math.toRadians(-90.0)).mirror()
-    private val Leavepoint = Pose(87.72881355932205, 110.42372881355934, Math.toRadians(45.0)).mirror()
-
-
-
-    //PPG path chains
-    private lateinit var PPGfirst: PathChain
-    private lateinit var PPGsecond: PathChain
-    private lateinit var PPGtoShotMove: PathChain
-
-    //PGP path chains
-    private lateinit var PGPfirst: PathChain
-    private lateinit var PGPsecond: PathChain
-    private lateinit var PGPtoShotMove: PathChain
-
-    //GPP path chains
-    private lateinit var GPPfirst: PathChain
-    private lateinit var GPPsecond: PathChain
-    private lateinit var GPPtoShotMove: PathChain
-    private lateinit var TheGate: PathChain
-    private lateinit var HPfirst: PathChain
-    private lateinit var HPtoShoot: PathChain
-
-    private lateinit var Leave: PathChain
-
-
-
-
-    //Move a bit
-    private lateinit var GoToShot: PathChain
-
-
-
-    private fun buildPaths() {
-        //Universal Paths
-        GoToShot = follower.pathBuilder()
-            .addPath(BezierLine(startPose, shootPose))
-            .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
-            .build()
-
-        Leave = follower.pathBuilder()
-            .addPath(BezierLine(pickUpGPP2, Leavepoint))
-            .setLinearHeadingInterpolation(startPose.heading, Leavepoint.heading)
-            .build()
-
-        //PPG paths
-        PPGfirst = follower.pathBuilder()
-            .addPath(BezierLine(shootPose, pickUpPPG1))
-            .setLinearHeadingInterpolation(shootPose.heading, pickUpPPG1.heading)
-            .build()
-        PPGsecond = follower.pathBuilder()
-            .addPath(BezierLine(pickUpPPG1, pickUpPPG2))
-            .setConstantHeadingInterpolation(0.0)
-            .build()
-        PPGtoShotMove = follower.pathBuilder()
-            .addPath(BezierLine(pickUpPPG2, PPGtoShot))
-            .setLinearHeadingInterpolation(pickUpPPG2.heading, PPGtoShot.heading)
-            .build()
-        //PGP paths
-        PGPfirst = follower.pathBuilder()
-            .addPath(BezierCurve(shootPose, pickUpPGPControl, pickUpPGP1))
-            .setLinearHeadingInterpolation(shootPose.heading, pickUpPGP1.heading)
-            .build()
-        PGPsecond = follower.pathBuilder()
-            .addPath(BezierLine(pickUpPGP1, pickUpPGP2))
-            .setConstantHeadingInterpolation(0.0)
-            .build()
-        TheGate = follower.pathBuilder()
-            .addPath(BezierCurve(PPGtoShot, HitGateControl, HitGate))
-            .setLinearHeadingInterpolation(pickUpPGP2.heading, HitGate.heading)
-            .build()
-        PGPtoShotMove = follower.pathBuilder()
-            .addPath(BezierLine(pickUpPGP2, PGPtoShot))
-            .setLinearHeadingInterpolation(pickUpPGP2.heading, PGPtoShot.heading)
-            .build()
-
-        //GPP paths
-        GPPfirst = follower.pathBuilder()
-            .addPath(BezierLine(shootPose, pickUpGPP1))
-            .setLinearHeadingInterpolation(shootPose.heading, pickUpGPP1.heading)
-            .build()
-        GPPsecond = follower.pathBuilder()
-            .addPath(BezierLine(pickUpGPP1, pickUpGPP2))
-            .setConstantHeadingInterpolation(0.0)
-            .build()
-        GPPtoShotMove = follower.pathBuilder()
-            .addPath(BezierLine(pickUpGPP2, GPPtoShot))
-            .setLinearHeadingInterpolation(pickUpGPP2.heading, GPPtoShot.heading)
-            .build()
-
-        HPfirst = follower.pathBuilder()
-            .addPath(BezierCurve(shootPose, pickUpHP))
-            .setTangentHeadingInterpolation()
-            .build()
-        HPtoShoot = follower.pathBuilder()
-            .addPath(BezierCurve(HitGate, shootPose))
-            .setLinearHeadingInterpolation(HitGate.heading,shootPose.heading)
-            .build()
-    }
-
     val autoRoutine: Command
         get() =
             SequentialGroup(

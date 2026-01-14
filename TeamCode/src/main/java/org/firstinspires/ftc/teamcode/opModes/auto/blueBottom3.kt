@@ -19,6 +19,11 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.TurretAuto
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.bottomLeave
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.bottomshoot
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.bottomstartPose
+import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.buildPaths
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
@@ -30,30 +35,14 @@ class blueBottom3 : NextFTCOpMode() {
         addComponents(
             SubsystemComponent(
                 MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
-                TurretAuto
+                TurretAuto, blueAutoPaths
             ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
     }
 
-    private val startPose = Pose(56.0, 7.5, Math.toRadians(90.0))
-    private val shootPose = Pose(56.0, 10.5, Math.toRadians(90.0))
 
-    private val leavePoint = Pose(36.49261083743842, 8.20935960591133, Math.toRadians(90.0))
-    private lateinit var Leave: PathChain
-    private lateinit var shoot: PathChain
-
-    private fun buildPaths() {
-        shoot = follower.pathBuilder()
-            .addPath(BezierLine(startPose, shootPose))
-            .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
-            .build()
-        Leave = follower.pathBuilder()
-            .addPath(BezierLine(startPose, leavePoint))
-            .setLinearHeadingInterpolation(shootPose.heading, leavePoint.heading)
-            .build()
-    }
 
     val autoRoutine: Command
         get() =
@@ -63,7 +52,7 @@ class blueBottom3 : NextFTCOpMode() {
                     Shooter.spinAtSpeed(1450.0),
                     TurretAuto.toLeftMohit,
                     Gate.gate_open,
-                    FollowPath(shoot)
+                    FollowPath(bottomshoot)
 
                 ),
                 Intake.spinFast,
@@ -75,7 +64,7 @@ class blueBottom3 : NextFTCOpMode() {
                 ),
                 ParallelGroup(
                     TurretAuto.toMid,
-                    FollowPath(Leave),
+                    FollowPath(bottomLeave),
                     Gate.gate_close
                 )
             )
@@ -86,7 +75,7 @@ class blueBottom3 : NextFTCOpMode() {
     }
 
     override fun onStartButtonPressed() {
-        follower.setStartingPose(startPose)
+        follower.setStartingPose(bottomstartPose)
         buildPaths()
         PoseStorage.blueAlliance = true
         PoseStorage.redAlliance = false

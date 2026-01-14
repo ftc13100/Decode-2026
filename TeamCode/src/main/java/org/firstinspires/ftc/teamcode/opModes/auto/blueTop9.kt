@@ -102,7 +102,7 @@ class blueTop9 : NextFTCOpMode() {
             .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
             .build()
         Leave = follower.pathBuilder()
-            .addPath(BezierLine(pickUpGPP2, leavePoint))
+            .addPath(BezierLine(shootPose, leavePoint))
             .setLinearHeadingInterpolation(shootPose.heading, leavePoint.heading)
             .build()
         MohitHitGate = follower.pathBuilder()
