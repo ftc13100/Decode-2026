@@ -1,8 +1,5 @@
-package org.firstinspires.ftc.teamcode.opModes.auto
+package org.firstinspires.ftc.teamcode.opModes.auto.red
 
-import com.pedropathing.geometry.BezierLine
-import com.pedropathing.geometry.Pose
-import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
@@ -11,9 +8,9 @@ import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
-import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
@@ -30,30 +27,11 @@ class redBottom3 : NextFTCOpMode() {
         addComponents(
             SubsystemComponent(
                 MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
-                TurretAuto
+                TurretAuto, redAutoPaths
             ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
-    }
-
-    private val startPose = Pose(56.0, 7.5, Math.toRadians(90.0)).mirror()
-    private val shootPose = Pose(56.0, 10.5, Math.toRadians(90.0)).mirror()
-
-    private val leavePoint =
-        Pose(36.49261083743842, 8.20935960591133, Math.toRadians(90.0)).mirror()
-    private lateinit var Leave: PathChain
-    private lateinit var shoot: PathChain
-
-    private fun buildPaths() {
-        shoot = follower.pathBuilder()
-            .addPath(BezierLine(startPose, shootPose))
-            .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
-            .build()
-        Leave = follower.pathBuilder()
-            .addPath(BezierLine(startPose, leavePoint))
-            .setLinearHeadingInterpolation(shootPose.heading, leavePoint.heading)
-            .build()
     }
 
     val autoRoutine: Command
@@ -64,7 +42,7 @@ class redBottom3 : NextFTCOpMode() {
                     Shooter.spinAtSpeed(1450.0),
                     TurretAuto.toRightMohit,
                     Gate.gate_open,
-                    FollowPath(shoot)
+                    FollowPath(redAutoPaths.bottomShoot)
 
                 ),
                 Intake.spinFast,
@@ -76,30 +54,28 @@ class redBottom3 : NextFTCOpMode() {
                 ),
                 ParallelGroup(
                     TurretAuto.toMid,
-                    FollowPath(Leave),
+                    FollowPath(redAutoPaths.bottomLeave),
                     Gate.gate_close
                 )
             )
 
     override fun onInit() {
-        follower.setMaxPower(1.0)
+        PedroComponent.Companion.follower.setMaxPower(1.0)
         Gate.gate_close()
     }
 
     override fun onStartButtonPressed() {
-        follower.setStartingPose(startPose)
-        buildPaths()
+        PedroComponent.Companion.follower.setStartingPose(redAutoPaths.bottomStartPose)
+        redAutoPaths.buildPaths()
         PoseStorage.blueAlliance = false
         PoseStorage.redAlliance = true
         autoRoutine()
     }
 
     override fun onStop() {
-        PoseStorage.poseEnd = follower.pose
+        PoseStorage.poseEnd = PedroComponent.Companion.follower.pose
     }
 
     override fun onUpdate() {
     }
 }
-
-

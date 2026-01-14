@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opModes.auto
+package org.firstinspires.ftc.teamcode.opModes.auto.red
 
 import com.pedropathing.geometry.BezierCurve
 import com.pedropathing.geometry.BezierLine
@@ -12,9 +12,21 @@ import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
-import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GPPfirst
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GPPsecond
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GoToShot
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.Leave
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.MohitHitGate
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PGPfirst
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PGPsecond
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PGPtoShotMove
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PPGfirst
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PPGsecond
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PPGtoShotMove
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.buildPaths
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.startPose
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
@@ -24,41 +36,19 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
-import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.GPPfirst
-import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.GPPsecond
-import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.GoToShot
-import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.Leave
-import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.MohitHitGate
-import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.PGPfirst
-import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.PGPsecond
-import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.PGPtoShotMove
-import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.PPGfirst
-import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.PPGsecond
-import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.PPGtoShotMove
-import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.TheGate
-import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.buildPaths
-import org.firstinspires.ftc.teamcode.opModes.subsystems.blueAutoPaths.startPose
 
-@Autonomous(name = "blueTop12")
-class blueTop12: NextFTCOpMode() {
+@Autonomous(name = "redTop12")
+class redTop12: NextFTCOpMode() {
     init {
         addComponents(
-            SubsystemComponent(MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
-                TurretAuto),
+            SubsystemComponent(
+                MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
+                TurretAuto
+            ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
     }
-    ////////KEY//////////
-    //pickUp_____1 == Getting to pick up motif row
-    //pickUp_____2 == Ramming into the motif
-    //___toShot    == Goes to the shootPose after picking up
-    //_____Control == Dilates the straight line into a curve
-
-    ///////DOCS//////////
-    //Parallel Groups    == Everything within happens at the same time
-    //Sequential Groups  == Everything within happens chronologically
-
     val autoRoutine: Command
         get() =
             SequentialGroup(
@@ -133,27 +123,27 @@ class blueTop12: NextFTCOpMode() {
                     Shooter.stopShooter,
                     TurretAuto.toMid,
                     Gate.gate_close,
-                    Intake.spinStop),
+                    Intake.spinStop
+                ),
             )
 
     override fun onInit() {
-        follower.setMaxPower(1.0)
+        PedroComponent.Companion.follower.setMaxPower(1.0)
         Gate.gate_close()
     }
 
     override fun onStartButtonPressed() {
-        follower.setStartingPose(startPose)
+        PedroComponent.Companion.follower.setStartingPose(startPose)
         buildPaths()
-        PoseStorage.blueAlliance = true
-        PoseStorage.redAlliance = false
+        PoseStorage.blueAlliance = false
+        PoseStorage.redAlliance = true
         autoRoutine()
     }
 
     override fun onStop() {
-        PoseStorage.poseEnd = follower.pose
+        PoseStorage.poseEnd = PedroComponent.Companion.follower.pose
     }
 
     override fun onUpdate() {
     }
 }
-
