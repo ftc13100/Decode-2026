@@ -4,10 +4,17 @@ import com.pedropathing.geometry.Pose
 import dev.nextftc.core.subsystems.Subsystem
 
 object PoseStorage : Subsystem {
-    var poseEnd: Pose = Pose()
-    var blueAlliance: Boolean = false
-    var redAlliance: Boolean = false
+    var poseEnd = Pose()
+    var blueAlliance = false
+    var redAlliance = false
 
-    var turretStartPos = Double.NaN
+    var turretValid = false
+        private set
+
+    var turretStartPos = -1.0
+        set(value) {
+            turretValid = true
+            field = value
+        }
 }
 

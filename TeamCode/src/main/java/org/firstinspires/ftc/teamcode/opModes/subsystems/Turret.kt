@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opModes.subsystems
 
 import com.bylazar.configurables.annotations.Configurable
+import com.pedropathing.geometry.Pose
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.control.KineticState
@@ -80,7 +81,7 @@ object Turret : Subsystem {
 
     fun initPos() {
         startPosition =
-            if (PoseStorage.turretStartPos != Double.NaN)
+            if (PoseStorage.turretValid)
                 PoseStorage.turretStartPos
             else
                 turret.currentPosition
