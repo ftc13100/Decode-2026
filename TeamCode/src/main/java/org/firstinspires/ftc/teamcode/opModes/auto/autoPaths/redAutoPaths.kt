@@ -21,19 +21,22 @@ object redAutoPaths : Subsystem {
      val startPose = Pose(125.23, 121.52, Math.toRadians(37.0))
      val shootPose = Pose(84.0, 84.0, Math.toRadians(0.0))
      val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0))
-     val pickUpPPG2 = Pose(127.2, 84.0, Math.toRadians(0.0))
+     val pickUpPPG2 = Pose(126.5, 84.0, Math.toRadians(0.0))
      val PPGtoShot = Pose(84.0, 84.0, Math.toRadians(0.0))
      val pickUpPGP1 = Pose(96.0, 57.0, Math.toRadians(0.0))
      val pickUpPGPControl = Pose(84.7, 57.6, Math.toRadians(0.0))
-     val pickUpPGP2 = Pose(135.8, 57.0, Math.toRadians(0.0))
+     val pickUpPGP2 = Pose(134.0, 57.0, Math.toRadians(0.0))
      val PGPtoShot = Pose(84.0, 84.0, Math.toRadians(0.0))
      val pickUpGPP1 = Pose(98.25, 36.0, Math.toRadians(0.0))
-     val pickUpGPP2 = Pose(134.3, 36.0, Math.toRadians(0.0))
+     val pickUpGPP2 = Pose(131.3, 36.0, Math.toRadians(0.0))
      val GPPtoShot = Pose(84.0, 84.0, Math.toRadians(0.0))
 
      val gate = Pose(127.5, 75.90674955595027, Math.toRadians(125.0))
-     val leavePoint = Pose(87.73, 110.42, Math.toRadians(45.0))
-     val hitGate = Pose(135.51, 60.203, Math.toRadians(45.0))
+
+     val secretTunnel = Pose(130.3050847457627, 55.983050847457626, Math.toRadians(0.0))
+
+    val leavePoint = Pose(87.73, 110.42, Math.toRadians(42.0))
+     val hitGate = Pose(133.61, 60.203, Math.toRadians(43.5))
      val hitGateControl = Pose(90.76, 61.42, Math.toRadians(45.0))
      val bottomStartPose = Pose(56.0, 7.5, Math.toRadians(90.0))
      val bottomShootPose = Pose(56.0, 10.5, Math.toRadians(90.0))
@@ -49,7 +52,10 @@ object redAutoPaths : Subsystem {
      lateinit var GPPsecond: PathChain
      lateinit var GPPtoShotMove: PathChain
      lateinit var TheGate: PathChain
-     lateinit var Leave: PathChain
+
+    lateinit var GoToSecretTunnel: PathChain
+
+    lateinit var Leave: PathChain
      lateinit var GoToShot: PathChain
      lateinit var MohitHitGate: PathChain
      lateinit var bottomShoot: PathChain
@@ -96,8 +102,13 @@ object redAutoPaths : Subsystem {
             .addPath(BezierCurve(PPGtoShot, hitGateControl, hitGate))
             .setLinearHeadingInterpolation(pickUpPGP2.heading, hitGate.heading)
             .build()
+
+         GoToSecretTunnel = PedroComponent.Companion.follower.pathBuilder()
+             .addPath(BezierLine(hitGate, secretTunnel))
+             .setLinearHeadingInterpolation(hitGate.heading, secretTunnel.heading)
+             .build()
         PGPtoShotMove = PedroComponent.Companion.follower.pathBuilder()
-            .addPath(BezierLine(pickUpPGP2, PGPtoShot))
+            .addPath(BezierCurve(pickUpPGP2, pickUpPGPControl, PGPtoShot))
             .setLinearHeadingInterpolation(pickUpPGP2.heading, PGPtoShot.heading)
             .build()
         GPPfirst = PedroComponent.Companion.follower.pathBuilder()

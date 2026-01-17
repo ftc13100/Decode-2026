@@ -12,10 +12,12 @@ import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
+import dev.nextftc.extensions.pedro.TurnTo
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GPPfirst
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GPPsecond
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GoToSecretTunnel
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GoToShot
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.Leave
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PGPfirst
@@ -25,6 +27,7 @@ import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PPGsec
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PPGtoShotMove
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.TheGate
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.buildPaths
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.pickUpPGP2
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.startPose
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
@@ -42,7 +45,7 @@ class redTop15 : NextFTCOpMode() {
         addComponents(
             SubsystemComponent(
                 MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
-                TurretAuto
+                TurretAuto,
             ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
@@ -66,7 +69,7 @@ class redTop15 : NextFTCOpMode() {
                     FollowPath(PGPfirst),
                     Gate.gate_close
                 ),
-                FollowPath(PGPsecond, holdEnd = true, maxPower = 0.8),
+                FollowPath(PGPsecond, holdEnd = true, maxPower = 1.0),
                 Intake.spinStop,
                 ParallelGroup(
                     FollowPath(PGPtoShotMove),
@@ -80,6 +83,7 @@ class redTop15 : NextFTCOpMode() {
                     Gate.gate_close
                 ),
                 Delay(2.2.seconds),
+                FollowPath(GoToSecretTunnel),
                 ParallelGroup(
                     Intake.spinStop,
                     FollowPath(PGPtoShotMove),
@@ -89,7 +93,7 @@ class redTop15 : NextFTCOpMode() {
                 Intake.spinFast,
                 Delay(1.8.seconds),
                 ParallelGroup(
-                    FollowPath(PPGsecond, holdEnd = true, maxPower = 0.8),
+                    FollowPath(PPGsecond, holdEnd = true, maxPower = 1.0),
                     Gate.gate_close,
                     Intake.spinFast
                 ),
@@ -107,7 +111,7 @@ class redTop15 : NextFTCOpMode() {
                     Gate.gate_close,
                     Intake.spinFast
                 ),
-                FollowPath(GPPsecond, holdEnd = true, maxPower = 0.8),
+                FollowPath(GPPsecond, holdEnd = true, maxPower = 1.0),
                 Intake.spinStop,
                 ParallelGroup(
                     FollowPath(Leave),
