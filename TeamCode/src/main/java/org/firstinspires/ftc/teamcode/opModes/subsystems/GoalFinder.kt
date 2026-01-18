@@ -115,17 +115,17 @@ object GoalFinder : Subsystem {
         gfLLTa = llResult.ta
         gfLLValid = true
 
-        // Calculate adjustment angle to account for position difference of April tag and desired goal
-        val aprilTagVecorX = aprilTag.x - adjX
-        val aprilTagVecorY = aprilTag.y - pose.y
-        val goalVectorX = goal.x - adjX
-        val goalVectorY = goal.y - pose.y
-
-        gfGoalAprilTagAdj = acos(
-            (aprilTagVecorX * goalVectorX + aprilTagVecorY * goalVectorY) / (sqrt(aprilTagVecorX * aprilTagVecorX + aprilTagVecorY * aprilTagVecorY) * sqrt(
-                goalVectorX * goalVectorX + goalVectorY * goalVectorY
-            ))
-        )
+//        // Calculate adjustment angle to account for position difference of April tag and desired goal
+//        val aprilTagVecorX = aprilTag.x - adjX
+//        val aprilTagVecorY = aprilTag.y - pose.y
+//        val goalVectorX = goal.x - adjX
+//        val goalVectorY = goal.y - pose.y
+//
+//        gfGoalAprilTagAdj = acos(
+//            (aprilTagVecorX * goalVectorX + aprilTagVecorY * goalVectorY) / (sqrt(aprilTagVecorX * aprilTagVecorX + aprilTagVecorY * aprilTagVecorY) * sqrt(
+//                goalVectorX * goalVectorX + goalVectorY * goalVectorY
+//            ))
+//        )
 
         if (blueAlliance) {
             if (gfTargetAngle < Math.PI * 3.0 / 4.0) {
@@ -141,7 +141,7 @@ object GoalFinder : Subsystem {
 
         gfTurretAdjLL = gfLLTx * TURRET_LL_ADJ_FACTOR
         gfTurretAdjGoalAprilTag = gfGoalAprilTagAdj / Turret.TURRET_TICKS_TO_RADS
-        gfTurretAdj = gfTurretAdjLL + gfTurretAdjGoalAprilTag
+        gfTurretAdj = gfTurretAdjLL //+ gfTurretAdjGoalAprilTag
     }
 
     fun calculate(pose: Pose, llResult: LLResult?, blueAlliance: Boolean): Double {

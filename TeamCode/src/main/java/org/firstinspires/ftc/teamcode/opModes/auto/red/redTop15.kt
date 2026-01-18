@@ -7,11 +7,15 @@ import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
+import dev.nextftc.core.commands.groups.ParallelDeadlineGroup
 import dev.nextftc.core.commands.groups.ParallelGroup
+import dev.nextftc.core.commands.groups.ParallelRaceGroup
 import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
+import dev.nextftc.extensions.pedro.PedroComponent.Companion
+import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.extensions.pedro.TurnTo
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
@@ -63,10 +67,12 @@ class redTop15 : NextFTCOpMode() {
                     Shooter.spinAtSpeed(1180.0),
                     FollowPath(GoToShot),
                     TurretAuto.toLeft,
-                    Gate.gate_open
+                    Gate.gate_open,
                 ),
-                Intake.spinFast,
-                Delay(1.8.seconds),
+                ParallelDeadlineGroup(
+                    Delay(1.8.seconds),
+                    Intake.spinFast
+                ),
                 ParallelGroup(
                     FollowPath(PGPfirst),
                     Gate.gate_close
@@ -78,8 +84,10 @@ class redTop15 : NextFTCOpMode() {
                     ShooterAngle.angle_kindaUP,
                     Gate.gate_open,
                 ),
-                Intake.spinFast,
-                Delay(1.8.seconds),
+                ParallelDeadlineGroup(
+                    Delay(1.8.seconds),
+                    Intake.spinFast
+                ),
                 ParallelGroup(
                     FollowPath(TheGate),
                     Gate.gate_close,
@@ -92,9 +100,11 @@ class redTop15 : NextFTCOpMode() {
                     ShooterAngle.angle_kindaUP,
                     Gate.gate_open,
                 ),
-                Intake.spinFast,
-                Delay(1.8.seconds),
-                ParallelGroup(
+                ParallelDeadlineGroup(
+                    Delay(1.8.seconds),
+                    Intake.spinFast
+                ),
+                ParallelDeadlineGroup(
                     FollowPath(PPGsecond, holdEnd = true, maxPower = 1.0),
                     Gate.gate_close,
                     Intake.spinFast
@@ -105,10 +115,11 @@ class redTop15 : NextFTCOpMode() {
                     ShooterAngle.angle_kindaUP,
                     Gate.gate_open,
                 ),
-                Intake.spinFast,
-                Delay(1.8.seconds),
-
-                ParallelGroup(
+                ParallelDeadlineGroup(
+                    Delay(1.8.seconds),
+                    Intake.spinFast
+                ),
+                ParallelDeadlineGroup(
                     FollowPath(GPPfirst),
                     Gate.gate_close,
                     Intake.spinFast
@@ -118,9 +129,12 @@ class redTop15 : NextFTCOpMode() {
                 ParallelGroup(
                     FollowPath(Leave),
                     ShooterAngle.angle_kindaUP,
-                    Gate.gate_open),
-                Intake.spinFast,
-                Delay(1.8.seconds),
+                    Gate.gate_open
+                ),
+                ParallelDeadlineGroup(
+                    Delay(1.8.seconds),
+                    Intake.spinFast
+                ),
                 ParallelGroup(
                     FollowPath(DeadhuzzLeave),
                     Shooter.stopShooter,
@@ -130,12 +144,12 @@ class redTop15 : NextFTCOpMode() {
             )
 
     override fun onInit() {
-        PedroComponent.Companion.follower.setMaxPower(1.0)
+        follower.setMaxPower(1.0)
         Gate.gate_close()
     }
 
     override fun onStartButtonPressed() {
-        PedroComponent.Companion.follower.setStartingPose(startPose)
+        Companion.follower.setStartingPose(startPose)
         buildPaths()
         PoseStorage.blueAlliance = false
         PoseStorage.redAlliance = true
@@ -143,6 +157,6 @@ class redTop15 : NextFTCOpMode() {
     }
 
     override fun onStop() {
-        PoseStorage.poseEnd = PedroComponent.Companion.follower.pose
+        PoseStorage.poseEnd = Companion.follower.pose
     }
 }
