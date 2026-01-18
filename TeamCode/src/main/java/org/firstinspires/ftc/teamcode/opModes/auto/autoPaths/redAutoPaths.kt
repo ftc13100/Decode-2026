@@ -31,13 +31,16 @@ object redAutoPaths : Subsystem {
      val pickUpGPP2 = Pose(131.3, 36.0, Math.toRadians(0.0))
      val GPPtoShot = Pose(84.0, 84.0, Math.toRadians(0.0))
 
-     val gate = Pose(127.5, 75.90674955595027, Math.toRadians(125.0))
+     val gate = Pose(142.9152542372881, 54.508474576271176, Math.toRadians(90.0))
 
      val secretTunnel = Pose(130.3050847457627, 55.983050847457626, Math.toRadians(0.0))
 
-    val leavePoint = Pose(87.73, 110.42, Math.toRadians(42.0))
-     val hitGate = Pose(133.61, 60.203, Math.toRadians(43.5))
-     val hitGateControl = Pose(90.76, 61.42, Math.toRadians(45.0))
+    val leavePoint = Pose(87.73, 110.42, Math.toRadians(40.67))
+     val hitGate = Pose(134.91525423728814, 59.79661016949153, Math.toRadians(45.0))
+
+    val eat = Pose(134.91525423728814, 57.79661016949153, Math.toRadians(45.0))
+
+    val hitGateControl = Pose(90.76, 61.42, Math.toRadians(45.0))
      val bottomStartPose = Pose(56.0, 7.5, Math.toRadians(90.0))
      val bottomShootPose = Pose(56.0, 10.5, Math.toRadians(90.0))
      val bottomLeavePoint = Pose(36.49261083743842, 8.20935960591133, Math.toRadians(90.0))
@@ -61,7 +64,14 @@ object redAutoPaths : Subsystem {
      lateinit var bottomShoot: PathChain
      lateinit var bottomLeave: PathChain
 
-     fun buildPaths() {
+     lateinit var DeadhuzzLeave: PathChain
+
+    lateinit var eatup: PathChain
+
+
+
+
+    fun buildPaths() {
         bottomShoot = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(bottomStartPose, bottomShootPose))
             .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
@@ -75,8 +85,12 @@ object redAutoPaths : Subsystem {
             .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
             .build()
         Leave = PedroComponent.Companion.follower.pathBuilder()
-            .addPath(BezierLine(pickUpGPP2, leavePoint))
-            .setLinearHeadingInterpolation(startPose.heading, leavePoint.heading)
+            .addPath(BezierLine(pickUpGPP2, shootPose))
+            .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
+            .build()
+        Leave = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(hitGate, shootPose))
+            .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
             .build()
         PPGfirst = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(shootPose, pickUpPPG1))
@@ -99,14 +113,14 @@ object redAutoPaths : Subsystem {
             .setLinearHeadingInterpolation(pickUpPGP1.heading, pickUpPGP2.heading)
             .build()
         TheGate = PedroComponent.Companion.follower.pathBuilder()
-            .addPath(BezierCurve(PPGtoShot, hitGateControl, hitGate))
-            .setLinearHeadingInterpolation(pickUpPGP2.heading, hitGate.heading)
+            .addPath(BezierLine(PPGtoShot, hitGate))
+            .setLinearHeadingInterpolation(PPGtoShot.heading, hitGate.heading)
+            .build()
+        eatup = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(hitGate, eat))
+            .setLinearHeadingInterpolation(hitGate.heading, eat.heading)
             .build()
 
-         GoToSecretTunnel = PedroComponent.Companion.follower.pathBuilder()
-             .addPath(BezierLine(hitGate, secretTunnel))
-             .setLinearHeadingInterpolation(hitGate.heading, secretTunnel.heading)
-             .build()
         PGPtoShotMove = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierCurve(pickUpPGP2, pickUpPGPControl, PGPtoShot))
             .setLinearHeadingInterpolation(pickUpPGP2.heading, PGPtoShot.heading)
@@ -127,6 +141,10 @@ object redAutoPaths : Subsystem {
             .addPath(BezierLine(pickUpPPG2, gate))
             .setLinearHeadingInterpolation(pickUpPPG2.heading,gate.heading)
             .build()
+        DeadhuzzLeave = PedroComponent.Companion.follower.pathBuilder()
+             .addPath(BezierLine(shootPose, leavePoint))
+             .setLinearHeadingInterpolation(shootPose.heading,leavePoint.heading)
+             .build()
 
     }
 }

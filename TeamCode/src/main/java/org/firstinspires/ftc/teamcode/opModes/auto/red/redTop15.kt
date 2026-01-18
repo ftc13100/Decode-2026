@@ -15,6 +15,7 @@ import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.TurnTo
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.DeadhuzzLeave
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GPPfirst
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GPPsecond
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GoToSecretTunnel
@@ -27,6 +28,7 @@ import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PPGsec
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PPGtoShotMove
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.TheGate
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.buildPaths
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.eatup
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.pickUpPGP2
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.startPose
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
@@ -58,7 +60,7 @@ class redTop15 : NextFTCOpMode() {
             SequentialGroup(
                 ParallelGroup(
                     ShooterAngle.angle_kindaUP,
-                    Shooter.spinAtSpeed(1150.0),
+                    Shooter.spinAtSpeed(1180.0),
                     FollowPath(GoToShot),
                     TurretAuto.toLeft,
                     Gate.gate_open
@@ -80,10 +82,10 @@ class redTop15 : NextFTCOpMode() {
                 Delay(1.8.seconds),
                 ParallelGroup(
                     FollowPath(TheGate),
-                    Gate.gate_close
+                    Gate.gate_close,
                 ),
-                Delay(2.2.seconds),
-                FollowPath(GoToSecretTunnel),
+                FollowPath(eatup),
+                Delay(1.8),
                 ParallelGroup(
                     Intake.spinStop,
                     FollowPath(PGPtoShotMove),
@@ -116,12 +118,11 @@ class redTop15 : NextFTCOpMode() {
                 ParallelGroup(
                     FollowPath(Leave),
                     ShooterAngle.angle_kindaUP,
-                    Gate.gate_open,
-                    TurretAuto.toMid
-                ),
+                    Gate.gate_open),
                 Intake.spinFast,
                 Delay(1.8.seconds),
                 ParallelGroup(
+                    FollowPath(DeadhuzzLeave),
                     Shooter.stopShooter,
                     Gate.gate_close,
                     Intake.spinStop,
