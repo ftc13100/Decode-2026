@@ -25,10 +25,12 @@ import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
@@ -250,9 +252,9 @@ class MainTeleop : NextFTCOpMode() {
                         intakeRunning = true
                     }
                 )
-
                 commands()
             }
+
             .whenBecomesFalse {
                 Shooter.stallShooter()
                 Gate.gate_close()
@@ -431,10 +433,12 @@ class MainTeleop : NextFTCOpMode() {
         )
         telemetry.addData(
             "Turret",
-            "Pos: %4.0f, Az: %4.1f, Tracking: %b",
+            "Pos: %4.0f, Az: %4.1f, Tracking: %b, Start: %.1f, %b",
             Turret.turretCurrentPos,
             Turret.turretAzDeg(),
-            Turret.goalTrackingActive
+            Turret.goalTrackingActive,
+            Turret.startPosition,
+            initialized
         )
 
         telemetry.addData("Current Shot", "Dist: %3.1f, Vel: %4.1f, Ang: %.3f",
@@ -461,13 +465,12 @@ class MainTeleop : NextFTCOpMode() {
             }
         )
         telemetry.addData(
-            "Intake", "%s (Power: %+1.1f)", if (intakeRunning) {
+            "Intake", "%s (Power: %+1.1f, Current: %3.2f mA)", if (intakeRunning) {
                 "Running"
             } else {
                 "Stopped"
-            }, Intake.intake.power
+            }, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
         )
-
         telemetry.update()
     }
 
