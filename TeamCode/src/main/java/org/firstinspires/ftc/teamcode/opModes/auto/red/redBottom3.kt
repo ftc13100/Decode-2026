@@ -12,7 +12,7 @@ import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
+import org.firstinspires.ftc.teamcode.opModes.subsystems.IntakeAuto
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.TurretAuto
@@ -26,7 +26,7 @@ class redBottom3 : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
+                MohitPatil, Shooter, ShooterAngle, IntakeAuto, Gate, PoseStorage,
                 TurretAuto, redAutoPaths
             ),
             BulkReadComponent,
@@ -45,11 +45,11 @@ class redBottom3 : NextFTCOpMode() {
                     FollowPath(redAutoPaths.bottomShoot)
 
                 ),
-                Intake.spinFast,
+                IntakeAuto.spinFast,
                 Delay(2.3.seconds),
                 ParallelGroup(
                     Shooter.stopShooter,
-                    Intake.spinStop,
+                    IntakeAuto.spinStop,
                     Gate.gate_close
                 ),
                 ParallelGroup(
@@ -57,7 +57,9 @@ class redBottom3 : NextFTCOpMode() {
                     FollowPath(redAutoPaths.bottomLeave),
                     Gate.gate_close
                 )
+
             )
+
 
     override fun onInit() {
         PedroComponent.Companion.follower.setMaxPower(1.0)
