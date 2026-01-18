@@ -149,7 +149,7 @@ class redTop15 : NextFTCOpMode() {
     }
 
     override fun onStartButtonPressed() {
-        Companion.follower.setStartingPose(startPose)
+        follower.setStartingPose(startPose)
         buildPaths()
         PoseStorage.blueAlliance = false
         PoseStorage.redAlliance = true
@@ -157,6 +157,6 @@ class redTop15 : NextFTCOpMode() {
     }
 
     override fun onStop() {
-        PoseStorage.poseEnd = Companion.follower.pose
+        PoseStorage.poseEnd = follower.pose
     }
 }

@@ -8,28 +8,28 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 
 
 object ShooterController {
-    val goal = Pose(0.0, 141.0)
+    val goal = Pose(6.0, 138.0)
     const val SHOOTER_TO_GOAL_Z_SQRD = 1056.25 // (46.0 - 13.5).pow(2.0)
 
     data class ShotParameters(val distance: Double, val velocity: Double, val angle: Double)
 
     private val shooterLookupTable = mapOf(
    //Distance to ShotParameters(Dist,            Velocity,        Angle)            // Origin (X, Y)
-        45.53 to ShotParameters(45.53, 985.0, 0.680),      // Pair(24, 120)
-        52.85 to ShotParameters(52.85, 1020.0, 0.620),     // Pair(36, 120)
-        61.65 to ShotParameters(61.65, 1000.0, 0.560),     // Pair(48, 120)
-        66.70 to ShotParameters(66.70, 1020.0, 0.550),     // Pair(48, 108)
-        73.38 to ShotParameters(73.38, 1065.0, 0.580),     // Pair(48, 96)
-        81.74 to ShotParameters(81.74, 1080.0, 0.540),     // Pair(72, 120)
-        85.61 to ShotParameters(85.61, 1150.0, 0.530),     // Pair(72, 108)
-        90.91 to ShotParameters(90.91, 1180.0, 0.530),     // Pair(72, 96)
-        103.50 to ShotParameters(103.50, 1200.0, 0.500),   // Pair(96, 120)
-        104.89 to ShotParameters(104.89, 1200.0, 0.510),   // Pair(72, 72)
-        110.89 to ShotParameters(110.89, 1290.0, 0.500),   // Pair(96, 96)
-        141.17 to ShotParameters(141.17, 1460.0, 0.500),   // Pair(72, 24)
-        141.43 to ShotParameters(141.43, 1460.0, 0.500),   // Pair(48, 12)
-        151.27 to ShotParameters(151.27, 1510.0, 0.520),   // Pair(72, 12)
-        164.05 to ShotParameters(164.05, 1560.0, 0.520),   // Pair(96, 12)
+        41.28 to ShotParameters(41.28, 985.0, 0.680),      // Pair(24, 120)
+        47.75 to ShotParameters(47.75, 1020.0, 0.620),     // Pair(36, 120)
+        56.07 to ShotParameters(56.07, 1000.0, 0.560),     // Pair(48, 120)
+        60.99 to ShotParameters(60.99, 1020.0, 0.550),     // Pair(48, 108)
+        67.71 to ShotParameters(67.71, 1065.0, 0.580),     // Pair(48, 96)
+        75.74 to ShotParameters(75.74, 1080.0, 0.540),     // Pair(72, 120)
+        79.45 to ShotParameters(79.45, 1150.0, 0.530),     // Pair(72, 108)
+        84.71 to ShotParameters(84.71, 1180.0, 0.530),     // Pair(72, 96)
+        97.37 to ShotParameters(97.37, 1200.0, 0.500),     // Pair(96, 120)
+        98.83 to ShotParameters(98.83, 1200.0, 0.510),     // Pair(72, 72)
+        104.50 to ShotParameters(104.50, 1290.0, 0.500),   // Pair(96, 96)
+        135.68 to ShotParameters(135.68, 1460.0, 0.500),   // Pair(72, 24)
+        136.73 to ShotParameters(136.73, 1460.0, 0.500),   // Pair(48, 12)
+        145.90 to ShotParameters(145.90, 1510.0, 0.520),   // Pair(72, 12)
+        158.22 to ShotParameters(158.22, 1560.0, 0.520),   // Pair(96, 12)
     ).toSortedMap()
 
     private fun lerp(x: Double, x0: Double, x1: Double, y0: Double, y1: Double): Double {
