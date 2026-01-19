@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PPGtoS
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.buildPaths
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.startPose
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
-import org.firstinspires.ftc.teamcode.opModes.subsystems.IntakeAuto
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.TurretAuto
@@ -40,7 +40,7 @@ class redTop9 : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                MohitPatil, Shooter, ShooterAngle, IntakeAuto, Gate, PoseStorage,
+                MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
                 TurretAuto
             ),
             BulkReadComponent,
@@ -58,55 +58,53 @@ class redTop9 : NextFTCOpMode() {
                     TurretAuto.toLeft,
                     Gate.gate_open
                 ),
-                IntakeAuto.spinFast,
+                Intake.spinFastAuto,
                 Delay(2.3.seconds),
                 ParallelGroup(
                     Shooter.stallShooter,
-                    IntakeAuto.spinStop,
+                    Intake.spinStop,
                     Gate.gate_close
                 ),
                 ParallelGroup(
                     FollowPath(PPGfirst),
                     Gate.gate_close
                 ),
-                IntakeAuto.spinFast,
+                Intake.spinFastAuto,
                 FollowPath(PPGsecond, holdEnd = true, maxPower = 0.65),
-                IntakeAuto.spinStop,
-                FollowPath(MohitHitGate),
-                Delay(1.0.seconds),
+                Intake.spinStop,
                 ParallelGroup(
                     FollowPath(PPGtoShotMove),
                     ShooterAngle.angle_kindaUP,
                     Shooter.spinAtSpeed(1150.0),
                     Gate.gate_open,
                 ),
-                IntakeAuto.spinFast,
+                Intake.spinFastAuto,
                 Delay(1.8.seconds),
                 ParallelGroup(
                     Shooter.stallShooter,
-                    IntakeAuto.spinStop,
+                    Intake.spinStop,
                     Gate.gate_close
                 ),
                 ParallelGroup(
                     FollowPath(PGPfirst),
                     Gate.gate_close,
-                    IntakeAuto.spinFast
+                    Intake.spinFastAuto
                 ),
                 FollowPath(PGPsecond, holdEnd = true, maxPower = 0.65),
-                IntakeAuto.spinStop,
+                Intake.spinStop,
                 ParallelGroup(
                     FollowPath(PGPtoShotMove),
                     ShooterAngle.angle_kindaUP,
                     Shooter.spinAtSpeed(1150.0),
                     Gate.gate_open,
                 ),
-                IntakeAuto.spinFast,
+                Intake.spinFastAuto,
                 Delay(1.8.seconds),
                 ParallelGroup(
                     Shooter.stopShooter,
                     Gate.gate_close,
                     FollowPath(Leave),
-                    IntakeAuto.spinFast
+                    Intake.spinFastAuto
                 )
             )
 

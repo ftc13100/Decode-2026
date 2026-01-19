@@ -31,7 +31,7 @@ object redAutoPaths : Subsystem {
      val pickUpGPP2 = Pose(131.3, 36.0, Math.toRadians(0.0))
      val GPPtoShot = Pose(84.0, 84.0, Math.toRadians(0.0))
 
-     val gate = Pose(142.9152542372881, 54.508474576271176, Math.toRadians(90.0))
+     val gate = Pose(125.0271186440678, 78.65254237288136, Math.toRadians(110.0))
 
      val secretTunnel = Pose(130.3050847457627, 55.983050847457626, Math.toRadians(0.0))
 
@@ -40,7 +40,7 @@ object redAutoPaths : Subsystem {
 
     val eat = Pose(134.91525423728814, 57.79661016949153, Math.toRadians(45.0))
 
-    val hitGateControl = Pose(90.76, 61.42, Math.toRadians(45.0))
+    val hitGateControl = Pose(89.31958762886597, 70.76288659793815, Math.toRadians(45.0))
      val bottomStartPose = Pose(56.0, 7.5, Math.toRadians(90.0))
      val bottomShootPose = Pose(56.0, 10.5, Math.toRadians(90.0))
      val bottomLeavePoint = Pose(36.49261083743842, 8.20935960591133, Math.toRadians(90.0))
@@ -113,7 +113,7 @@ object redAutoPaths : Subsystem {
             .setLinearHeadingInterpolation(pickUpPGP1.heading, pickUpPGP2.heading)
             .build()
         TheGate = PedroComponent.Companion.follower.pathBuilder()
-            .addPath(BezierLine(PPGtoShot, hitGate))
+            .addPath(BezierCurve(PPGtoShot, hitGateControl, hitGate))
             .setLinearHeadingInterpolation(PPGtoShot.heading, hitGate.heading)
             .build()
         eatup = PedroComponent.Companion.follower.pathBuilder()

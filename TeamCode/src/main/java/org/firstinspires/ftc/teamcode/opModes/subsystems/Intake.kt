@@ -15,6 +15,14 @@ object Intake : Subsystem {
     var isRunning = false
     const val CURRENT_THRESHOLD = 7000.0
 
+    val spinFastAuto =
+        SetPower(intake, 1.0)
+            .requires(this)
+
+    val spinStopAuto =
+        SetPower(intake, 0.0)
+            .requires(this)
+
     val spinFast =
         SequentialGroup(
         SetPower(intake, 1.0),

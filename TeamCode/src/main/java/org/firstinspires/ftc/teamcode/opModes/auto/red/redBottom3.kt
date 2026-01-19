@@ -12,7 +12,7 @@ import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
-import org.firstinspires.ftc.teamcode.opModes.subsystems.IntakeAuto
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.TurretAuto
@@ -26,7 +26,7 @@ class redBottom3 : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                MohitPatil, Shooter, ShooterAngle, IntakeAuto, Gate, PoseStorage,
+                MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
                 TurretAuto, redAutoPaths
             ),
             BulkReadComponent,
@@ -45,11 +45,11 @@ class redBottom3 : NextFTCOpMode() {
                     FollowPath(redAutoPaths.bottomShoot)
 
                 ),
-                IntakeAuto.spinFast,
+                Intake.spinFastAuto,
                 Delay(2.3.seconds),
                 ParallelGroup(
                     Shooter.stopShooter,
-                    IntakeAuto.spinStop,
+                    Intake.spinStop,
                     Gate.gate_close
                 ),
                 ParallelGroup(
