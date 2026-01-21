@@ -11,6 +11,8 @@ import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomLeave
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomShoot
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
@@ -42,10 +44,10 @@ class blueBottom3 : NextFTCOpMode() {
                     Shooter.spinAtSpeed(1450.0),
                     TurretAuto.toLeftMohit,
                     Gate.gate_open,
-                    FollowPath(blueAutoPaths.bottomShoot)
+                    FollowPath(bottomShoot)
 
                 ),
-                Intake.spinFast,
+                Intake.spinFastAuto,
                 Delay(2.3.seconds),
                 ParallelGroup(
                     Shooter.stopShooter,
@@ -54,10 +56,12 @@ class blueBottom3 : NextFTCOpMode() {
                 ),
                 ParallelGroup(
                     TurretAuto.toMid,
-                    FollowPath(blueAutoPaths.bottomLeave),
+                    FollowPath(bottomLeave),
                     Gate.gate_close
                 )
+
             )
+
 
     override fun onInit() {
         PedroComponent.Companion.follower.setMaxPower(1.0)

@@ -47,7 +47,7 @@ class blueTop9 : NextFTCOpMode() {
             PedroComponent(Constants::createFollower)
         )
     }
-   val autoRoutine: Command
+    val autoRoutine: Command
         get() =
             SequentialGroup(
                 ParallelGroup(
@@ -57,7 +57,7 @@ class blueTop9 : NextFTCOpMode() {
                     TurretAuto.toRight,
                     Gate.gate_open
                 ),
-                Intake.spinFast,
+                Intake.spinFastAuto,
                 Delay(2.3.seconds),
                 ParallelGroup(
                     Shooter.stallShooter,
@@ -68,18 +68,16 @@ class blueTop9 : NextFTCOpMode() {
                     FollowPath(PPGfirst),
                     Gate.gate_close
                 ),
-                Intake.spinFast,
+                Intake.spinFastAuto,
                 FollowPath(PPGsecond, holdEnd = true, maxPower = 0.65),
                 Intake.spinStop,
-                FollowPath(MohitHitGate),
-                Delay(1.0.seconds),
                 ParallelGroup(
                     FollowPath(PPGtoShotMove),
                     ShooterAngle.angle_kindaUP,
                     Shooter.spinAtSpeed(1150.0),
                     Gate.gate_open,
                 ),
-                Intake.spinFast,
+                Intake.spinFastAuto,
                 Delay(1.8.seconds),
                 ParallelGroup(
                     Shooter.stallShooter,
@@ -89,7 +87,7 @@ class blueTop9 : NextFTCOpMode() {
                 ParallelGroup(
                     FollowPath(PGPfirst),
                     Gate.gate_close,
-                    Intake.spinFast
+                    Intake.spinFastAuto
                 ),
                 FollowPath(PGPsecond, holdEnd = true, maxPower = 0.65),
                 Intake.spinStop,
@@ -99,13 +97,13 @@ class blueTop9 : NextFTCOpMode() {
                     Shooter.spinAtSpeed(1150.0),
                     Gate.gate_open,
                 ),
-                Intake.spinFast,
+                Intake.spinFastAuto,
                 Delay(1.8.seconds),
                 ParallelGroup(
                     Shooter.stopShooter,
                     Gate.gate_close,
                     FollowPath(Leave),
-                    Intake.spinFast
+                    Intake.spinFastAuto
                 )
             )
 

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opModes.auto.blue
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
+import dev.nextftc.core.commands.groups.ParallelDeadlineGroup
 import dev.nextftc.core.commands.groups.ParallelGroup
 import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.SubsystemComponent
@@ -11,6 +12,18 @@ import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.DeadhuzzLeave
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.GPPfirst
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.GPPsecond
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.GPPtoShotMove
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.GoToShot
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.PGPfirst
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.PGPsecond
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.PGPtoShotMove
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.PPGsecond
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.PPGtoShotMove
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.TheGate
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.eatup
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
@@ -33,74 +46,74 @@ class blueTop15 : NextFTCOpMode() {
             PedroComponent(Constants::createFollower)
         )
     }
-    val autoRoutine: Command
+   val autoRoutine: Command
         get() =
             SequentialGroup(
                 ParallelGroup(
                     ShooterAngle.angle_kindaUP,
-                    Shooter.spinAtSpeed(1150.0),
-                    FollowPath(blueAutoPaths.GoToShot),
-                    TurretAuto.toLeft,
+                    Shooter.spinAtSpeed(1180.0),
+                    FollowPath(GoToShot),
+                    TurretAuto.toRight,
+                    Gate.gate_open,
+                ),
+                Intake.spinFastAuto,
+                Delay(1.8.seconds),
+                ParallelGroup(
+                    FollowPath(PGPfirst),
+                    Gate.gate_close
+                ),
+                FollowPath(PGPsecond, holdEnd = true, maxPower = 1.0),
+                Intake.spinStop,
+                ParallelGroup(
+                    FollowPath(PGPtoShotMove),
+                    ShooterAngle.angle_kindaUP,
+                    Gate.gate_open,
+                ),
+                Intake.spinFastAuto,
+                Delay(1.8.seconds),
+                ParallelGroup(
+                    FollowPath(TheGate),
+                    Gate.gate_close,
+                ),
+                FollowPath(eatup),
+                Delay(1.8),
+                ParallelGroup(
+                    Intake.spinStop,
+                    FollowPath(PGPtoShotMove),
+                    ShooterAngle.angle_kindaUP,
+                    Gate.gate_open,
+                ),
+                Intake.spinFastAuto,
+                Delay(1.8.seconds),
+                ParallelDeadlineGroup(
+                    FollowPath(PPGsecond, holdEnd = true, maxPower = 1.0),
+                    Gate.gate_close,
+                    Intake.spinFastAuto
+                ),
+                ParallelGroup(
+                    Intake.spinStop,
+                    FollowPath(PPGtoShotMove),
+                    ShooterAngle.angle_kindaUP,
+                    Gate.gate_open,
+                ),
+                Intake.spinFastAuto,
+                Delay(1.8.seconds),
+                ParallelDeadlineGroup(
+                    FollowPath(GPPfirst),
+                    Gate.gate_close,
+                    Intake.spinFastAuto
+                ),
+                FollowPath(GPPsecond, holdEnd = true, maxPower = 1.0),
+                Intake.spinStop,
+                ParallelGroup(
+                    FollowPath(GPPtoShotMove),
+                    ShooterAngle.angle_kindaUP,
                     Gate.gate_open
                 ),
-                Intake.spinFast,
+                Intake.spinFastAuto,
                 Delay(1.8.seconds),
                 ParallelGroup(
-                    FollowPath(blueAutoPaths.PGPfirst),
-                    Gate.gate_close
-                ),
-                FollowPath(blueAutoPaths.PGPsecond, holdEnd = true, maxPower = 0.8),
-                Intake.spinStop,
-                ParallelGroup(
-                    FollowPath(blueAutoPaths.PGPtoShotMove),
-                    ShooterAngle.angle_kindaUP,
-                    Gate.gate_open,
-                ),
-                Intake.spinFast,
-                Delay(1.8.seconds),
-                ParallelGroup(
-                    FollowPath(blueAutoPaths.TheGate),
-                    Gate.gate_close
-                ),
-                Delay(2.2.seconds),
-                ParallelGroup(
-                    Intake.spinStop,
-                    FollowPath(blueAutoPaths.PGPtoShotMove),
-                    ShooterAngle.angle_kindaUP,
-                    Gate.gate_open,
-                ),
-                Intake.spinFast,
-                Delay(1.8.seconds),
-                ParallelGroup(
-                    FollowPath(blueAutoPaths.PPGsecond, holdEnd = true, maxPower = 0.8),
-                    Gate.gate_close,
-                    Intake.spinFast
-                ),
-                ParallelGroup(
-                    Intake.spinStop,
-                    FollowPath(blueAutoPaths.PPGtoShotMove),
-                    ShooterAngle.angle_kindaUP,
-                    Gate.gate_open,
-                ),
-                Intake.spinFast,
-                Delay(1.8.seconds),
-
-                ParallelGroup(
-                    FollowPath(blueAutoPaths.GPPfirst),
-                    Gate.gate_close,
-                    Intake.spinFast
-                ),
-                FollowPath(blueAutoPaths.GPPsecond, holdEnd = true, maxPower = 0.8),
-                Intake.spinStop,
-                ParallelGroup(
-                    FollowPath(blueAutoPaths.Leave),
-                    ShooterAngle.angle_kindaUP,
-                    Gate.gate_open,
-                    TurretAuto.toMid
-                ),
-                Intake.spinFast,
-                Delay(1.8.seconds),
-                ParallelGroup(
+                    FollowPath(DeadhuzzLeave),
                     Shooter.stopShooter,
                     Gate.gate_close,
                     Intake.spinStop,
