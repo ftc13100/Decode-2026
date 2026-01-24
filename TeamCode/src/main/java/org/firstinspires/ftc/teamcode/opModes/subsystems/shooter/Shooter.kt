@@ -14,11 +14,11 @@ import dev.nextftc.hardware.impl.MotorEx
 @Configurable
 object Shooter : Subsystem {
     @JvmField var target = 0.0
-    @JvmField var velPIDCoefficients = PIDCoefficients(0.0, 0.0, 0.0)
-    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.0, 0.0, 0.0)
+    @JvmField var velPIDCoefficients = PIDCoefficients(0.0015, 0.0, 0.0)
+    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.00036, 0.0001, 0.12)
 
     val shooter1 = MotorEx("shooter1").brakeMode()
-    //val shooter2 = MotorEx("shooter2").brakeMode()
+    val shooter2 = MotorEx("shooter2").brakeMode()
     var shooterActive = false
     var shooterReady = false
     var shooterReadyMs: Double = 0.00
@@ -35,7 +35,7 @@ object Shooter : Subsystem {
                 shooter1.state
             )
             shooter1.power = motorPower
-            //shooter2.power = motorPower
+            shooter2.power = motorPower
 
         } else {
             shooter1.power = 0.0
@@ -74,6 +74,6 @@ object Shooter : Subsystem {
             KineticState(velocity = shooter1.velocity)
         )
         shooter1.power = motorPower
-        //shooter2.power = motorPower
+        shooter2.power = motorPower
     }
 }
