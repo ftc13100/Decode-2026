@@ -14,8 +14,8 @@ import dev.nextftc.hardware.impl.MotorEx
 @Configurable
 object Shooter : Subsystem {
     @JvmField var target = 0.0
-    @JvmField var velPIDCoefficients = PIDCoefficients(0.0015, 0.0, 0.0)
-    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.00036, 0.0001, 0.12)
+    @JvmField var velPIDCoefficients = PIDCoefficients(0.002, 0.0, 0.0)
+    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.000385, 0.0, 0.095)
 
     val shooter1 = MotorEx("shooter1").brakeMode()
     val shooter2 = MotorEx("shooter2").brakeMode()
@@ -50,7 +50,7 @@ object Shooter : Subsystem {
             shooterReadyMs = 0.00
             runtime.reset()
         }.then(
-            RunToVelocity(controller, speed, 30.0),
+            RunToVelocity(controller, speed, 21.0),
             InstantCommand {
                 shooterReady = true
                 shooterReadyMs = runtime.milliseconds()

@@ -13,6 +13,7 @@ object Spindexer : Subsystem {
     var target = 0.0
 
     @JvmField
+    // Position PID used for indexing
     var posPIDCoefficients = PIDCoefficients(0.0, 0.0, 0.0)
 
     val spindexer = MotorEx("spindexer").brakeMode()
@@ -21,4 +22,8 @@ object Spindexer : Subsystem {
     val controlSystem = controlSystem {
         posPid(Turret.posPIDCoefficients)
     }
+
+    //For shot
+
+
 }
