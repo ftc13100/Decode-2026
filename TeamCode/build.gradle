@@ -18,6 +18,7 @@ buildscript {
         }
     }
     dependencies {
+//        implementation("com.bylazar.sloth:fullpanels:0.2.4+1.0.12")
         classpath "dev.frozenmilk:Load:0.2.4"
     }
 }

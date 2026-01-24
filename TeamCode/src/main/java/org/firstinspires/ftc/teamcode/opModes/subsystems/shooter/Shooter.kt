@@ -13,16 +13,12 @@ import dev.nextftc.hardware.impl.MotorEx
 
 @Configurable
 object Shooter : Subsystem {
-    @JvmField
-    var target = 0.0
+    @JvmField var target = 0.0
+    @JvmField var velPIDCoefficients = PIDCoefficients(0.0, 0.0, 0.0)
+    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.0, 0.0, 0.0)
 
-    @JvmField
-    var velPIDCoefficients = PIDCoefficients(0.0035, 0.0, 0.0)
-
-    @JvmField
-    var basicFFParameters = BasicFeedforwardParameters(0.000365, 0.0001, 0.16)
-
-    val shooter = MotorEx("shooter").brakeMode().reversed()
+    val shooter1 = MotorEx("shooter1").brakeMode()
+    //val shooter2 = MotorEx("shooter2").brakeMode()
     var shooterActive = false
     var shooterReady = false
     var shooterReadyMs: Double = 0.00
@@ -35,11 +31,14 @@ object Shooter : Subsystem {
 
     override fun periodic() {
         if (shooterActive) {
-            shooter.power = controller.calculate(
-                shooter.state
+            val motorPower = controller.calculate(
+                shooter1.state
             )
+            shooter1.power = motorPower
+            //shooter2.power = motorPower
+
         } else {
-            shooter.power = 0.0
+            shooter1.power = 0.0
         }
     }
 
@@ -71,8 +70,10 @@ object Shooter : Subsystem {
     fun spinning() {
         shooterActive = true
         controller.goal = KineticState(velocity = target)
-        shooter.power = controller.calculate(
-            KineticState(velocity = shooter.velocity)
+        val motorPower = controller.calculate(
+            KineticState(velocity = shooter1.velocity)
         )
+        shooter1.power = motorPower
+        //shooter2.power = motorPower
     }
 }

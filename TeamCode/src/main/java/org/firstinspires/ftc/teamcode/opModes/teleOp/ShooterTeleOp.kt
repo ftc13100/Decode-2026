@@ -18,7 +18,6 @@ class ShooterTeleOp : NextFTCOpMode() {
         addComponents(
             SubsystemComponent(Shooter),
             BulkReadComponent,
-            PedroComponent(Constants::createFollower)
         )
     }
 
@@ -44,7 +43,7 @@ class ShooterTeleOp : NextFTCOpMode() {
     }
 
     private fun updateSignals() {
-        panelsTelemetry.addData("velocity", Shooter.shooter.velocity)
+        panelsTelemetry.addData("velocity", Shooter.shooter1.velocity)
         panelsTelemetry.addData("target", Shooter.target)
         panelsTelemetry.update(telemetry)
     }
