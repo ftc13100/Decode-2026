@@ -23,6 +23,7 @@ class ShooterTeleOp : NextFTCOpMode() {
 
     private val panelsTelemetry = PanelsTelemetry.telemetry
     private val timer = ElapsedTime()
+
     val shooterCommand = PerpetualCommand(
         LambdaCommand()
             .setUpdate {
