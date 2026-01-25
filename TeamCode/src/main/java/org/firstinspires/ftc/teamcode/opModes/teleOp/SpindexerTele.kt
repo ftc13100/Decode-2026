@@ -23,8 +23,8 @@ import kotlin.math.abs
 class SpindexerTele : NextFTCOpMode() {
     init {
         addComponents(
-        SubsystemComponent(Spindexer),
-        BulkReadComponent,
+            SubsystemComponent(Spindexer),
+            BulkReadComponent,
         )
     }
 
@@ -42,10 +42,16 @@ class SpindexerTele : NextFTCOpMode() {
     override fun onInit() {
         spindexCommand()
         timer.reset()
+        updateSignals()
     }
 
     override fun onUpdate() {
-        telemetry.addData("Dexer Position", Spindexer.spindexer.currentPosition)
+        updateSignals()
+    }
+
+    private fun updateSignals() {
+        //telemetry.addData("Dexer Position", Spindexer.spindexer.currentPosition)
+        panelsTelemetry.addData("Position", Spindexer.spindexer.currentPosition)
         panelsTelemetry.addData("Target", Spindexer.target)
         panelsTelemetry.update(telemetry)
         telemetry.update()

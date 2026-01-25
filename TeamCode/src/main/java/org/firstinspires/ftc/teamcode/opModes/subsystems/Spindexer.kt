@@ -14,13 +14,6 @@ import dev.nextftc.ftc.ActiveOpMode.hardwareMap
 import dev.nextftc.hardware.controllable.RunToPosition
 import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.hardware.powerable.SetPower
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.goalTrackingActive
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.turret
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.turretActive
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.turretReady
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.turretReadyMs
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.turretTolearanceCount
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.updateTarget
 import kotlin.math.abs
 
 @Configurable
@@ -30,9 +23,9 @@ object Spindexer : Subsystem {
     @JvmField var posPIDCoefficients = PIDCoefficients(0.0, 0.0, 0.0)
 
     val spindexer = MotorEx("spindexer").brakeMode()
-    val color0 = ActiveOpMode.hardwareMap.get(RevColorSensorV3::class.java, "color0")
-    val color1 = ActiveOpMode.hardwareMap.get(RevColorSensorV3::class.java, "color1")
-    val color2 = ActiveOpMode.hardwareMap.get(ColorSensor::class.java, "color2");
+//    val color0 = ActiveOpMode.hardwareMap.get(RevColorSensorV3::class.java, "color0")
+//    val color1 = ActiveOpMode.hardwareMap.get(RevColorSensorV3::class.java, "color1")
+//    val color2 = ActiveOpMode.hardwareMap.get(ColorSensor::class.java, "color2");
 
     private val runtime = ElapsedTime()
 
