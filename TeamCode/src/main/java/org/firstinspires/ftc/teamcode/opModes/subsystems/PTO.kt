@@ -11,8 +11,8 @@ object PTO : Subsystem {
     private lateinit var pto2: Servo
 
     override fun initialize() {
-        pto1 = ActiveOpMode.hardwareMap.get(Servo::class.java, "pto1")
-        pto2 = ActiveOpMode.hardwareMap.get(Servo::class.java, "pto2")
+        pto1 = ActiveOpMode.hardwareMap.get(Servo::class.java, "ptoLeft")
+        pto2 = ActiveOpMode.hardwareMap.get(Servo::class.java, "ptoRight")
     }
 
     val pto_lift = InstantCommand {

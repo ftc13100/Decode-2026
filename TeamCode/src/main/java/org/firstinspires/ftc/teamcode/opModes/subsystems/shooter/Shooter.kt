@@ -57,7 +57,7 @@ object Shooter : Subsystem {
             }
         ).setInterruptible(true).requires(this)
 
-    val stallShooter = spinAtSpeed(1000.0)
+    val stallShooter = spinAtSpeed(1200.0)
 
     val stopShooter =
         InstantCommand {

@@ -42,12 +42,12 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
 
-@TeleOp(name = "NewMain")
-class NewMain : NextFTCOpMode() {
+@TeleOp(name = "rapid")
+class rapid : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                Shooter, Intake, Spindexer, Gate, NewTurret, ShooterAngle, GoalFinder, PoseStorage
+                Shooter, Intake, Spindexer, Gate//, NewTurret, ShooterAngle, GoalFinder
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -60,7 +60,7 @@ class NewMain : NextFTCOpMode() {
     private val backLeftName = "backLeft"
     private val backRightName = "backRight"
 
-    private val shooterController = ShooterController
+//    private val shooterController = ShooterController
 
     private lateinit var frontLeftMotor: MotorEx
     private lateinit var frontRightMotor: MotorEx
@@ -71,24 +71,24 @@ class NewMain : NextFTCOpMode() {
 
 //    lateinit var limelight: Limelight3A
 
-    private val startPose = PoseStorage.poseEnd  // Pose(72.0,72.0, Math.toRadians(90.0))
-    private val testingPose = Pose(72.0, 72.0, Math.toRadians(90.0))
-    private var testMode = false
-    private var currentShotDistance = 0.0
-    private var currentShotVelocity = 0.0
-    private var currentShotAngle = 0.0
+//    private val startPose = PoseStorage.poseEnd  // Pose(72.0,72.0, Math.toRadians(90.0))
+//    private val testingPose = Pose(72.0, 72.0, Math.toRadians(90.0))
+//    private var testMode = false
+//    private var currentShotDistance = 0.0
+//    private var currentShotVelocity = 0.0
+//    private var currentShotAngle = 0.0
     private var gateOpen = false
     private var intakeRunning = false
-    private var initialized = false
+//    private var initialized = false
 
     override fun onInit() {
-        if (abs(startPose.x) < 0.1 && abs(startPose.y) < 0.1) {
-            follower.setStartingPose(testingPose)
-            PoseStorage.blueAlliance = true
-            testMode = true
-        } else {
-            follower.setStartingPose(startPose)
-        }
+//        if (abs(startPose.x) < 0.1 && abs(startPose.y) < 0.1) {
+//            follower.setStartingPose(testingPose)
+//            PoseStorage.blueAlliance = true
+//            testMode = true
+//        } else {
+//            follower.setStartingPose(startPose)
+//        }
 
         frontLeftMotor = MotorEx(frontLeftName)
         frontRightMotor = MotorEx(frontRightName)
@@ -103,7 +103,7 @@ class NewMain : NextFTCOpMode() {
 //        telemetry.msTransmissionInterval = 11
 //        limelight.pipelineSwitch(1)
 //        limelight.start()
-        follower.update()
+//        follower.update()
 
         telemetry = JoinedTelemetry(telemetry, PanelsTelemetry.ftcTelemetry)
         //Gate.gate_close()
@@ -131,15 +131,16 @@ class NewMain : NextFTCOpMode() {
         button { gamepad1.left_bumper }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                Gate.gate_close()
+                Gate.gate_open()
                 Intake.spinFast()
                 intakeRunning = true
-                gateOpen = false
+                gateOpen = true
             }
             .whenBecomesFalse {
                 Intake.spinStop()
-                Gate.gate_open()
+                Gate.gate_close()
                 intakeRunning = false
+                gateOpen = false
             }
 
         //Outtake artifact
@@ -171,30 +172,30 @@ class NewMain : NextFTCOpMode() {
             .whenFalse { driverControlled.scalar = 0.95 }
 
         // Reset location and heading
-        Gamepads.gamepad1.leftTrigger.asButton { it > 0.5 } and Gamepads.gamepad1.rightTrigger.asButton { it > 0.5 }
-            .whenBecomesTrue {
-                if (PoseStorage.blueAlliance) {
-                    follower.pose = Pose(135.25, 8.5, Math.toRadians(-90.0))
-                } else {
-                    follower.pose = Pose(8.75, 8.5, Math.toRadians(-90.0))
-                }
-            }
+//        Gamepads.gamepad1.leftTrigger.asButton { it > 0.5 } and Gamepads.gamepad1.rightTrigger.asButton { it > 0.5 }
+//            .whenBecomesTrue {
+//                if (PoseStorage.blueAlliance) {
+//                    follower.pose = Pose(135.25, 8.5, Math.toRadians(-90.0))
+//                } else {
+//                    follower.pose = Pose(8.75, 8.5, Math.toRadians(-90.0))
+//                }
+//            }
 
 ////////////////////////////////////////////////////////////////////////////
 //        GamePad 2 - Operator Commands
 ////////////////////////////////////////////////////////////////////////////
 
-        // Fine jump turret right
-        button { gamepad2.right_bumper }
-            .whenTrue {
-                NewTurret.increment
-            }
-
-        // Fine jump turret left
-        button { gamepad2.left_bumper }
-            .whenTrue {
-                NewTurret.decrement
-            }
+//        // Fine jump turret right
+//        button { gamepad2.right_bumper }
+//            .whenTrue {
+//                NewTurret.increment
+//            }
+//
+//        // Fine jump turret left
+//        button { gamepad2.left_bumper }
+//            .whenTrue {
+//                NewTurret.decrement
+//            }
 
 //        // Coarse jump turret right
 //        button { gamepad2.right_trigger > 0.5 }
@@ -208,14 +209,14 @@ class NewMain : NextFTCOpMode() {
 //                Turret.turn(-500.0)
 //            }
 //
-        // Turret Tracking
-        button { gamepad2.a }
-            .whenBecomesTrue {
-                NewTurret.turretTrackCommand()
-            }
-            .whenBecomesFalse {
-                NewTurret.disabledCommand()
-            }
+//        // Turret Tracking
+//        button { gamepad2.a }
+//            .whenBecomesTrue {
+//                NewTurret.turretTrackCommand()
+//            }
+//            .whenBecomesFalse {
+//                NewTurret.disabledCommand()
+//            }
 
         button { gamepad2.x }
             .whenBecomesTrue {
@@ -236,35 +237,35 @@ class NewMain : NextFTCOpMode() {
             }
 
 // Start shooter and set hood angle / Stop shooter
-        button { gamepad2.y }
-            .toggleOnBecomesTrue()
-            .whenBecomesTrue {
-                Gate.gate_close()
-                gateOpen = false
-                val currentShot = shooterController.getShot(GoalFinder.gfGoalDistance)
-                val commands = SequentialGroup(
-                    WaitUntil { currentShot != null },
-                    InstantCommand {
-                        currentShotVelocity = currentShot!!.velocity
-                        currentShotAngle = currentShot.angle
-                        currentShotDistance = currentShot.distance
-                        shooterController.applyShot(currentShot)
-                    },
-                    WaitUntil { Shooter.shooterReady },
-                    Spindexer.spinShot,
-                    Delay(1500.milliseconds),
-                    Spindexer.stopShot
-                )
-                commands()
-            }
-            .whenBecomesFalse {
-                Shooter.stallShooter()
-                Gate.gate_open()
-                Intake.spinStop()
-                Spindexer.stopShot()
-                gateOpen = false
-                intakeRunning = false
-            }
+//        button { gamepad2.y }
+//            .toggleOnBecomesTrue()
+//            .whenBecomesTrue {
+//                Gate.gate_close()
+//                gateOpen = false
+//                val currentShot = shooterController.getShot(GoalFinder.gfGoalDistance)
+//                val commands = SequentialGroup(
+//                    WaitUntil { currentShot != null },
+//                    InstantCommand {
+//                        currentShotVelocity = currentShot!!.velocity
+//                        currentShotAngle = currentShot.angle
+//                        currentShotDistance = currentShot.distance
+//                        shooterController.applyShot(currentShot)
+//                    },
+//                    WaitUntil { Shooter.shooterReady },
+//                    Spindexer.spinShot,
+//                    Delay(1500.milliseconds),
+//                    Spindexer.stopShot
+//                )
+//                commands()
+//            }
+//            .whenBecomesFalse {
+//                Shooter.stallShooter()
+//                Gate.gate_open()
+//                Intake.spinStop()
+//                Spindexer.stopShot()
+//                gateOpen = false
+//                intakeRunning = false
+//            }
 
 //        button { gamepad2.b }
 //            .whenBecomesTrue {

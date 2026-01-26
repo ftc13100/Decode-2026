@@ -22,11 +22,10 @@ object Spindexer : Subsystem {
     // Position PID used for indexing
     @JvmField var posPIDCoefficients = PIDCoefficients(0.025, 0.0, 0.0015)
 
-    val spindexer = MotorEx("spindexer").brakeMode()
-
-//    val color0 = ActiveOpMode.hardwareMap.get(RevColorSensorV3::class.java, "color0")
-//    val color1 = ActiveOpMode.hardwareMap.get(RevColorSensorV3::class.java, "color1")
-//    val color2 = ActiveOpMode.hardwareMap.get(RevColorSensorV3::class.java, "color2")
+    val spindexer = MotorEx("spindexer").brakeMode().reversed()
+//    lateinit var color0: RevColorSensorV3
+//    lateinit var color1: RevColorSensorV3
+//    lateinit var color2: RevColorSensorV3
 
     private val runtime = ElapsedTime()
 
@@ -85,4 +84,11 @@ object Spindexer : Subsystem {
         1, 1, 2, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 2, 2, 0, 1, 1, 2, 0, 0, 1, 2, 2, 0, 1, 1, 2, 0,
         0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0)
+
+    override fun initialize() {
+//        color0 = hardwareMap.get(RevColorSensorV3::class.java, "color0")
+//        color1 = hardwareMap.get(RevColorSensorV3::class.java, "color1")
+//        color2 = hardwareMap.get(RevColorSensorV3::class.java, "color2")
+    }
+
 }

@@ -10,10 +10,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 
 object Intake : Subsystem {
 
-    val intake = MotorEx("intake").brakeMode()
+    val intake = MotorEx("intake").brakeMode().reversed()
 
     var isRunning = false
-    const val CURRENT_THRESHOLD = 7000.0
+    const val CURRENT_THRESHOLD = 13000.0
 
     val spinFast =
         SequentialGroup(
