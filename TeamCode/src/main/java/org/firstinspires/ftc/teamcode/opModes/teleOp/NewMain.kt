@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
+import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.core.commands.delays.Delay
 import dev.nextftc.core.commands.delays.WaitUntil
 import dev.nextftc.core.commands.groups.SequentialGroup
@@ -258,48 +259,48 @@ class NewMain : NextFTCOpMode() {
 //                }
 //            }
 //
-//        // Increase shooter velocity
-//        button { gamepad2.dpad_up }
-//            .whenBecomesTrue {
-//                if (currentShotVelocity < 1800) {
-//                    currentShotVelocity += 10.0
-//                    Shooter.spinAtSpeed(currentShotVelocity).schedule()
-//                }
-//            }
-//
-//        // Decrease shooter velocity
-//        button { gamepad2.dpad_down }
-//            .whenBecomesTrue {
-//                if (currentShotVelocity > 800) {
-//                    currentShotVelocity -= 10.0
-//                    Shooter.spinAtSpeed(currentShotVelocity).schedule()
-//                }
-//            }
-//
-//        // lower shooting hood
-//        button { gamepad2.dpad_left }
-//            .whenBecomesTrue {
-//                if (currentShotAngle > 0.0 && currentShotAngle <= 0.681) {
-//                    currentShotAngle += 0.02
-//                    ShooterAngle.targetPosition = currentShotAngle
-//                    CommandManager.scheduleCommand(
-//                        ShooterAngle.update()
-//                    )
-//                }
-//            }
-//
-//        // raise shooting hood
-//        button { gamepad2.dpad_right }
-//            .whenBecomesTrue {
-//                if (currentShotAngle > 0.0 && currentShotAngle >= 0.519) {
-//                    currentShotAngle -= 0.02
-//                    ShooterAngle.targetPosition = currentShotAngle
-//                    CommandManager.scheduleCommand(
-//                        ShooterAngle.update()
-//                    )
-//                }
-//            }
-//
+        // Increase shooter velocity
+        button { gamepad2.dpad_up }
+            .whenBecomesTrue {
+                if (currentShotVelocity < 1800) {
+                    currentShotVelocity += 10.0
+                    Shooter.spinAtSpeed(currentShotVelocity).schedule()
+                }
+            }
+
+        // Decrease shooter velocity
+        button { gamepad2.dpad_down }
+            .whenBecomesTrue {
+                if (currentShotVelocity > 800) {
+                    currentShotVelocity -= 10.0
+                    Shooter.spinAtSpeed(currentShotVelocity).schedule()
+                }
+            }
+
+        // lower shooting hood
+        button { gamepad2.dpad_left }
+            .whenBecomesTrue {
+                if (currentShotAngle > 0.0 && currentShotAngle <= 0.681) {
+                    currentShotAngle += 0.02
+                    ShooterAngle.targetPosition = currentShotAngle
+                    CommandManager.scheduleCommand(
+                        ShooterAngle.update()
+                    )
+                }
+            }
+
+        // raise shooting hood
+        button { gamepad2.dpad_right }
+            .whenBecomesTrue {
+                if (currentShotAngle > 0.0 && currentShotAngle >= 0.519) {
+                    currentShotAngle -= 0.02
+                    ShooterAngle.targetPosition = currentShotAngle
+                    CommandManager.scheduleCommand(
+                        ShooterAngle.update()
+                    )
+                }
+            }
+
 //        // Switch alliance (works only in test mode where Teleop was started without Auto)
 //        button { gamepad2.left_stick_button }
 //            .toggleOnBecomesTrue()
