@@ -17,8 +17,8 @@ object Shooter : Subsystem {
     @JvmField var velPIDCoefficients = PIDCoefficients(0.002, 0.0, 0.0)
     @JvmField var basicFFParameters = BasicFeedforwardParameters(0.000385, 0.0, 0.095)
 
-    val shooter1 = MotorEx("shooter1").brakeMode()
-    val shooter2 = MotorEx("shooter2").brakeMode()
+    val shooter1 = MotorEx("shooter1").brakeMode().reversed()
+    val shooter2 = MotorEx("shooter2").brakeMode().reversed()
     var shooterActive = false
     var shooterReady = false
     var shooterReadyMs: Double = 0.00

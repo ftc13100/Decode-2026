@@ -20,16 +20,18 @@ import kotlin.math.abs
 object Spindexer : Subsystem {
     @JvmField var target = 0.0
     // Position PID used for indexing
-    @JvmField var posPIDCoefficients = PIDCoefficients(0.0, 0.0, 0.0)
+    @JvmField var posPIDCoefficients = PIDCoefficients(0.025, 0.0, 0.0015)
 
     val spindexer = MotorEx("spindexer").brakeMode()
+
 //    val color0 = ActiveOpMode.hardwareMap.get(RevColorSensorV3::class.java, "color0")
 //    val color1 = ActiveOpMode.hardwareMap.get(RevColorSensorV3::class.java, "color1")
-//    val color2 = ActiveOpMode.hardwareMap.get(ColorSensor::class.java, "color2");
+//    val color2 = ActiveOpMode.hardwareMap.get(RevColorSensorV3::class.java, "color2")
 
     private val runtime = ElapsedTime()
 
-    val spinAngle = 360/384.5 * spindexer.currentPosition
+    val spinAngle: Double
+        get() = (360.0 / 384.5) * spindexer.currentPosition
 
     val controlSystem = controlSystem {
         posPid(posPIDCoefficients)
@@ -48,6 +50,8 @@ object Spindexer : Subsystem {
     //For shot
     val spinShot = SetPower(spindexer,1.0)
 
+    val stopShot = SetPower(spindexer,0.0)
+
     fun angleToTicks(angle : Double): Double {
         val ticks = angle * 384.5/360
         return ticks
@@ -64,6 +68,13 @@ object Spindexer : Subsystem {
     fun index2() {
         RunToPosition(controlSystem, angleToTicks(240.0))
     }
+
+    // color sensor stuff
+//    fun getColor(): DoubleArray {
+//        val raw = intArrayOf(color0.red(), color0.green(), color0.blue())
+//        val sum = (raw[0] + raw[1] + raw[2]).toDouble()
+//        return doubleArrayOf(raw[0] / sum, raw[1] / sum, raw[2] / sum)
+//        }
 
     val dexing = intArrayOf(-1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 2, 0, 1,
         1, 2, 0, 0, 1, 2, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 2, 2, 0, 1, 1, 2, 0, 2, 0, 1, 1, 2, 0, 0,
