@@ -6,17 +6,27 @@ import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode
 
 object Gate : Subsystem {
-    private lateinit var servo: Servo
+    private lateinit var servoLeft: Servo
+    private lateinit var servoRight: Servo
     override fun initialize() {
-        servo = ActiveOpMode.hardwareMap.get(Servo::class.java, "gateLeft")
+        servoLeft = ActiveOpMode.hardwareMap.get(Servo::class.java, "gateLeft")
+        servoRight = ActiveOpMode.hardwareMap.get(Servo::class.java, "gateRight")
     }
 
-    val gate_open = InstantCommand {
-        servo.position = 0.62
+    val gate_in = InstantCommand {
+        servoLeft.position = 0.0
+        servoRight.position = 1.0
     }
 
-    val gate_close = InstantCommand {
-        servo.position = 0.1
+    val gate_stop = InstantCommand {
+        servoLeft.position = 0.5
+        servoRight.position = 0.5
+    }
+
+    val gate_out = InstantCommand {
+        servoLeft.position = 1.0
+        servoRight.position = 0.0
+
     }
 
 }

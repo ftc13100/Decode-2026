@@ -1,18 +1,12 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import com.bylazar.configurables.annotations.Configurable
 import com.bylazar.telemetry.JoinedTelemetry
 import com.bylazar.telemetry.PanelsTelemetry
-import com.pedropathing.ftc.FTCCoordinates
 import com.pedropathing.geometry.Pose
-import com.qualcomm.hardware.limelightvision.LLResult
-import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
-import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.core.commands.delays.Delay
 import dev.nextftc.core.commands.delays.WaitUntil
 import dev.nextftc.core.commands.groups.SequentialGroup
@@ -27,7 +21,6 @@ import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
@@ -35,7 +28,6 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
@@ -47,7 +39,7 @@ class NewMain : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                Shooter, Intake, Spindexer, Gate, NewTurret, ShooterAngle, GoalFinder, PoseStorage
+                Shooter, Intake, Spindexer, Gate, ShooterAngle, GoalFinder, PoseStorage //, NewTurret
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -131,14 +123,15 @@ class NewMain : NextFTCOpMode() {
         button { gamepad1.left_bumper }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                Gate.gate_close()
+                Spindexer.index0()
+                Gate.gate_in()
                 Intake.spinFast()
                 intakeRunning = true
                 gateOpen = false
             }
             .whenBecomesFalse {
                 Intake.spinStop()
-                Gate.gate_open()
+                Gate.gate_stop()
                 intakeRunning = false
             }
 
@@ -146,12 +139,13 @@ class NewMain : NextFTCOpMode() {
         button { gamepad1.right_bumper }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                Gate.gate_open()
+                Gate.gate_out()
                 Intake.spinReverse()
                 intakeRunning = true
                 gateOpen = true
             }
             .whenBecomesFalse {
+                Gate.gate_stop()
                 Intake.spinStop()
                 intakeRunning = false
             }
@@ -184,17 +178,17 @@ class NewMain : NextFTCOpMode() {
 //        GamePad 2 - Operator Commands
 ////////////////////////////////////////////////////////////////////////////
 
-        // Fine jump turret right
-        button { gamepad2.right_bumper }
-            .whenTrue {
-                NewTurret.increment
-            }
-
-        // Fine jump turret left
-        button { gamepad2.left_bumper }
-            .whenTrue {
-                NewTurret.decrement
-            }
+//         Fine jump turret right
+//        button { gamepad2.right_bumper }
+//            .whenTrue {
+//                NewTurret.increment
+//            }
+//
+//        // Fine jump turret left
+//        button { gamepad2.left_bumper }
+//            .whenTrue {
+//                NewTurret.decrement
+//            }
 
 //        // Coarse jump turret right
 //        button { gamepad2.right_trigger > 0.5 }
@@ -208,38 +202,29 @@ class NewMain : NextFTCOpMode() {
 //                Turret.turn(-500.0)
 //            }
 //
-        // Turret Tracking
-        button { gamepad2.a }
-            .whenBecomesTrue {
-                NewTurret.turretTrackCommand()
-            }
-            .whenBecomesFalse {
-                NewTurret.disabledCommand()
-            }
+//         Turret Tracking
+//        button { gamepad2.a }
+//            .whenBecomesTrue {
+//                NewTurret.turretTrackCommand()
+//            }
+//            .whenBecomesFalse {
+//                NewTurret.disabledCommand()
+//            }
 
-        button { gamepad2.x }
-            .whenBecomesTrue {
-                Gate.gate_close()
-                gateOpen = false
-            }
-            .whenBecomesFalse {
-                Gate.gate_open()
-            }
-
-        button { gamepad2.y }
-            .whenTrue {
-                Gate.gate_close
-                Spindexer.spinShot()
-            }
-            .whenFalse {
-                Spindexer.stopShot()
-            }
+//        button { gamepad2.y }
+//            .whenTrue {
+//                Gate.gate_close
+//                Spindexer.spinShot()
+//            }
+//            .whenFalse {
+//                Spindexer.stopShot()
+//            }
 
 // Start shooter and set hood angle / Stop shooter
         button { gamepad2.y }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                Gate.gate_close()
+                Gate.gate_stop()
                 gateOpen = false
                 val currentShot = shooterController.getShot(GoalFinder.gfGoalDistance)
                 val commands = SequentialGroup(
@@ -259,7 +244,7 @@ class NewMain : NextFTCOpMode() {
             }
             .whenBecomesFalse {
                 Shooter.stallShooter()
-                Gate.gate_open()
+                Gate.gate_stop()
                 Intake.spinStop()
                 Spindexer.stopShot()
                 gateOpen = false
@@ -335,6 +320,16 @@ class NewMain : NextFTCOpMode() {
 //            .whenBecomesTrue {
 //                Turret.resetToStartPosition()
 //            }
+
+        button { gamepad2.a }
+            .whenTrue {
+                Gate.gate_stop
+                Spindexer.spinShot()
+            }
+            .whenFalse {
+                Spindexer.stopShot()
+            }
+
     }
 
 
@@ -367,11 +362,11 @@ class NewMain : NextFTCOpMode() {
 //            driverControlled.update()
 //        } // end tracking goal
 
-//        if (PoseStorage.blueAlliance) {
-//            telemetry.addData("Alliance", "BLUE")
-//        } else {
-//            telemetry.addData("Alliance", "RED")
-//        }
+        if (PoseStorage.blueAlliance) {
+            telemetry.addData("Alliance", "BLUE")
+        } else {
+            telemetry.addData("Alliance", "RED")
+        }
 //
 //        var llBotpose = Pose(Double.NaN, Double.NaN, Double.NaN)
 //        var llTx = Double.NaN
@@ -397,14 +392,14 @@ class NewMain : NextFTCOpMode() {
 //            llTx = llResult.tx
 //        }
 //
-//        telemetry.addData(
-//            "X",
-//            "%3.1f, Y: %3.1f, Heading: %3.1f, Dist: %3.1f",
-//            follower.pose.x,
-//            follower.pose.y,
-//            Math.toDegrees(follower.heading),
-//            GoalFinder.gfGoalDistance
-//        )
+        telemetry.addData(
+            "X",
+            "%3.1f, Y: %3.1f, Heading: %3.1f, Dist: %3.1f",
+            follower.pose.x,
+            follower.pose.y,
+            Math.toDegrees(follower.heading),
+            GoalFinder.gfGoalDistance
+        )
 //
 //        telemetry.addData(
 //            "LL",
@@ -432,22 +427,22 @@ class NewMain : NextFTCOpMode() {
 //            initialized
 //        )
 
-//        telemetry.addData("Current Shot", "Dist: %3.1f, Vel: %4.1f, Ang: %.3f",
-//            currentShotDistance, currentShotVelocity, currentShotAngle)
+        telemetry.addData("Current Shot", "Dist: %3.1f, Vel: %4.1f, Ang: %.3f",
+            currentShotDistance, currentShotVelocity, currentShotAngle)
 
-//        telemetry.addData(
-//            "Shooter Vel",
-//            "%4.0f, Ready: %s, Error: %4.0f",
-//            Shooter.target,
-//            if (Shooter.shooterReady) {
-//                "Yes"
-//            } else {
-//                "No"
-//            },
-//            Shooter.target - Shooter.shooter1.velocity,
-//        )
-//
-//        telemetry.addData("Shooter Angle", "%.3f", currentShotAngle)
+        telemetry.addData(
+            "Shooter Vel",
+            "%4.0f, Ready: %s, Error: %4.0f",
+            Shooter.target,
+            if (Shooter.shooterReady) {
+                "Yes"
+            } else {
+                "No"
+            },
+            Shooter.target - Shooter.shooter1.velocity,
+        )
+
+        telemetry.addData("Shooter Angle", "%.3f", currentShotAngle)
 //        telemetry.addData(
 //            "Gate", "%s", if (gateOpen) {
 //                "Open"
@@ -455,13 +450,16 @@ class NewMain : NextFTCOpMode() {
 //                "Closed"
 //            }
 //        )
-//        telemetry.addData(
-//            "Intake", "%s (Power: %+1.1f, Current: %3.2f mA)", if (intakeRunning) {
-//                "Running"
-//            } else {
-//                "Stopped"
-//            }, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
-//        )
+        telemetry.addData(
+            "Intake", "%s (Power: %+1.1f, Current: %3.2f mA)", if (intakeRunning) {
+                "Running"
+            } else {
+                "Stopped"
+            }, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
+        )
+
+        telemetry.addData("Spindexer Pos", Spindexer.spindexer.currentPosition)
+
         telemetry.update()
     }
 

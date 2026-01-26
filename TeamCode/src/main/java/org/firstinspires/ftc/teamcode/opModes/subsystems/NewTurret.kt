@@ -33,8 +33,11 @@ object NewTurret : Subsystem {
         set(value) {
             val safeVal = value.coerceIn(0.0, 1.0)
 
-            turret1.position = safeVal
-            turret2.position = safeVal
+            if (::turret1.isInitialized and ::turret2.isInitialized) {
+                turret1.position = safeVal
+                turret2.position = safeVal
+            }
+
             field = safeVal
         }
 

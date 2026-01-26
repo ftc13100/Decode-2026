@@ -1,10 +1,7 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import com.bylazar.configurables.annotations.Configurable
 import com.bylazar.telemetry.JoinedTelemetry
 import com.bylazar.telemetry.PanelsTelemetry
-import com.pedropathing.ftc.FTCCoordinates
 import com.pedropathing.geometry.Pose
 import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.hardware.limelightvision.Limelight3A
@@ -26,7 +23,6 @@ import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
@@ -126,7 +122,7 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad1.left_bumper }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                Gate.gate_close()
+                Gate.gate_stop()
                 Intake.spinFast()
                 intakeRunning = true
                 gateOpen = false
@@ -150,7 +146,7 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad1.right_bumper }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                Gate.gate_close()
+                Gate.gate_stop()
                 Intake.spinReverse()
                 intakeRunning = true
                 gateOpen = false
@@ -226,7 +222,7 @@ class MainTeleop : NextFTCOpMode() {
 
         button { gamepad2.x }
             .whenBecomesTrue {
-                Gate.gate_open()
+                Gate.gate_in()
                 gateOpen = true
             }
 // Start shooter and set hood angle / Stop shooter
@@ -245,7 +241,7 @@ class MainTeleop : NextFTCOpMode() {
                     },
                     WaitUntil { Shooter.shooterReady && GoalFinder.gfReady },
                     InstantCommand {
-                        Gate.gate_open()
+                        Gate.gate_in()
                         Intake.spinSlowSpeed()
                         gateOpen = true
                         intakeRunning = true
@@ -256,7 +252,7 @@ class MainTeleop : NextFTCOpMode() {
 
             .whenBecomesFalse {
                 Shooter.stallShooter()
-                Gate.gate_close()
+                Gate.gate_stop()
                 Intake.spinStop()
                 Turret.trackTarget()
                 gateOpen = false

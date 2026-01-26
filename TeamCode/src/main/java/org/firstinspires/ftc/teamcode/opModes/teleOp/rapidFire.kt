@@ -1,22 +1,11 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import com.bylazar.configurables.annotations.Configurable
 import com.bylazar.telemetry.JoinedTelemetry
 import com.bylazar.telemetry.PanelsTelemetry
-import com.pedropathing.ftc.FTCCoordinates
-import com.pedropathing.geometry.Pose
-import com.qualcomm.hardware.limelightvision.LLResult
-import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
-import dev.nextftc.core.commands.CommandManager
-import dev.nextftc.core.commands.delays.Delay
-import dev.nextftc.core.commands.delays.WaitUntil
-import dev.nextftc.core.commands.groups.SequentialGroup
-import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.PedroComponent
@@ -26,21 +15,11 @@ import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
-import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
-import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
-import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
-import kotlin.math.abs
-import kotlin.time.Duration.Companion.milliseconds
 
 @TeleOp(name = "rapid")
 class rapid : NextFTCOpMode() {
@@ -131,14 +110,14 @@ class rapid : NextFTCOpMode() {
         button { gamepad1.left_bumper }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                Gate.gate_open()
+                Gate.gate_in()
                 Intake.spinFast()
                 intakeRunning = true
                 gateOpen = true
             }
             .whenBecomesFalse {
                 Intake.spinStop()
-                Gate.gate_close()
+                Gate.gate_stop()
                 intakeRunning = false
                 gateOpen = false
             }
@@ -147,7 +126,7 @@ class rapid : NextFTCOpMode() {
         button { gamepad1.right_bumper }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                Gate.gate_open()
+                Gate.gate_in()
                 Intake.spinReverse()
                 intakeRunning = true
                 gateOpen = true
@@ -220,16 +199,16 @@ class rapid : NextFTCOpMode() {
 
         button { gamepad2.x }
             .whenBecomesTrue {
-                Gate.gate_close()
+                Gate.gate_stop()
                 gateOpen = false
             }
             .whenBecomesFalse {
-                Gate.gate_open()
+                Gate.gate_in()
             }
 
         button { gamepad2.y }
             .whenTrue {
-                Gate.gate_close
+                Gate.gate_stop
                 Spindexer.spinShot()
             }
             .whenFalse {

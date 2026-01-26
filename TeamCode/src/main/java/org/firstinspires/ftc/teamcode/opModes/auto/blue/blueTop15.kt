@@ -41,53 +41,53 @@ class blueTop15 : NextFTCOpMode() {
                     Shooter.spinAtSpeed(1150.0),
                     FollowPath(blueAutoPaths.GoToShot),
                     TurretAuto.toLeft,
-                    Gate.gate_open
+                    Gate.gate_in
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
                 ParallelGroup(
                     FollowPath(blueAutoPaths.PGPfirst),
-                    Gate.gate_close
+                    Gate.gate_stop
                 ),
                 FollowPath(blueAutoPaths.PGPsecond, holdEnd = true, maxPower = 0.8),
                 Intake.spinStop,
                 ParallelGroup(
                     FollowPath(blueAutoPaths.PGPtoShotMove),
                     ShooterAngle.angle_kindaUP,
-                    Gate.gate_open,
+                    Gate.gate_in,
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
                 ParallelGroup(
                     FollowPath(blueAutoPaths.TheGate),
-                    Gate.gate_close
+                    Gate.gate_stop
                 ),
                 Delay(2.2.seconds),
                 ParallelGroup(
                     Intake.spinStop,
                     FollowPath(blueAutoPaths.PGPtoShotMove),
                     ShooterAngle.angle_kindaUP,
-                    Gate.gate_open,
+                    Gate.gate_in,
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
                 ParallelGroup(
                     FollowPath(blueAutoPaths.PPGsecond, holdEnd = true, maxPower = 0.8),
-                    Gate.gate_close,
+                    Gate.gate_stop,
                     Intake.spinFast
                 ),
                 ParallelGroup(
                     Intake.spinStop,
                     FollowPath(blueAutoPaths.PPGtoShotMove),
                     ShooterAngle.angle_kindaUP,
-                    Gate.gate_open,
+                    Gate.gate_in,
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
 
                 ParallelGroup(
                     FollowPath(blueAutoPaths.GPPfirst),
-                    Gate.gate_close,
+                    Gate.gate_stop,
                     Intake.spinFast
                 ),
                 FollowPath(blueAutoPaths.GPPsecond, holdEnd = true, maxPower = 0.8),
@@ -95,21 +95,21 @@ class blueTop15 : NextFTCOpMode() {
                 ParallelGroup(
                     FollowPath(blueAutoPaths.Leave),
                     ShooterAngle.angle_kindaUP,
-                    Gate.gate_open,
+                    Gate.gate_in,
                     TurretAuto.toMid
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
                 ParallelGroup(
                     Shooter.stopShooter,
-                    Gate.gate_close,
+                    Gate.gate_stop,
                     Intake.spinStop,
                 )
             )
 
     override fun onInit() {
         PedroComponent.Companion.follower.setMaxPower(1.0)
-        Gate.gate_close()
+        Gate.gate_stop()
     }
 
     override fun onStartButtonPressed() {

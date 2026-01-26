@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.opModes.auto.red
 
-import com.pedropathing.geometry.BezierCurve
-import com.pedropathing.geometry.BezierLine
-import com.pedropathing.geometry.Pose
-import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
@@ -57,18 +53,18 @@ class redTop12: NextFTCOpMode() {
                     Shooter.spinAtSpeed(1150.0),
                     FollowPath(GoToShot),
                     TurretAuto.toRight,
-                    Gate.gate_open
+                    Gate.gate_in
                 ),
                 Intake.spinFast,
                 Delay(2.3.seconds),
                 ParallelGroup(
                     Shooter.spinAtSpeed(1000.0),
                     Intake.spinStop,
-                    Gate.gate_close
+                    Gate.gate_stop
                 ),
                 ParallelGroup(
                     FollowPath(PPGfirst),
-                    Gate.gate_close
+                    Gate.gate_stop
                 ),
                 Intake.spinFast,
                 FollowPath(PPGsecond, holdEnd = true, maxPower = 0.65),
@@ -79,18 +75,18 @@ class redTop12: NextFTCOpMode() {
                     FollowPath(PPGtoShotMove),
                     ShooterAngle.angle_kindaUP,
                     Shooter.spinAtSpeed(1150.0),
-                    Gate.gate_open,
+                    Gate.gate_in,
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
                 ParallelGroup(
                     Shooter.spinAtSpeed(1000.0),
                     Intake.spinStop,
-                    Gate.gate_close
+                    Gate.gate_stop
                 ),
                 ParallelGroup(
                     FollowPath(PGPfirst),
-                    Gate.gate_close,
+                    Gate.gate_stop,
                     Intake.spinFast
                 ),
                 FollowPath(PGPsecond, holdEnd = true, maxPower = 0.65),
@@ -99,13 +95,13 @@ class redTop12: NextFTCOpMode() {
                     FollowPath(PGPtoShotMove),
                     ShooterAngle.angle_kindaUP,
                     Shooter.spinAtSpeed(1150.0),
-                    Gate.gate_open,
+                    Gate.gate_in,
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
                 ParallelGroup(
                     Shooter.spinAtSpeed(1000.0),
-                    Gate.gate_close,
+                    Gate.gate_stop,
                     FollowPath(GPPfirst),
                     Intake.spinFast
                 ),
@@ -115,21 +111,21 @@ class redTop12: NextFTCOpMode() {
                     FollowPath(Leave),
                     ShooterAngle.angle_kindaUP,
                     Shooter.spinAtSpeed(1150.0),
-                    Gate.gate_open,
+                    Gate.gate_in,
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),
                 ParallelGroup(
                     Shooter.stopShooter,
                     TurretAuto.toMid,
-                    Gate.gate_close,
+                    Gate.gate_stop,
                     Intake.spinStop
                 ),
             )
 
     override fun onInit() {
         PedroComponent.Companion.follower.setMaxPower(1.0)
-        Gate.gate_close()
+        Gate.gate_stop()
     }
 
     override fun onStartButtonPressed() {

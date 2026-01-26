@@ -1,28 +1,20 @@
 package org.firstinspires.ftc.teamcode.opModes.auto.red
 
-import com.pedropathing.geometry.BezierCurve
-import com.pedropathing.geometry.BezierLine
-import com.pedropathing.geometry.Pose
-import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
 import dev.nextftc.core.commands.groups.ParallelDeadlineGroup
 import dev.nextftc.core.commands.groups.ParallelGroup
-import dev.nextftc.core.commands.groups.ParallelRaceGroup
 import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
-import dev.nextftc.extensions.pedro.PedroComponent.Companion
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
-import dev.nextftc.extensions.pedro.TurnTo
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.DeadhuzzLeave
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GPPfirst
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GPPsecond
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GoToSecretTunnel
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GoToShot
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.Leave
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PGPfirst
@@ -33,7 +25,6 @@ import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PPGtoS
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.TheGate
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.buildPaths
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.eatup
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.pickUpPGP2
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.startPose
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
@@ -67,7 +58,7 @@ class redTop15 : NextFTCOpMode() {
                     Shooter.spinAtSpeed(1180.0),
                     FollowPath(GoToShot),
                     TurretAuto.toLeft,
-                    Gate.gate_open,
+                    Gate.gate_in,
                 ),
                 ParallelDeadlineGroup(
                     Delay(1.8.seconds),
@@ -75,14 +66,14 @@ class redTop15 : NextFTCOpMode() {
                 ),
                 ParallelGroup(
                     FollowPath(PGPfirst),
-                    Gate.gate_close
+                    Gate.gate_stop
                 ),
                 FollowPath(PGPsecond, holdEnd = true, maxPower = 1.0),
                 Intake.spinStop,
                 ParallelGroup(
                     FollowPath(PGPtoShotMove),
                     ShooterAngle.angle_kindaUP,
-                    Gate.gate_open,
+                    Gate.gate_in,
                 ),
                 ParallelDeadlineGroup(
                     Delay(1.8.seconds),
@@ -90,7 +81,7 @@ class redTop15 : NextFTCOpMode() {
                 ),
                 ParallelGroup(
                     FollowPath(TheGate),
-                    Gate.gate_close,
+                    Gate.gate_stop,
                 ),
                 FollowPath(eatup),
                 Delay(1.8),
@@ -98,7 +89,7 @@ class redTop15 : NextFTCOpMode() {
                     Intake.spinStop,
                     FollowPath(PGPtoShotMove),
                     ShooterAngle.angle_kindaUP,
-                    Gate.gate_open,
+                    Gate.gate_in,
                 ),
                 ParallelDeadlineGroup(
                     Delay(1.8.seconds),
@@ -106,14 +97,14 @@ class redTop15 : NextFTCOpMode() {
                 ),
                 ParallelDeadlineGroup(
                     FollowPath(PPGsecond, holdEnd = true, maxPower = 1.0),
-                    Gate.gate_close,
+                    Gate.gate_stop,
                     Intake.spinFast
                 ),
                 ParallelGroup(
                     Intake.spinStop,
                     FollowPath(PPGtoShotMove),
                     ShooterAngle.angle_kindaUP,
-                    Gate.gate_open,
+                    Gate.gate_in,
                 ),
                 ParallelDeadlineGroup(
                     Delay(1.8.seconds),
@@ -121,7 +112,7 @@ class redTop15 : NextFTCOpMode() {
                 ),
                 ParallelDeadlineGroup(
                     FollowPath(GPPfirst),
-                    Gate.gate_close,
+                    Gate.gate_stop,
                     Intake.spinFast
                 ),
                 FollowPath(GPPsecond, holdEnd = true, maxPower = 1.0),
@@ -129,7 +120,7 @@ class redTop15 : NextFTCOpMode() {
                 ParallelGroup(
                     FollowPath(Leave),
                     ShooterAngle.angle_kindaUP,
-                    Gate.gate_open
+                    Gate.gate_in
                 ),
                 ParallelDeadlineGroup(
                     Delay(1.8.seconds),
@@ -138,14 +129,14 @@ class redTop15 : NextFTCOpMode() {
                 ParallelGroup(
                     FollowPath(DeadhuzzLeave),
                     Shooter.stopShooter,
-                    Gate.gate_close,
+                    Gate.gate_stop,
                     Intake.spinStop,
                 )
             )
 
     override fun onInit() {
         follower.setMaxPower(1.0)
-        Gate.gate_close()
+        Gate.gate_stop()
     }
 
     override fun onStartButtonPressed() {

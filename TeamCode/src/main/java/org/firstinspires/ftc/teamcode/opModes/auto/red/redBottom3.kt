@@ -41,7 +41,7 @@ class redBottom3 : NextFTCOpMode() {
                     ShooterAngle.angle_up,
                     Shooter.spinAtSpeed(1450.0),
                     TurretAuto.toRightMohit,
-                    Gate.gate_open,
+                    Gate.gate_in,
                     FollowPath(redAutoPaths.bottomShoot)
 
                 ),
@@ -50,18 +50,18 @@ class redBottom3 : NextFTCOpMode() {
                 ParallelGroup(
                     Shooter.stopShooter,
                     Intake.spinStop,
-                    Gate.gate_close
+                    Gate.gate_stop
                 ),
                 ParallelGroup(
                     TurretAuto.toMid,
                     FollowPath(redAutoPaths.bottomLeave),
-                    Gate.gate_close
+                    Gate.gate_stop
                 )
             )
 
     override fun onInit() {
         PedroComponent.Companion.follower.setMaxPower(1.0)
-        Gate.gate_close()
+        Gate.gate_stop()
     }
 
     override fun onStartButtonPressed() {
