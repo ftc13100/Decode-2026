@@ -40,7 +40,7 @@ class blueBottom3 : NextFTCOpMode() {
                 ParallelGroup(
                     ShooterAngle.angle_up,
                     Shooter.spinAtSpeed(1450.0),
-                    TurretAuto.toLeftMohit,
+                    TurretAuto.toLeft,
                     Gate.gate_in,
                     FollowPath(blueAutoPaths.bottomShoot)
 
@@ -53,7 +53,7 @@ class blueBottom3 : NextFTCOpMode() {
                     Gate.gate_stop
                 ),
                 ParallelGroup(
-                    TurretAuto.toMid,
+                    TurretAuto.toLeft,
                     FollowPath(blueAutoPaths.bottomLeave),
                     Gate.gate_stop
                 )

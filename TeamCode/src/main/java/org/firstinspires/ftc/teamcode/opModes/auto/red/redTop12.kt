@@ -117,7 +117,7 @@ class redTop12: NextFTCOpMode() {
                 Delay(1.8.seconds),
                 ParallelGroup(
                     Shooter.stopShooter,
-                    TurretAuto.toMid,
+                    TurretAuto.toLeft,
                     Gate.gate_stop,
                     Intake.spinStop
                 ),

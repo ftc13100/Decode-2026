@@ -96,7 +96,7 @@ class blueTop15 : NextFTCOpMode() {
                     FollowPath(blueAutoPaths.Leave),
                     ShooterAngle.angle_kindaUP,
                     Gate.gate_in,
-                    TurretAuto.toMid
+                    TurretAuto.toLeft
                 ),
                 Intake.spinFast,
                 Delay(1.8.seconds),

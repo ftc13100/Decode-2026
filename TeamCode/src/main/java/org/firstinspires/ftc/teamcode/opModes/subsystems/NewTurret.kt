@@ -30,7 +30,7 @@ object NewTurret : Subsystem {
 
     const val MAX_LIMIT_DEG = 300.0
 
-    private var turretPosition = 0.0
+    var turretPosition = 0.0
         set(value) {
             val safeVal = value.coerceIn(0.0, 1.0)
 

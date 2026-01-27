@@ -31,14 +31,13 @@ object TurretAuto : Subsystem {
     }
 
     val toLeft = InstantCommand {
-        turret1.position = //blue shoot
-        turret2.position = //blue shoot
+//        turret1.position = //blue shoot
+//        turret2.position = //blue shoot
     }
 
+    //
     val toRight = InstantCommand {
-        turret1.position = //red shoot
-        turret2.position = //red shoot
-
+//        turret1.position = //red shoot
+//        turret2.position = //red shoot
     }
 }
-

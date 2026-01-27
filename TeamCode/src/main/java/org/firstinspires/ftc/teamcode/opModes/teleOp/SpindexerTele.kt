@@ -50,21 +50,41 @@ class SpindexerTele : NextFTCOpMode() {
     override fun onStartButtonPressed() {
         button { gamepad2.a }
             .whenBecomesTrue {
+
             }
             .whenBecomesFalse {
+
             }
     }
 
     override fun onUpdate() {
-        Gate.gate_in()
+//        Gate.gate_spindex()
         updateSignals()
     }
 
     private fun updateSignals() {
         //telemetry.addData("Dexer Position", Spindexer.spindexer.currentPosition)
-        panelsTelemetry.addData("Position", Spindexer.spindexer.currentPosition)
-        panelsTelemetry.addData("Target", Spindexer.target)
-        panelsTelemetry.update(telemetry)
+//        panelsTelemetry.addData("Position", Spindexer.spindexer.currentPosition)
+//        panelsTelemetry.addData("Target", Spindexer.target)
+        // Sensor 0
+//        val c0 = Spindexer.color0.normalizedColors
+//        telemetry.addData("S0 Hue", "%.1f°", Spindexer.getHue(Spindexer.color0))
+//        telemetry.addData("S0 RGB", "R:%.2f G:%.2f B:%.2f", c0.red, c0.green, c0.blue)
+//
+//        // Sensor 1
+//        val c1 = Spindexer.color1.normalizedColors
+//        telemetry.addData("S1 Hue", "%.1f°", Spindexer.getHue(Spindexer.color1))
+//        telemetry.addData("S1 RGB", "R:%.2f G:%.2f B:%.2f", c1.red, c1.green, c1.blue)
+//
+//        // Sensor 2
+//        val c2 = Spindexer.color2.normalizedColors
+//        telemetry.addData("S2 Hue", "%.1f°", Spindexer.getHue(Spindexer.color2))
+//        telemetry.addData("S2 RGB", "R:%.2f G:%.2f B:%.2f", c2.red, c2.green, c2.blue)
+        telemetry.addData("S0 State", Spindexer.detectColorRGB(Spindexer.color0))
+        telemetry.addData("S1 State", Spindexer.detectColorRGB(Spindexer.color1))
+        telemetry.addData("S2 State", Spindexer.detectColorRGB(Spindexer.color2))
         telemetry.update()
+        panelsTelemetry.update(telemetry)
+
     }
 }

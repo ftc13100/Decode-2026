@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes.subsystems
 
+import android.graphics.Color
 import com.bylazar.configurables.annotations.Configurable
 import com.qualcomm.hardware.rev.RevColorSensorV3
 import com.qualcomm.robotcore.hardware.ColorSensor
@@ -76,6 +77,28 @@ object Spindexer : Subsystem {
         RunToPosition(controlSystem, angleToTicks(240.0))
     }
 
+    enum class SpindexerColor { PURPLE, GREEN, EMPTY }
+
+    fun detectColorRGB(sensor: NormalizedColorSensor): SpindexerColor {
+        val colors = sensor.normalizedColors
+
+        // 1. Proximity Check: If Alpha is very low, the slot is empty
+        if (colors.alpha < 0.1) return SpindexerColor.EMPTY
+
+        // 2. Ratio Logic: Compare color intensities
+        return when {
+            // If Green is the dominant color
+            colors.green > colors.red && colors.green > colors.blue -> {
+                SpindexerColor.GREEN
+            }
+            // If Blue is dominant (Purple elements often register as high Blue)
+            colors.blue > colors.red && colors.blue > colors.green -> {
+                SpindexerColor.PURPLE
+            }
+            else -> SpindexerColor.EMPTY
+        }
+    }
+
     // color sensor stuff
 //    fun getColor(): DoubleArray {
 //        val raw = intArrayOf(color0.red(), color0.green(), color0.blue())
@@ -95,8 +118,11 @@ object Spindexer : Subsystem {
 
     override fun initialize() {
         color0 = hardwareMap.get(NormalizedColorSensor::class.java, "color0")
+        color0.gain = 10.0f
         color1 = hardwareMap.get(NormalizedColorSensor::class.java, "color1")
+        color1.gain = 10.0f
         color2 = hardwareMap.get(NormalizedColorSensor::class.java, "color2")
+        color2.gain = 10.0f
     }
 
 }
