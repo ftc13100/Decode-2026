@@ -50,10 +50,8 @@ class SpindexerTele : NextFTCOpMode() {
     override fun onStartButtonPressed() {
         button { gamepad2.a }
             .whenBecomesTrue {
-                Spindexer.index0()
             }
             .whenBecomesFalse {
-                Spindexer.stopShot()
             }
     }
 
