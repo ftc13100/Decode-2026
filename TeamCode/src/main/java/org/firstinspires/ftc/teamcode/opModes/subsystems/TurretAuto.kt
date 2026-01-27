@@ -1,39 +1,44 @@
 package org.firstinspires.ftc.teamcode.opModes.subsystems
 
 import com.bylazar.configurables.annotations.Configurable
+import com.qualcomm.robotcore.hardware.Servo
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
+import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
+import dev.nextftc.ftc.ActiveOpMode
 import dev.nextftc.hardware.controllable.RunToPosition
 import dev.nextftc.hardware.impl.MotorEx
+import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret.turretPosition
 
 @Configurable
 object TurretAuto : Subsystem {
-    @JvmField
-    var target = 0.0
-
-    @JvmField
-    var posPIDCoefficients = PIDCoefficients(0.0097, 0.0, 0.00015)
-    val turret = MotorEx("turret").brakeMode().zeroed()
-
+    private lateinit var turret1: Servo
+    private lateinit var turret2: Servo
     override fun initialize() {
-        turret.zero()
-        PoseStorage.turretStartPos = turret.currentPosition
+        turret1 = ActiveOpMode.hardwareMap.get(Servo::class.java, "gateLeft")
+        turret2 = ActiveOpMode.hardwareMap.get(Servo::class.java, "gateRight")
     }
 
-    val controlSystem = controlSystem {
-        posPid(posPIDCoefficients)
+    val min = InstantCommand {
+        turret1.position = 0.0
+        turret2.position = 0.0
     }
 
-    val toMid = RunToPosition(controlSystem, 0.0).requires(this)
-    val toLeft = RunToPosition(controlSystem, -1500.0).requires(this)
-    val toRight = RunToPosition(controlSystem, 1500.0).requires(this)
+    val max = InstantCommand {
+        turret1.position = 1.0
+        turret2.position = 1.0
+    }
 
-    val toLeftMohit = RunToPosition(controlSystem, -725.0).requires(this)
-    val toRightMohit = RunToPosition(controlSystem, 725.0).requires(this)
+    val toLeft = InstantCommand {
+        turret1.position = //blue shoot
+        turret2.position = //blue shoot
+    }
 
-    override fun periodic() {
-        turret.power = controlSystem.calculate(turret.state)
+    val toRight = InstantCommand {
+        turret1.position = //red shoot
+        turret2.position = //red shoot
+
     }
 }
 
