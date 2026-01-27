@@ -27,7 +27,11 @@ object Gate : Subsystem {
     val gate_out = InstantCommand {
         servoLeft.position = 1.0
         servoRight.position = 0.0
+    }
 
+    val gate_spindex = InstantCommand {
+        servoLeft.position = 0.45
+        servoRight.position = 0.55
     }
 
 }

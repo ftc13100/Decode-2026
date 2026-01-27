@@ -9,6 +9,7 @@ import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode
 import dev.nextftc.hardware.controllable.RunToPosition
 import dev.nextftc.hardware.impl.MotorEx
+import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret.turretPosition
 
 @Configurable
 object TurretAuto : Subsystem {
@@ -29,15 +30,14 @@ object TurretAuto : Subsystem {
         turret2.position = 1.0
     }
 
-//    val toLeft = InstantCommand {
+    val toLeft = InstantCommand {
 //        turret1.position = //blue shoot
 //        turret2.position = //blue shoot
-//    }
+    }
 
-//    val toRight = InstantCommand {
+    //
+    val toRight = InstantCommand {
 //        turret1.position = //red shoot
 //        turret2.position = //red shoot
-//
-//    }
+    }
 }
-
