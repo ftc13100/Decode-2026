@@ -12,6 +12,7 @@ import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.ActiveOpMode
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret.turretState
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret.turretTrackCommand
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer.spindexer
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.heading
 import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goal
 import kotlin.math.abs
@@ -50,9 +51,12 @@ object NewTurret : Subsystem {
     override fun initialize() {
         turret1 = ActiveOpMode.hardwareMap["turret1"] as Servo
         turret2 = ActiveOpMode.hardwareMap["turret1"] as Servo
-
         turretPosition = 0.0
     }
+
+    val turretAngle: Double
+        get() = 300.0 * turretPosition
+
 
     val increment = InstantCommand {
         turretPosition += 0.001

@@ -15,9 +15,11 @@ import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.bindings.BindingManager
+import dev.nextftc.bindings.button
 import dev.nextftc.core.commands.CommandManager
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
 import kotlin.math.abs
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 
 @TeleOp(name = "SpindexerTesting")
 class SpindexerTele : NextFTCOpMode() {
@@ -45,7 +47,18 @@ class SpindexerTele : NextFTCOpMode() {
         updateSignals()
     }
 
+    override fun onStartButtonPressed() {
+        button { gamepad2.a }
+            .whenBecomesTrue {
+                Spindexer.index0()
+            }
+            .whenBecomesFalse {
+                Spindexer.stopShot()
+            }
+    }
+
     override fun onUpdate() {
+        Gate.gate_in()
         updateSignals()
     }
 

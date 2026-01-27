@@ -8,6 +8,7 @@ import dev.nextftc.ftc.ActiveOpMode
 object Gate : Subsystem {
     private lateinit var servoLeft: Servo
     private lateinit var servoRight: Servo
+
     override fun initialize() {
         servoLeft = ActiveOpMode.hardwareMap.get(Servo::class.java, "gateLeft")
         servoRight = ActiveOpMode.hardwareMap.get(Servo::class.java, "gateRight")

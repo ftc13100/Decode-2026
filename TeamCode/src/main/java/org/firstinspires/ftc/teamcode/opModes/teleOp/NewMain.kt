@@ -459,7 +459,7 @@ class NewMain : NextFTCOpMode() {
             }, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
         )
 
-        telemetry.addData("Spindexer Pos", Spindexer.spindexer.currentPosition)
+        telemetry.addData("Spindexer Pos", Spindexer.spinAngle)
 
         telemetry.update()
     }

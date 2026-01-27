@@ -25,37 +25,41 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime
+import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.math.abs
 
-//@TeleOp(name = "Turret Test & Tune")
-class TurretTeleOp : NextFTCOpMode() {
+@TeleOp(name = "TurretTele")
+class TurretTele : NextFTCOpMode() {
 
     init {
         addComponents(
-        SubsystemComponent(Turret),
-        BulkReadComponent,
-        PedroComponent(Constants::createFollower)
+            SubsystemComponent(NewTurret),
+            BulkReadComponent,
+            PedroComponent(Constants::createFollower)
         )
     }
 
     private val panelsTelemetry = PanelsTelemetry.telemetry
+
     private val timer = ElapsedTime()
     val turretCommand = PerpetualCommand(
         LambdaCommand()
             .setUpdate {
-                Turret.turn(0.0)
+                NewTurret.turretTrackCommand()
             }
-            .requires(Turret)
+            .requires(NewTurret)
     )
+
     override fun onInit() {
         turretCommand()
         timer.reset()
     }
 
     override fun onUpdate() {
-        telemetry.addData("Turret Position", Turret.turret.currentPosition)
+        telemetry.addData("Target", NewTurret.turretState)
+        telemetry.addData("Angle", NewTurret.turretAngle)
         panelsTelemetry.addData("Target", Turret.target)
         panelsTelemetry.addData("Position", Turret.turret.currentPosition)
         panelsTelemetry.update(telemetry)
