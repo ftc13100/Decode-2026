@@ -9,94 +9,94 @@ import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 
 object blueAutoPaths : Subsystem {
+val shoot = follower.pathBuilder().addPath(
+    BezierLine(
+        Pose(33.833, 134.621),
 
-    val Path1 = follower.pathBuilder().addPath(
-        BezierLine(
-            Pose(21.000, 123.000),
+        Pose(60.000, 84.000)
+    )
+).setLinearHeadingInterpolation(Math.toRadians(0.0), Math.toRadians(180.0))
 
-            Pose(60.000, 84.000)
-        )
-    ).setLinearHeadingInterpolation(Math.toRadians(52.0), Math.toRadians(52.0))
+.build()
 
-        .build()
+val shootPPG = follower.pathBuilder().addPath(
+    BezierLine(
+        Pose(60.000, 84.000),
 
-    val Path2 = follower.pathBuilder().addPath(
-        BezierLine(
-            Pose(60.000, 84.000),
+        Pose(24.000, 84.049)
+    )
+).setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(180.0))
 
-            Pose(20.487, 83.741)
-        )
-    ).setTangentHeadingInterpolation()
+.build()
 
-        .build()
+val PPGgate = follower.pathBuilder().addPath(
+    BezierLine(
+        Pose(24.000, 84.049),
 
-    val Path5 = follower.pathBuilder().addPath(
-        BezierLine(
-            Pose(20.487, 83.741),
+        Pose(16.000, 74.800)
+    )
+).setConstantHeadingInterpolation(Math.toRadians(180.0))
 
-            Pose(15.485, 73.401)
-        )
-    ).setLinearHeadingInterpolation(Math.toRadians(180.0), Math.toRadians(87.0))
+.build()
 
-        .build()
+val gateShoot = follower.pathBuilder().addPath(
+    BezierLine(
+        Pose(16.000, 74.800),
 
-    val Path3 = follower.pathBuilder().addPath(
-        BezierLine(
-            Pose(15.485, 73.401),
+        Pose(60.000, 84.000)
+    )
+).setConstantHeadingInterpolation(Math.toRadians(180.0))
 
-            Pose(60.000, 84.000)
-        )
-    ).setLinearHeadingInterpolation(Math.toRadians(87.0), Math.toRadians(239.0))
-        .setReversed()
-        .build()
+.build()
 
-    val Path4 = follower.pathBuilder().addPath(
-        BezierCurve(
-            Pose(60.000, 84.000),
-            Pose(42.781, 55.014),
-            Pose(22.046, 58.595)
-        )
-    ).setTangentHeadingInterpolation()
+val shootPGP = follower.pathBuilder().addPath(
+    BezierCurve(
+        Pose(60.000, 84.000),
+        Pose(39.000, 57.000),
+        Pose(24.000, 59.000)
+    )
+).setConstantHeadingInterpolation(Math.toRadians(180.0))
 
-        .build()
+.build()
 
-    val Path6 = follower.pathBuilder().addPath(
-        BezierLine(
-            Pose(22.046, 58.595),
+val PGPshoot = follower.pathBuilder().addPath(
+    BezierLine(
+        Pose(24.000, 59.000),
 
-            Pose(60.000, 84.000)
-        )
-    ).setLinearHeadingInterpolation(Math.toRadians(270.0), Math.toRadians(256.0))
-        .setReversed()
-        .build()
+        Pose(60.000, 84.000)
+    )
+).setConstantHeadingInterpolation(Math.toRadians(180.0))
 
-    val Path7 = follower.pathBuilder().addPath(
-        BezierCurve(
-            Pose(60.000, 84.000),
-            Pose(46.378, 28.216),
-            Pose(18.350, 35.151)
-        )
-    ).setTangentHeadingInterpolation()
+.build()
 
-        .build()
+val shootGPP = follower.pathBuilder().addPath(
+    BezierCurve(
+        Pose(60.000, 84.000),
+        Pose(56.000, 30.000),
+        Pose(24.000, 35.872)
+    )
+).setConstantHeadingInterpolation(Math.toRadians(180.0))
 
-    val Path8 = follower.pathBuilder().addPath(
-        BezierLine(
-            Pose(18.350, 35.151),
+.build()
 
-            Pose(60.000, 84.000)
-        )
-    ).setTangentHeadingInterpolation()
-        .setReversed()
-        .build()
+val GPPshoot = follower.pathBuilder().addPath(
+    BezierLine(
+        Pose(24.000, 35.872),
 
-    val Path9 = follower.pathBuilder().addPath(
-        BezierLine(
-            Pose(60.000, 84.000),
+        Pose(60.000, 84.000)
+    )
+).setConstantHeadingInterpolation(Math.toRadians(180.0))
 
-            Pose(24.000, 72.000)
-        )
-    ).setLinearHeadingInterpolation(Math.toRadians(226.0), Math.toRadians(180.0))
+.build()
 
-        .build()
+val shootLeave = follower.pathBuilder().addPath(
+    BezierLine(
+        Pose(60.000, 84.000),
+
+        Pose(21.296, 73.414)
+    )
+).setConstantHeadingInterpolation(Math.toRadians(180.0))
+
+.build()
+
 }
