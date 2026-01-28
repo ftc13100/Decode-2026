@@ -28,41 +28,61 @@ object Spindexer : Subsystem {
     // Position PID used for indexing
     @JvmField var posPIDCoefficients = PIDCoefficients(0.01, 0.0, 0.0002)
 
+    val controlSystem = controlSystem {
+        posPid(posPIDCoefficients)
+    }
+
+    val spinAngle: Double
+        get() = (360.0 / 384.5) * spindexer.currentPosition
+
     val spindexer = MotorEx("spindexer").brakeMode()
     lateinit var color0: NormalizedColorSensor
     lateinit var color1: NormalizedColorSensor
     lateinit var color2: NormalizedColorSensor
 
-    private val runtime = ElapsedTime()
+    enum class State { PID, MANUAL }
 
-    val spinAngle: Double
-        get() = (360.0 / 384.5) * spindexer.currentPosition
-
-    val controlSystem = controlSystem {
-        posPid(posPIDCoefficients)
-    }
-
-// instead of periodic?
-//    override val defaultCommand: Command = LambdaCommand()
-//        .setUpdate {
-//            spindexer.power = controlSystem.calculate(spindexer.state)
-//        }
-//        .requires(this)
+    var state = State.PID
 
     override fun periodic() {
-        spindexer.power = controlSystem.calculate(spindexer.state)
+        when (state) {
+            State.PID -> {
+                spindexer.power = controlSystem.calculate(spindexer.state)
+            }
+            State.MANUAL -> {
+                return
+            }
+        }
     }
+
+    // Indexing
+    // PID state: schedules RunToPosition
+    val index0 = InstantCommand({ state = State.PID })
+        .then(RunToPosition(controlSystem, 0.0))
+        .requires(this)
+
+    val index1 = InstantCommand({ state = State.PID })
+        .then(RunToPosition(controlSystem, angleToTicks(120.0)))
+        .requires(this)
+
+    val index2 = InstantCommand({ state = State.PID })
+        .then(RunToPosition(controlSystem, angleToTicks(240.0)))
+        .requires(this)
+
+    // manual: periodic stops PID
+    val spinShot = InstantCommand({ state = State.MANUAL })
+        .then(SetPower(spindexer, -1.0))
+        .requires(this)
+
+    val stopShot = InstantCommand({ state = State.MANUAL })
+        .then(SetPower(spindexer, 0.0))
+        .requires(this)
 
     // tuning only
     fun spin() {
         controlSystem.goal = KineticState(position = target)
         spindexer.power = controlSystem.calculate(spindexer.state)
     }
-
-    //For shot
-    val spinShot = SetPower(spindexer,-1.0).requires(this)
-
-    val stopShot = SetPower(spindexer,0.0).requires(this)
 
     fun angleToTicks(angle : Double): Double {
         val ticks = angle * 384.5/360
@@ -74,11 +94,6 @@ object Spindexer : Subsystem {
         return angle
     }
 
-    val index0 = RunToPosition(controlSystem, 0.0)
-
-    val index1 = RunToPosition(controlSystem, angleToTicks(120.0))
-
-    val index2 = RunToPosition(controlSystem, angleToTicks(240.0))
 
     enum class SpindexerColor { PURPLE, GREEN, EMPTY }
 
@@ -101,13 +116,6 @@ object Spindexer : Subsystem {
             else -> SpindexerColor.EMPTY
         }
     }
-
-    // color sensor stuff
-//    fun getColor(): DoubleArray {
-//        val raw = intArrayOf(color0.red(), color0.green(), color0.blue())
-//        val sum = (raw[0] + raw[1] + raw[2]).toDouble()
-//        return doubleArrayOf(raw[0] / sum, raw[1] / sum, raw[2] / sum)
-//        }
 
     val dexing = intArrayOf(-1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 2, 0, 1,
         1, 2, 0, 0, 1, 2, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 2, 2, 0, 1, 1, 2, 0, 2, 0, 1, 1, 2, 0, 0,

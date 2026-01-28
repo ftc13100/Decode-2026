@@ -50,7 +50,7 @@ object NewTurret : Subsystem {
 
     override fun initialize() {
         turret1 = ActiveOpMode.hardwareMap["turret1"] as Servo
-        turret2 = ActiveOpMode.hardwareMap["turret1"] as Servo
+        turret2 = ActiveOpMode.hardwareMap["turret2"] as Servo
         turretPosition = 0.0
     }
 

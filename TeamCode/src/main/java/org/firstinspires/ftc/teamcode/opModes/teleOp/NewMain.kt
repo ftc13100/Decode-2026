@@ -40,7 +40,7 @@ class NewMain : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                Shooter, Intake, Spindexer, Gate, ShooterAngle, GoalFinder, PoseStorage //, NewTurret
+                Shooter, Intake, Spindexer, Gate, ShooterAngle, GoalFinder, PoseStorage , NewTurret
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -179,17 +179,17 @@ class NewMain : NextFTCOpMode() {
 //        GamePad 2 - Operator Commands
 ////////////////////////////////////////////////////////////////////////////
 
-//         Fine jump turret right
-//        button { gamepad2.right_bumper }
-//            .whenTrue {
-//                NewTurret.increment
-//            }
-//
-//        // Fine jump turret left
-//        button { gamepad2.left_bumper }
-//            .whenTrue {
-//                NewTurret.decrement
-//            }
+        // Fine jump turret right
+        button { gamepad2.right_bumper }
+            .whenTrue {
+                NewTurret.increment
+            }
+
+        // Fine jump turret left
+        button { gamepad2.left_bumper }
+            .whenTrue {
+                NewTurret.decrement
+            }
 
 //        // Coarse jump turret right
 //        button { gamepad2.right_trigger > 0.5 }
@@ -203,14 +203,14 @@ class NewMain : NextFTCOpMode() {
 //                Turret.turn(-500.0)
 //            }
 //
-//         Turret Tracking
-//        button { gamepad2.a }
-//            .whenBecomesTrue {
-//                NewTurret.turretTrackCommand()
-//            }
-//            .whenBecomesFalse {
-//                NewTurret.disabledCommand()
-//            }
+//      // Turret Tracking
+        button { gamepad1.a }
+            .whenBecomesTrue {
+                NewTurret.turretTrackCommand()
+            }
+            .whenBecomesFalse {
+                NewTurret.disabledCommand()
+            }
 
 //        button { gamepad2.y }
 //            .whenTrue {
@@ -321,11 +321,11 @@ class NewMain : NextFTCOpMode() {
 //            }
 
         button { gamepad2.a }
-            .whenTrue {
-                Gate.gate_stop
+            .whenBecomesTrue {
+                Gate.gate_stop()
                 Spindexer.spinShot()
             }
-            .whenFalse {
+            .whenBecomesFalse {
                 Spindexer.stopShot()
             }
     }
@@ -438,22 +438,22 @@ class NewMain : NextFTCOpMode() {
         )
 
         telemetry.addData("Shooter Angle", "%.3f", currentShotAngle)
-//        telemetry.addData(
-//            "Gate", "%s", if (gateOpen) {
-//                "Open"
-//            } else {
-//                "Closed"
-//            }
-//        )
+
         telemetry.addData(
-            "Intake", "%s (Power: %+1.1f, Current: %3.2f mA)", if (intakeRunning) {
+            "Intake", "%s (Power: %+1.1f, Current: %3.2f mA)",
+            if (intakeRunning) {
                 "Running"
             } else {
                 "Stopped"
             }, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
         )
 
-        telemetry.addData("Spindexer Pos", Spindexer.spinAngle)
+        telemetry.addData(
+            "Spindexer angle",
+            "%2.0f, Target: %2.0f",
+            Spindexer.spinAngle, Spindexer.ticksToAngle(Spindexer.target))
+
+        telemetry.addData("Turret", NewTurret.turretAngle)
 
         telemetry.addData("S0 ", Spindexer.detectColorRGB(Spindexer.color0))
         telemetry.addData("S1 ", Spindexer.detectColorRGB(Spindexer.color1))
