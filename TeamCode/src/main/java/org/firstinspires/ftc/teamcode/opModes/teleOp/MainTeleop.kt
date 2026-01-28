@@ -449,7 +449,7 @@ class MainTeleop : NextFTCOpMode() {
             } else {
                 "No"
             },
-            Shooter.target - Shooter.shooter1.velocity,
+            Shooter.target - Shooter.shooter.velocity,
         )
 
         telemetry.addData("Shooter Angle", "%.3f", currentShotAngle)
