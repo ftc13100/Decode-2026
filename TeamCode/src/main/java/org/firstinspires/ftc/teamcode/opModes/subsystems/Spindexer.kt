@@ -10,7 +10,9 @@ import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
+import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.utility.InstantCommand
+import dev.nextftc.core.commands.utility.LambdaCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode
 import dev.nextftc.ftc.ActiveOpMode.hardwareMap
@@ -26,7 +28,7 @@ object Spindexer : Subsystem {
     // Position PID used for indexing
     @JvmField var posPIDCoefficients = PIDCoefficients(0.01, 0.0, 0.0002)
 
-    val spindexer = MotorEx("spindexer").brakeMode().reversed()
+    val spindexer = MotorEx("spindexer").brakeMode()
     lateinit var color0: NormalizedColorSensor
     lateinit var color1: NormalizedColorSensor
     lateinit var color2: NormalizedColorSensor
@@ -40,20 +42,27 @@ object Spindexer : Subsystem {
         posPid(posPIDCoefficients)
     }
 
-//    override fun periodic() {
-//        controlSystem.goal = KineticState(target)
-//        spindexer.power = controlSystem.calculate(spindexer.state)
-//    }
+// instead of periodic?
+//    override val defaultCommand: Command = LambdaCommand()
+//        .setUpdate {
+//            spindexer.power = controlSystem.calculate(spindexer.state)
+//        }
+//        .requires(this)
 
+    override fun periodic() {
+        spindexer.power = controlSystem.calculate(spindexer.state)
+    }
+
+    // tuning only
     fun spin() {
         controlSystem.goal = KineticState(position = target)
         spindexer.power = controlSystem.calculate(spindexer.state)
     }
 
     //For shot
-    val spinShot = SetPower(spindexer,1.0)
+    val spinShot = SetPower(spindexer,-1.0).requires(this)
 
-    val stopShot = SetPower(spindexer,0.0)
+    val stopShot = SetPower(spindexer,0.0).requires(this)
 
     fun angleToTicks(angle : Double): Double {
         val ticks = angle * 384.5/360
@@ -65,17 +74,11 @@ object Spindexer : Subsystem {
         return angle
     }
 
-    fun index0() {
-        RunToPosition(controlSystem, 0.0)
-    }
+    val index0 = RunToPosition(controlSystem, 0.0)
 
-    fun index1() {
-        RunToPosition(controlSystem, angleToTicks(120.0))
-    }
+    val index1 = RunToPosition(controlSystem, angleToTicks(120.0))
 
-    fun index2() {
-        RunToPosition(controlSystem, angleToTicks(240.0))
-    }
+    val index2 = RunToPosition(controlSystem, angleToTicks(240.0))
 
     enum class SpindexerColor { PURPLE, GREEN, EMPTY }
 

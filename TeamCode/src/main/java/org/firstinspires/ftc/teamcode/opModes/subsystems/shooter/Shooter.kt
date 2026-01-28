@@ -17,8 +17,7 @@ object Shooter : Subsystem {
     @JvmField var velPIDCoefficients = PIDCoefficients(0.002, 0.0, 0.0)
     @JvmField var basicFFParameters = BasicFeedforwardParameters(0.000385, 0.0, 0.095)
 
-    val shooter1 = MotorEx("shooter1").brakeMode().reversed()
-    val shooter2 = MotorEx("shooter2").brakeMode().reversed()
+    val shooter = MotorEx("shooter").brakeMode().reversed()
     var shooterActive = false
     var shooterReady = false
     var shooterReadyMs: Double = 0.00
@@ -32,13 +31,12 @@ object Shooter : Subsystem {
     override fun periodic() {
         if (shooterActive) {
             val motorPower = controller.calculate(
-                shooter1.state
+                shooter.state
             )
-            shooter1.power = motorPower
-            shooter2.power = motorPower
+            shooter.power = motorPower
 
         } else {
-            shooter1.power = 0.0
+            shooter.power = 0.0
         }
     }
 
@@ -57,7 +55,7 @@ object Shooter : Subsystem {
             }
         ).setInterruptible(true).requires(this)
 
-    val stallShooter = spinAtSpeed(800.0)
+    val stallShooter = spinAtSpeed(1000.0)
 
     val stopShooter =
         InstantCommand {
@@ -71,9 +69,9 @@ object Shooter : Subsystem {
         shooterActive = true
         controller.goal = KineticState(velocity = target)
         val motorPower = controller.calculate(
-            KineticState(velocity = shooter1.velocity)
+            KineticState(velocity = shooter.velocity)
         )
-        shooter1.power = motorPower
-        shooter2.power = motorPower
+        shooter.power = motorPower
+        shooter.power = motorPower
     }
 }

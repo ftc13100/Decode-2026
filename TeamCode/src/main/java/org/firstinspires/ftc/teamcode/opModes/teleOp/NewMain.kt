@@ -128,7 +128,7 @@ class NewMain : NextFTCOpMode() {
                 Gate.gate_in()
                 Intake.spinFast()
                 intakeRunning = true
-                gateOpen = false
+//                gateOpen = false
             }
             .whenBecomesFalse {
                 Intake.spinStop()
@@ -143,7 +143,7 @@ class NewMain : NextFTCOpMode() {
                 Gate.gate_out()
                 Intake.spinReverse()
                 intakeRunning = true
-                gateOpen = true
+//                gateOpen = true
             }
             .whenBecomesFalse {
                 Gate.gate_stop()
@@ -226,7 +226,6 @@ class NewMain : NextFTCOpMode() {
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 Gate.gate_stop()
-                gateOpen = false
                 val currentShot = shooterController.getShot(GoalFinder.gfGoalDistance)
                 val commands = SequentialGroup(
                     WaitUntil { currentShot != null },
@@ -248,7 +247,6 @@ class NewMain : NextFTCOpMode() {
                 Gate.gate_stop()
                 Intake.spinStop()
                 Spindexer.stopShot()
-                gateOpen = false
                 intakeRunning = false
             }
 
@@ -330,15 +328,11 @@ class NewMain : NextFTCOpMode() {
             .whenFalse {
                 Spindexer.stopShot()
             }
-
     }
-
-
 
     override fun onUpdate() {
         BindingManager.update()
         follower.update()
-
         driverControlled.update()
 
 //        if (!initialized) {
@@ -440,7 +434,7 @@ class NewMain : NextFTCOpMode() {
             } else {
                 "No"
             },
-            Shooter.target - Shooter.shooter1.velocity,
+            Shooter.target - Shooter.shooter.velocity,
         )
 
         telemetry.addData("Shooter Angle", "%.3f", currentShotAngle)
@@ -461,6 +455,9 @@ class NewMain : NextFTCOpMode() {
 
         telemetry.addData("Spindexer Pos", Spindexer.spinAngle)
 
+        telemetry.addData("S0 ", Spindexer.detectColorRGB(Spindexer.color0))
+        telemetry.addData("S1 ", Spindexer.detectColorRGB(Spindexer.color1))
+        telemetry.addData("S2 ", Spindexer.detectColorRGB(Spindexer.color2))
         telemetry.update()
     }
 

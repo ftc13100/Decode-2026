@@ -17,15 +17,29 @@ import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
 import dev.nextftc.core.commands.CommandManager
+import dev.nextftc.core.commands.delays.Delay
+import dev.nextftc.extensions.pedro.PedroComponent
+import kotlinx.coroutines.delay
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
 import kotlin.math.abs
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
+import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
+import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants.createFollower
+import kotlin.time.Duration.Companion.milliseconds
 
 @TeleOp(name = "SpindexerTesting")
 class SpindexerTele : NextFTCOpMode() {
     init {
         addComponents(
-            SubsystemComponent(Spindexer),
+            SubsystemComponent(
+                Intake, Spindexer, Gate
+            ),
+            BindingsComponent,
             BulkReadComponent,
         )
     }
@@ -33,6 +47,7 @@ class SpindexerTele : NextFTCOpMode() {
     private val panelsTelemetry = PanelsTelemetry.telemetry
     private val timer = ElapsedTime()
 
+    //tuning only
     val spindexCommand = PerpetualCommand(
         LambdaCommand()
             .setUpdate {
@@ -42,19 +57,34 @@ class SpindexerTele : NextFTCOpMode() {
     )
 
     override fun onInit() {
-        spindexCommand()
+//        spindexCommand()
         timer.reset()
         updateSignals()
     }
 
     override fun onStartButtonPressed() {
-        button { gamepad2.a }
+        button { gamepad2.left_bumper }
             .whenBecomesTrue {
-
+                Gate.gate_in()
+                Intake.spinFast()
             }
             .whenBecomesFalse {
-
+                Gate.gate_stop()
+                Intake.spinStop()
             }
+
+        button { gamepad2.x }
+            .whenBecomesTrue (Spindexer.index0)
+
+        button { gamepad2.y }
+            .whenBecomesTrue (Spindexer.index1)
+
+        button { gamepad2.b }
+            .whenBecomesTrue (Spindexer.index2)
+
+        button { gamepad2.a }
+            .whenBecomesTrue(Spindexer.spinShot)
+            .whenBecomesFalse(Spindexer.stopShot)
     }
 
     override fun onUpdate() {
@@ -66,23 +96,11 @@ class SpindexerTele : NextFTCOpMode() {
         //telemetry.addData("Dexer Position", Spindexer.spindexer.currentPosition)
 //        panelsTelemetry.addData("Position", Spindexer.spindexer.currentPosition)
 //        panelsTelemetry.addData("Target", Spindexer.target)
-        // Sensor 0
-//        val c0 = Spindexer.color0.normalizedColors
-//        telemetry.addData("S0 Hue", "%.1f°", Spindexer.getHue(Spindexer.color0))
-//        telemetry.addData("S0 RGB", "R:%.2f G:%.2f B:%.2f", c0.red, c0.green, c0.blue)
-//
-//        // Sensor 1
-//        val c1 = Spindexer.color1.normalizedColors
-//        telemetry.addData("S1 Hue", "%.1f°", Spindexer.getHue(Spindexer.color1))
-//        telemetry.addData("S1 RGB", "R:%.2f G:%.2f B:%.2f", c1.red, c1.green, c1.blue)
-//
-//        // Sensor 2
-//        val c2 = Spindexer.color2.normalizedColors
-//        telemetry.addData("S2 Hue", "%.1f°", Spindexer.getHue(Spindexer.color2))
-//        telemetry.addData("S2 RGB", "R:%.2f G:%.2f B:%.2f", c2.red, c2.green, c2.blue)
-        telemetry.addData("S0 State", Spindexer.detectColorRGB(Spindexer.color0))
-        telemetry.addData("S1 State", Spindexer.detectColorRGB(Spindexer.color1))
-        telemetry.addData("S2 State", Spindexer.detectColorRGB(Spindexer.color2))
+
+        telemetry.addData("Dexer Pos", Spindexer.spindexer.currentPosition)
+        telemetry.addData("S0 ", Spindexer.detectColorRGB(Spindexer.color0))
+        telemetry.addData("S1 ", Spindexer.detectColorRGB(Spindexer.color1))
+        telemetry.addData("S2 ", Spindexer.detectColorRGB(Spindexer.color2))
         telemetry.update()
         panelsTelemetry.update(telemetry)
 

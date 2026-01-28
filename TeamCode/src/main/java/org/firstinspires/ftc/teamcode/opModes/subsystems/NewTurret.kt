@@ -84,13 +84,13 @@ object NewTurret : Subsystem {
         InstantCommand { turretPosition = 0.0 }
     )
 
-    override val defaultCommand =
-        switchCommand(::turretState) {
-            case(TurretState.AUTO_TRACK, turretTrackCommand)
-            case(TurretState.HOLD_POSITION, NullCommand())
-            // Case above is a little stupid but its so that the other commands aren't scheduled
-            // (servo mode makes it so that like I don't need to do anything)
-            case(TurretState.DISABLED, disabledCommand)
-        }
-            .requires(this)
+//    override val defaultCommand =
+//        switchCommand(::turretState) {
+//            case(TurretState.AUTO_TRACK, turretTrackCommand)
+//            case(TurretState.HOLD_POSITION, NullCommand())
+//            // Case above is a little stupid but its so that the other commands aren't scheduled
+//            // (servo mode makes it so that like I don't need to do anything)
+//            case(TurretState.DISABLED, disabledCommand)
+//        }
+//            .requires(this)
 }
