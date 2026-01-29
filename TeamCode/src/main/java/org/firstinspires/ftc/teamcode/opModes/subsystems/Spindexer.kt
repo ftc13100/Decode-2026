@@ -70,6 +70,12 @@ object Spindexer : Subsystem {
         return newTarget
     }
 
+    // only if needed
+    val wiggle = InstantCommand({ state = State.PID })
+        .then(RunToPosition(controlSystem, forwardOnlyTarget(30.0))) // Move slightly forward
+        .then(RunToPosition(controlSystem, forwardOnlyTarget(-30.0))) // Move slightly back
+        .requires(this)
+
     // Indexing
     // PID state: schedules RunToPosition
     val index0 = InstantCommand({ state = State.PID })
