@@ -40,8 +40,6 @@ object Spindexer : Subsystem {
     lateinit var color1: NormalizedColorSensor
     lateinit var color2: NormalizedColorSensor
 
-
-
     enum class State { PID, MANUAL }
 
     var state = State.PID
@@ -49,7 +47,7 @@ object Spindexer : Subsystem {
     override fun periodic() {
         when (state) {
             State.PID -> {
-                spindexer.power = controlSystem.calculate(spindexer.state)
+                spindexer.power = controlSystem.calculate(spindexer.state).coerceIn(-1.0, 0.5)
                 detectColorRGB(color0)
                 detectColorRGB(color1)
                 detectColorRGB(color2)

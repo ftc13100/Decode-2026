@@ -37,7 +37,7 @@ class SpindexerTele : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                Intake, Spindexer, Gate
+                 Spindexer //, Gate, Intake
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -57,40 +57,40 @@ class SpindexerTele : NextFTCOpMode() {
     )
 
     override fun onInit() {
-//        spindexCommand()
+        spindexCommand()
         timer.reset()
         updateSignals()
     }
 
-    override fun onStartButtonPressed() {
-        button { gamepad2.left_bumper }
-            .whenBecomesTrue {
-                Gate.gate_in()
-                Intake.spinFast()
-            }
-            .whenBecomesFalse {
-                Gate.gate_stop()
-                Intake.spinStop()
-            }
-
-        button {gamepad2.left_bumper}
-            .whenBecomesTrue {
-                Spindexer.autoIndex()
-            }
-
-        button { gamepad2.x }
-            .whenBecomesTrue (Spindexer.index0)
-
-        button { gamepad2.y }
-            .whenBecomesTrue (Spindexer.index1)
-
-        button { gamepad2.b }
-            .whenBecomesTrue (Spindexer.index2)
-
-        button { gamepad2.a }
-            .whenBecomesTrue(Spindexer.spinShot)
-            .whenBecomesFalse(Spindexer.stopShot)
-    }
+//    override fun onStartButtonPressed() {
+//        button { gamepad2.left_bumper }
+//            .whenBecomesTrue {
+//                Gate.gate_in()
+//                Intake.spinFast()
+//            }
+//            .whenBecomesFalse {
+//                Gate.gate_stop()
+//                Intake.spinStop()
+//            }
+//
+//        button {gamepad2.left_bumper}
+//            .whenBecomesTrue {
+//                Spindexer.autoIndex()
+//            }
+//
+//        button { gamepad2.x }
+//            .whenBecomesTrue (Spindexer.index0)
+//
+//        button { gamepad2.y }
+//            .whenBecomesTrue (Spindexer.index1)
+//
+//        button { gamepad2.b }
+//            .whenBecomesTrue (Spindexer.index2)
+//
+//        button { gamepad2.a }
+//            .whenBecomesTrue(Spindexer.spinShot)
+//            .whenBecomesFalse(Spindexer.stopShot)
+//    }
 
     override fun onUpdate() {
 //        Gate.gate_spindex()
@@ -99,8 +99,8 @@ class SpindexerTele : NextFTCOpMode() {
 
     private fun updateSignals() {
         //telemetry.addData("Dexer Position", Spindexer.spindexer.currentPosition)
-//        panelsTelemetry.addData("Position", Spindexer.spindexer.currentPosition)
-//        panelsTelemetry.addData("Target", Spindexer.target)
+        panelsTelemetry.addData("Position", Spindexer.spindexer.currentPosition)
+        panelsTelemetry.addData("Target", Spindexer.target)
 
         telemetry.addData("Dexer Pos", Spindexer.spindexer.currentPosition)
         telemetry.addData("S0 ", Spindexer.detectColorRGB(Spindexer.color0))
