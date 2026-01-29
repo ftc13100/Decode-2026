@@ -48,6 +48,9 @@ object Spindexer : Subsystem {
         when (state) {
             State.PID -> {
                 spindexer.power = controlSystem.calculate(spindexer.state)
+                detectColorRGB(color0)
+                detectColorRGB(color1)
+                detectColorRGB(color2)
             }
             State.MANUAL -> {
                 return
@@ -55,18 +58,28 @@ object Spindexer : Subsystem {
         }
     }
 
+    fun forwardOnlyTarget(angleDeg: Double): Double {
+        val targetInRev = angleToTicks(angleDeg)
+        val currentRev = kotlin.math.floor(spindexer.currentPosition / 384.5)
+        var newTarget = currentRev * 384.5 + targetInRev
+        if (newTarget <= spindexer.currentPosition) {
+            newTarget += 384.5
+        }
+        return newTarget
+    }
+
     // Indexing
     // PID state: schedules RunToPosition
     val index0 = InstantCommand({ state = State.PID })
-        .then(RunToPosition(controlSystem, 0.0))
+        .then(RunToPosition(controlSystem, forwardOnlyTarget(0.0)))
         .requires(this)
 
     val index1 = InstantCommand({ state = State.PID })
-        .then(RunToPosition(controlSystem, angleToTicks(120.0)))
+        .then(RunToPosition(controlSystem, forwardOnlyTarget(120.0)))
         .requires(this)
 
     val index2 = InstantCommand({ state = State.PID })
-        .then(RunToPosition(controlSystem, angleToTicks(240.0)))
+        .then(RunToPosition(controlSystem, forwardOnlyTarget(240.0)))
         .requires(this)
 
     // manual: periodic stops PID
@@ -77,6 +90,15 @@ object Spindexer : Subsystem {
     val stopShot = InstantCommand({ state = State.MANUAL })
         .then(SetPower(spindexer, 0.0))
         .requires(this)
+
+    val autoIndex = InstantCommand({ state = State.PID
+        when (desiredIndex()) {
+            0 -> index0()
+            1 -> index1()
+            2 -> index2()
+        }
+    }).requires(this)
+
 
     // tuning only
     fun spin() {
@@ -94,28 +116,49 @@ object Spindexer : Subsystem {
         return angle
     }
 
-
     enum class SpindexerColor { PURPLE, GREEN, EMPTY }
 
     fun detectColorRGB(sensor: NormalizedColorSensor): SpindexerColor {
         val colors = sensor.normalizedColors
 
-        // 1. Proximity Check: If Alpha is very low, the slot is empty
-        if (colors.alpha < 0.1) return SpindexerColor.EMPTY
+        // Proximity, if Alpha low, slot empty
+        if (colors.alpha < 0.15) return SpindexerColor.EMPTY
 
-        // 2. Ratio Logic: Compare color intensities
         return when {
-            // If Green is the dominant color
+            // If Green dominant
             colors.green > colors.red && colors.green > colors.blue -> {
                 SpindexerColor.GREEN
             }
-            // If Blue is dominant (Purple elements often register as high Blue)
+            // If Blue dominant (Purple)
             colors.blue > colors.red && colors.blue > colors.green -> {
                 SpindexerColor.PURPLE
             }
             else -> SpindexerColor.EMPTY
         }
     }
+
+    private fun colorToDigit(color: SpindexerColor): Int =
+        when (color) {
+            SpindexerColor.EMPTY -> 0
+            SpindexerColor.GREEN -> 1
+            SpindexerColor.PURPLE -> 2
+        }
+
+    fun computeDexIndex(): Int {
+        val b0 = colorToDigit(detectColorRGB(color0))
+        val b1 = colorToDigit(detectColorRGB(color1))
+        val b2 = colorToDigit(detectColorRGB(color2))
+        val b3 = 0
+        //Shoot command button need to figure out how to implement this,
+        // probably done in main teleop?
+        // however would probaby also mean this function would have to be done in main
+        val b4 = 0 //Motif
+
+        return b0 * 81 + b1 * 27 + b2 * 9 + b3 * 3 + b4
+    }
+
+    fun desiredIndex(): Int =
+        dexing[computeDexIndex()]
 
     val dexing = intArrayOf(-1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 2, 0, 1,
         1, 2, 0, 0, 1, 2, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 2, 2, 0, 1, 1, 2, 0, 2, 0, 1, 1, 2, 0, 0,

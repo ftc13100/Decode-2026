@@ -456,7 +456,9 @@ class NewMain : NextFTCOpMode() {
         telemetry.addData("Turret", NewTurret.turretAngle)
 
         telemetry.addData("S0 ", Spindexer.detectColorRGB(Spindexer.color0))
+        telemetry.addData("Alpha", "%.3f", Spindexer.color0.normalizedColors.alpha)
         telemetry.addData("S1 ", Spindexer.detectColorRGB(Spindexer.color1))
+        telemetry.addData("Alpha", "%.3f", Spindexer.color1.normalizedColors.alpha)
         telemetry.addData("S2 ", Spindexer.detectColorRGB(Spindexer.color2))
         telemetry.update()
     }
