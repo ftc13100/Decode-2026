@@ -101,7 +101,6 @@ object Spindexer : Subsystem {
         }
     }).requires(this)
 
-
     // tuning only
     fun spin() {
         controlSystem.goal = KineticState(position = target)

@@ -73,6 +73,11 @@ class SpindexerTele : NextFTCOpMode() {
                 Intake.spinStop()
             }
 
+        button {gamepad2.left_bumper}
+            .whenBecomesTrue {
+                Spindexer.autoIndex()
+            }
+
         button { gamepad2.x }
             .whenBecomesTrue (Spindexer.index0)
 
