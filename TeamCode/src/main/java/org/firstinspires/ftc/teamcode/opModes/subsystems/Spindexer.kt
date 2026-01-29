@@ -40,6 +40,8 @@ object Spindexer : Subsystem {
     lateinit var color1: NormalizedColorSensor
     lateinit var color2: NormalizedColorSensor
 
+
+
     enum class State { PID, MANUAL }
 
     var state = State.PID
@@ -169,6 +171,19 @@ object Spindexer : Subsystem {
         1, 1, 2, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 2, 2, 0, 1, 1, 2, 0, 0, 1, 2, 2, 0, 1, 1, 2, 0,
         0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0)
+
+    val isFull: Boolean
+        get() {
+            var purples = 0
+            var greens = 0
+            val sensors = listOf(color0, color1, color2)
+            for (sensor in sensors) {
+                val detected = detectColorRGB(sensor)
+                if (detected == SpindexerColor.PURPLE) purples++
+                if (detected == SpindexerColor.GREEN) greens++
+            }
+            return purples == 2 && greens == 1
+        }
 
     override fun initialize() {
         color0 = hardwareMap.get(NormalizedColorSensor::class.java, "color0")

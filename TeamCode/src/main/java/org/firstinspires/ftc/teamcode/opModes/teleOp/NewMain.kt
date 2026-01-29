@@ -40,7 +40,7 @@ class NewMain : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                Shooter, Intake, Spindexer, Gate, ShooterAngle, GoalFinder, PoseStorage , NewTurret
+                Shooter, ShooterAngle, Gate, GoalFinder, Intake, NewTurret, PoseStorage, Spindexer
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -70,7 +70,6 @@ class NewMain : NextFTCOpMode() {
     private var currentShotDistance = 0.0
     private var currentShotVelocity = 0.0
     private var currentShotAngle = 0.0
-    private var gateOpen = false
     private var intakeRunning = false
     private var initialized = false
 
@@ -454,6 +453,8 @@ class NewMain : NextFTCOpMode() {
             Spindexer.spinAngle, Spindexer.ticksToAngle(Spindexer.target))
 
         telemetry.addData("Turret", NewTurret.turretAngle)
+
+        telemetry.addData("Full?", Spindexer.isFull)
 
         telemetry.addData("S0 ", Spindexer.detectColorRGB(Spindexer.color0))
         telemetry.addData("Alpha", "%.3f", Spindexer.color0.normalizedColors.alpha)
