@@ -56,7 +56,6 @@ class rapid : NextFTCOpMode() {
 //    private var currentShotDistance = 0.0
 //    private var currentShotVelocity = 0.0
 //    private var currentShotAngle = 0.0
-    private var gateOpen = false
     private var intakeRunning = false
 //    private var initialized = false
 
@@ -113,13 +112,11 @@ class rapid : NextFTCOpMode() {
                 Gate.gate_in()
                 Intake.spinFast()
                 intakeRunning = true
-                gateOpen = true
             }
             .whenBecomesFalse {
                 Intake.spinStop()
                 Gate.gate_stop()
                 intakeRunning = false
-                gateOpen = false
             }
 
         //Outtake artifact
@@ -129,7 +126,6 @@ class rapid : NextFTCOpMode() {
                 Gate.gate_in()
                 Intake.spinReverse()
                 intakeRunning = true
-                gateOpen = true
             }
             .whenBecomesFalse {
                 Intake.spinStop()
@@ -200,7 +196,6 @@ class rapid : NextFTCOpMode() {
         button { gamepad2.x }
             .whenBecomesTrue {
                 Gate.gate_stop()
-                gateOpen = false
             }
             .whenBecomesFalse {
                 Gate.gate_in()
