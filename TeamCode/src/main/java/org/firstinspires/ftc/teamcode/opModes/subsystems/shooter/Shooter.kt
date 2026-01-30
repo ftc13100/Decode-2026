@@ -33,6 +33,8 @@ object Shooter : Subsystem {
         basicFF(basicFFParameters)
     }
 
+    var stallSpeed = 1000.0
+
     override fun periodic() {
         if (shooterActive) {
             shooter.power = controller.calculate(
@@ -58,10 +60,11 @@ object Shooter : Subsystem {
             }
         ).setInterruptible(true).requires(this)
 
-    val stallShooter = spinAtSpeed(1000.0)
+//    val stallShooter = spinAtSpeed(1000.0)
 
-    val stopShooter =
-        InstantCommand {
+    fun stallShooter() = spinAtSpeed(stallSpeed)
+
+    val stopShooter = InstantCommand {
             shooterActive = false
             shooterReady = false
             target = 0.0

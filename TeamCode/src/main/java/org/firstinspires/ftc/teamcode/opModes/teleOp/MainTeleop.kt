@@ -175,6 +175,8 @@ class MainTeleop : NextFTCOpMode() {
             .whenTrue { driverControlled.scalar = 0.4 }
             .whenFalse { driverControlled.scalar = 0.95 }
 
+
+
         // Reset location and heading
         Gamepads.gamepad1.leftTrigger.asButton { it > 0.5 } and Gamepads.gamepad1.rightTrigger.asButton { it > 0.5 }
             .whenBecomesTrue {
@@ -185,6 +187,15 @@ class MainTeleop : NextFTCOpMode() {
                 }
             }
 
+        button { gamepad1.b }
+            .whenBecomesTrue {
+                Shooter.stallSpeed = 1200.0
+                Shooter.stallShooter().schedule()
+            }
+            .whenBecomesFalse {
+                Shooter.stallSpeed = 1000.0
+                Shooter.stallShooter().schedule()
+            }
 
 ////////////////////////////////////////////////////////////////////////////
 //        GamePad 2 - Operator Commands
