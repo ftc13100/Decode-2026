@@ -13,7 +13,7 @@ object TurretAuto : Subsystem {
     var target = 0.0
 
     @JvmField
-    var posPIDCoefficients = PIDCoefficients(0.0097, 0.0, 0.00015)
+    var posPIDCoefficients = PIDCoefficients(0.01, 0.0, 0.00013)
     val turret = MotorEx("turret").brakeMode().zeroed()
 
     override fun initialize() {
@@ -26,11 +26,11 @@ object TurretAuto : Subsystem {
     }
 
     val toMid = RunToPosition(controlSystem, 0.0).requires(this)
-    val toLeft = RunToPosition(controlSystem, -1500.0).requires(this)
-    val toRight = RunToPosition(controlSystem, 1500.0).requires(this)
+    val toLeft = RunToPosition(controlSystem, -527.0).requires(this)
+    val toRight = RunToPosition(controlSystem, 527.0).requires(this)
 
-    val toLeftMohit = RunToPosition(controlSystem, -725.0).requires(this)
-    val toRightMohit = RunToPosition(controlSystem, 725.0).requires(this)
+    val toLeftMohit = RunToPosition(controlSystem, -214.0).requires(this)
+    val toRightMohit = RunToPosition(controlSystem, 214.0).requires(this)
 
     override fun periodic() {
         turret.power = controlSystem.calculate(turret.state)

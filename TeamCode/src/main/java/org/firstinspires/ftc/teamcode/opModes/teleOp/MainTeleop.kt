@@ -336,18 +336,6 @@ class MainTeleop : NextFTCOpMode() {
 
     }
 
-    @JvmField
-    var llAveX : Double = 0.0
-
-    @JvmField
-    var llAveY : Double = 0.0
-
-    @JvmField
-    var llAveH : Double = 0.0
-
-    @JvmField
-    val LL_AVE_COEFF = 0.99
-
     override fun onUpdate() {
         BindingManager.update()
         follower.update()
@@ -382,29 +370,24 @@ class MainTeleop : NextFTCOpMode() {
             telemetry.addData("Alliance", "RED")
         }
 
-        var llBotpose = Pose(Double.NaN, Double.NaN, Double.NaN)
-        var llTx = Double.NaN
-
-        if (llResult != null && llResult.isValid) {
-            // botpose gives in meters with 0,0 at center of field.
-            val position = llResult.botpose.position.toUnit(DistanceUnit.INCH)
-            val orientation = llResult.botpose.orientation
-
-            llBotpose =
-                FTCCoordinates.INSTANCE.convertToPedro(
-                    Pose(
-                        position.x,
-                        position.y,
-                        Math.toRadians(orientation.yaw + Turret.turretAzDeg()),
-                    )
-                )
-
-            llAveX = llAveX * LL_AVE_COEFF + llBotpose.x * (1 - LL_AVE_COEFF)
-            llAveY = llAveY * LL_AVE_COEFF + llBotpose.y * (1 - LL_AVE_COEFF)
-            llAveH = llAveH * LL_AVE_COEFF + llBotpose.heading * (1 - LL_AVE_COEFF)
-
-            llTx = llResult.tx
-        }
+//        var llBotpose = Pose(Double.NaN, Double.NaN, Double.NaN)
+//        var llTx = Double.NaN
+//
+//        if (llResult != null && llResult.isValid) {
+//            // botpose gives in meters with 0,0 at center of field.
+//            val position = llResult.botpose.position.toUnit(DistanceUnit.INCH)
+//            val orientation = llResult.botpose.orientation
+//
+//            llBotpose =
+//                FTCCoordinates.INSTANCE.convertToPedro(
+//                    Pose(
+//                        position.x,
+//                        position.y,
+//                        Math.toRadians(orientation.yaw + Turret.turretAzDeg()),
+//                    )
+//                )
+//            llTx = llResult.tx
+//        }
 
         telemetry.addData(
             "X",
@@ -416,13 +399,9 @@ class MainTeleop : NextFTCOpMode() {
         )
 
         telemetry.addData(
-            "LL",
-            "Tx: %3.1f, X: %3.1f, Y: %3.1f, Heading: %3.1f",
-            llTx,
-            llAveX,
-            llAveY,
-            llAveH
-        )
+            "PointingVals",
+            "Error: %.1f, Limelight: (%.1f, %.1f)",
+            Math.toDegrees(GoalFinder.gfHeadingError),GoalFinder.gfLLTx,GoalFinder.gfLLTy)
 
         telemetry.addData(
             "Goal",

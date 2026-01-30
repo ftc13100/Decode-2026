@@ -35,10 +35,10 @@ object Turret : Subsystem {
     var startPosition = 0.0
 
     @JvmField
-    var leftLimit = -3000.0
+    var leftLimit = -1060.0
 
     @JvmField
-    var rightLimit = 3000.0
+    var rightLimit = 1060.0
 
     @JvmField
     var targetAngle = 0.0
@@ -62,12 +62,12 @@ object Turret : Subsystem {
         get() = turretError / TURRET_TICKS_TO_RADS
 
     @JvmField
-    var posPIDCoefficients = PIDCoefficients(0.0097, 0.0, 0.00015)
+    var posPIDCoefficients = PIDCoefficients(0.01, 0.0, 0.00013)
 
     val turret = MotorEx("turret").brakeMode()
     private val runtime = ElapsedTime()
 
-    const val TURRET_TICKS_TO_RADS = (Math.PI * 2) / (1425.1 * (138 / 16))
+    const val TURRET_TICKS_TO_RADS = (Math.PI * 2) / (751.8 * (138 / 24))
 
     val controlSystem = controlSystem {
         posPid(posPIDCoefficients)
@@ -87,8 +87,8 @@ object Turret : Subsystem {
                 turret.currentPosition
 
         target = startPosition
-        rightLimit = startPosition + 3000.0
-        leftLimit = startPosition - 3000.0
+        rightLimit = startPosition + 1060.0
+        leftLimit = startPosition - 1060.0
         trackTarget()
     }
 
@@ -149,7 +149,7 @@ object Turret : Subsystem {
     }
 
     fun turretHeadingWithMargin(heading: Double): Double {
-        val curPos = turret.currentPosition.coerceIn(leftLimit + 500, rightLimit - 500)
+        val curPos = turret.currentPosition.coerceIn(leftLimit + 175, rightLimit - 175)
         return (heading - (curPos - startPosition) * TURRET_TICKS_TO_RADS)
     }
 
@@ -178,7 +178,7 @@ object Turret : Subsystem {
             turret.power = controlSystem.calculate(turret.state)
 
             // Determine when turret is "ready"
-            if (!turretReady && abs(current - target) < 4.0 && ++turretTolearanceCount >= 3) {
+            if (!turretReady && abs(current - target) < 5.0 && ++turretTolearanceCount >= 4) {
                 turretReady = true
                 turretReadyMs = runtime.milliseconds()
             }

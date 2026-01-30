@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opModes.teleOppackage
+package org.firstinspires.ftc.teamcode.opModes.teleOp//package org.firstinspires.ftc.teamcode.opModes.teleOp
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import dev.nextftc.core.commands.Command
