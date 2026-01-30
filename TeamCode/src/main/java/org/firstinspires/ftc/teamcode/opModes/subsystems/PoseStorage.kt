@@ -18,3 +18,5 @@ object PoseStorage : Subsystem {
         }
 }
 
+// add limelight storage and spindexer storage
+

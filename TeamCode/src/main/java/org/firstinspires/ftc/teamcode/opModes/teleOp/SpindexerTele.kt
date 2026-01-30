@@ -59,7 +59,6 @@ class SpindexerTele : NextFTCOpMode() {
     override fun onInit() {
         spindexCommand()
         timer.reset()
-        updateSignals()
     }
 
 //    override fun onStartButtonPressed() {
@@ -73,27 +72,28 @@ class SpindexerTele : NextFTCOpMode() {
 //                Intake.spinStop()
 //            }
 //
-//        button {gamepad2.left_bumper}
-//            .whenBecomesTrue {
-//                Spindexer.autoIndex()
-//            }
-//
 //        button { gamepad2.x }
-//            .whenBecomesTrue (Spindexer.index0)
+//            .whenBecomesTrue(Spindexer.autoIndex(0))
 //
+//        // Button Y represents b3 = 1
 //        button { gamepad2.y }
-//            .whenBecomesTrue (Spindexer.index1)
+//            .whenBecomesTrue(Spindexer.autoIndex(1))
 //
+//        // Button B represents b3 = 2
 //        button { gamepad2.b }
-//            .whenBecomesTrue (Spindexer.index2)
+//            .whenBecomesTrue(Spindexer.autoIndex(2))
 //
 //        button { gamepad2.a }
-//            .whenBecomesTrue(Spindexer.spinShot)
-//            .whenBecomesFalse(Spindexer.stopShot)
+//            .whenBecomesTrue {
+//                Spindexer.spinShot()
+//            }
+//            .whenBecomesFalse {
+//                Spindexer.stopShot()
+//            }
 //    }
 
     override fun onUpdate() {
-//        Gate.gate_spindex()
+        Gate.gate_spindex()
         updateSignals()
     }
 

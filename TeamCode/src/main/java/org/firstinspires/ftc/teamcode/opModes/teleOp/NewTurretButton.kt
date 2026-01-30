@@ -9,7 +9,7 @@ import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
 
 @TeleOp
-class NewTurretTeleOp : NextFTCOpMode() {
+class NewTurretButton : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(NewTurret),

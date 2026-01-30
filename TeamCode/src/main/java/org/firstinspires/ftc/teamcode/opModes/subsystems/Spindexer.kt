@@ -26,11 +26,15 @@ import kotlin.math.abs
 object Spindexer : Subsystem {
     @JvmField var target = 0.0
     // Position PID used for indexing
-    @JvmField var posPIDCoefficients = PIDCoefficients(0.01, 0.0, 0.0002)
+    @JvmField var posPIDCoefficients = PIDCoefficients(0.006, 0.0, 0.0001)
+
+    var motif: Int = 0
 
     val controlSystem = controlSystem {
         posPid(posPIDCoefficients)
     }
+
+    val tolerance = KineticState(10.0)
 
     val spinAngle: Double
         get() = (360.0 / 384.5) * spindexer.currentPosition
@@ -47,7 +51,8 @@ object Spindexer : Subsystem {
     override fun periodic() {
         when (state) {
             State.PID -> {
-                spindexer.power = controlSystem.calculate(spindexer.state).coerceIn(-1.0, 0.5)
+                spindexer.power = controlSystem.calculate(spindexer.state).coerceIn(-0.3, 0.6)
+                Gate.gate_spindex()
                 detectColorRGB(color0)
                 detectColorRGB(color1)
                 detectColorRGB(color2)
@@ -69,23 +74,75 @@ object Spindexer : Subsystem {
     }
 
     // only if needed
-    val wiggle = InstantCommand({ state = State.PID })
-        .then(RunToPosition(controlSystem, forwardOnlyTarget(30.0))) // Move slightly forward
-        .then(RunToPosition(controlSystem, forwardOnlyTarget(-30.0))) // Move slightly back
+    val wiggle = LambdaCommand("wiggleUp")
+        .setStart {
+            state = State.PID
+            controlSystem.goal = KineticState(forwardOnlyTarget(25.0))
+        }
+        .setIsDone { controlSystem.isWithinTolerance(tolerance) }
+        .then(
+            LambdaCommand("wiggleBack")
+                .setStart {
+                    controlSystem.goal = KineticState(spindexer.currentPosition-angleToTicks(25.0))
+                }
+                .setIsDone { controlSystem.isWithinTolerance(tolerance) }
+        )
         .requires(this)
+
+    val resetIndex0 = LambdaCommand("SpindexerPIDCommand")
+            .setStart {
+                state = State.PID
+                controlSystem.goal =
+                    KineticState(forwardOnlyTarget(0.0))
+            }
+            .setIsDone { controlSystem.isWithinTolerance(tolerance) }
+            .requires(this)
 
     // Indexing
     // PID state: schedules RunToPosition
-    val index0 = InstantCommand({ state = State.PID })
-        .then(RunToPosition(controlSystem, forwardOnlyTarget(0.0)))
+    val index0 = LambdaCommand("Index0Overshoot")
+        .setStart {
+            state = State.PID
+            controlSystem.goal = KineticState(forwardOnlyTarget(120.0))
+        }
+        .setIsDone { controlSystem.isWithinTolerance(tolerance) }
+        .then(
+            LambdaCommand("Index0Return")
+                .setStart {
+                    controlSystem.goal = KineticState(spindexer.currentPosition-angleToTicks(120.0))
+                }
+                .setIsDone { controlSystem.isWithinTolerance(tolerance) }
+        )
         .requires(this)
 
-    val index1 = InstantCommand({ state = State.PID })
-        .then(RunToPosition(controlSystem, forwardOnlyTarget(120.0)))
+    val index1 = LambdaCommand("Index1Overshoot")
+        .setStart {
+            state = State.PID
+            controlSystem.goal = KineticState(forwardOnlyTarget(240.0))
+        }
+        .setIsDone { controlSystem.isWithinTolerance(tolerance) }
+        .then(
+            LambdaCommand("Index1Return")
+                .setStart {
+                    controlSystem.goal = KineticState(spindexer.currentPosition-angleToTicks(120.0))
+                }
+                .setIsDone { controlSystem.isWithinTolerance(tolerance) }
+        )
         .requires(this)
 
-    val index2 = InstantCommand({ state = State.PID })
-        .then(RunToPosition(controlSystem, forwardOnlyTarget(240.0)))
+    val index2 = LambdaCommand("Index2Overshoot")
+        .setStart {
+            state = State.PID
+            controlSystem.goal = KineticState(forwardOnlyTarget(360.0))
+        }
+        .setIsDone { controlSystem.isWithinTolerance(tolerance) }
+        .then(
+            LambdaCommand("Index2Return")
+                .setStart {
+                    controlSystem.goal = KineticState(spindexer.currentPosition-angleToTicks(120.0))
+                }
+                .setIsDone { controlSystem.isWithinTolerance(tolerance) }
+        )
         .requires(this)
 
     // manual: periodic stops PID
@@ -97,11 +154,12 @@ object Spindexer : Subsystem {
         .then(SetPower(spindexer, 0.0))
         .requires(this)
 
-    val autoIndex = InstantCommand({ state = State.PID
-        when (desiredIndex()) {
-            0 -> index0()
-            1 -> index1()
-            2 -> index2()
+    fun autoIndex(b3: Int) = InstantCommand({
+        state = State.PID
+        when (desiredIndex(b3, motif)) {
+            0 -> index0.schedule()
+            1 -> index1.schedule()
+            2 -> index2.schedule()
         }
     }).requires(this)
 
@@ -117,7 +175,7 @@ object Spindexer : Subsystem {
     }
 
     fun ticksToAngle(ticks : Double): Double {
-        val angle = ticks * 384.5/360
+        val angle = ticks * 360/384.5
         return angle
     }
 
@@ -149,21 +207,15 @@ object Spindexer : Subsystem {
             SpindexerColor.PURPLE -> 2
         }
 
-    fun computeDexIndex(): Int {
+    fun computeDexIndex(b3: Int, b4: Int): Int {
         val b0 = colorToDigit(detectColorRGB(color0))
         val b1 = colorToDigit(detectColorRGB(color1))
         val b2 = colorToDigit(detectColorRGB(color2))
-        val b3 = 0
-        //Shoot command button need to figure out how to implement this,
-        // probably done in main teleop?
-        // however would probaby also mean this function would have to be done in main
-        val b4 = 0 //Motif
-
         return b0 * 81 + b1 * 27 + b2 * 9 + b3 * 3 + b4
     }
 
-    fun desiredIndex(): Int =
-        dexing[computeDexIndex()]
+    fun desiredIndex(b3: Int, b4: Int): Int =
+        dexing[computeDexIndex(b3, b4)]
 
     val dexing = intArrayOf(-1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 2, 0, 1,
         1, 2, 0, 0, 1, 2, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 2, 2, 0, 1, 1, 2, 0, 2, 0, 1, 1, 2, 0, 0,
@@ -196,5 +248,4 @@ object Spindexer : Subsystem {
         color2 = hardwareMap.get(NormalizedColorSensor::class.java, "color2")
         color2.gain = 10.0f
     }
-
 }

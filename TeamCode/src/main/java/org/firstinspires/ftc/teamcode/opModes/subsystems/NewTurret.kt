@@ -28,11 +28,11 @@ object NewTurret : Subsystem {
     private lateinit var turret1: Servo
     private lateinit var turret2: Servo
 
-    const val MAX_LIMIT_DEG = 300.0
+    const val MAX_LIMIT_DEG = 210.0
 
     var turretPosition = 0.0
         set(value) {
-            val safeVal = value.coerceIn(0.0, 1.0)
+            val safeVal = value.coerceIn(0.0, 0.7)
 
             if (::turret1.isInitialized and ::turret2.isInitialized) {
                 turret1.position = safeVal

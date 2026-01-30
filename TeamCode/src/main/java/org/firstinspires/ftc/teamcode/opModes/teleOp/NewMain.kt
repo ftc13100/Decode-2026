@@ -123,7 +123,7 @@ class NewMain : NextFTCOpMode() {
         button { gamepad1.left_bumper }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                Spindexer.index0()
+                Spindexer.resetIndex0()
                 Gate.gate_in()
                 Intake.spinFast()
                 intakeRunning = true
@@ -255,7 +255,7 @@ class NewMain : NextFTCOpMode() {
 //                    Turret.turn(GoalFinder.gfTurretAdj)
 //                }
 //            }
-//
+
         // Increase shooter velocity
         button { gamepad2.dpad_up }
             .whenBecomesTrue {
@@ -319,14 +319,34 @@ class NewMain : NextFTCOpMode() {
 //                Turret.resetToStartPosition()
 //            }
 
+        button { gamepad2.x }
+            .whenBecomesTrue{
+                Spindexer.index0()
+//                Spindexer.autoIndex(0)
+            }
+
+        // Button Y represents b3 = 1
+        button { gamepad2.y }
+            .whenBecomesTrue{
+                Spindexer.index1()
+//                Spindexer.autoIndex(1)
+            }
+
+        // Button B represents b3 = 2
+        button { gamepad2.b }
+            .whenBecomesTrue{
+                Spindexer.index2()
+//                Spindexer.autoIndex(2)
+            }
+
         button { gamepad2.a }
             .whenBecomesTrue {
-                Gate.gate_stop()
                 Spindexer.spinShot()
             }
             .whenBecomesFalse {
                 Spindexer.stopShot()
             }
+
     }
 
     override fun onUpdate() {

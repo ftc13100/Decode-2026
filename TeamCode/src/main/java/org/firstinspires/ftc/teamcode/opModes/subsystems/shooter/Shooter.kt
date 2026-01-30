@@ -15,7 +15,7 @@ import dev.nextftc.hardware.impl.MotorEx
 object Shooter : Subsystem {
     @JvmField var target = 0.0
     @JvmField var velPIDCoefficients = PIDCoefficients(0.002, 0.0, 0.0)
-    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.000385, 0.0, 0.095)
+    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.000395, 0.001, 0.095)
 
     val shooter = MotorEx("shooter").brakeMode().reversed()
     var shooterActive = false

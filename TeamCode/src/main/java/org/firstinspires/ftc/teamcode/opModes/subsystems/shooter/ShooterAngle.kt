@@ -16,18 +16,21 @@ object ShooterAngle : Subsystem {
     fun update() = InstantCommand { servo.position = targetPosition }
 
     val angle_up = InstantCommand {
-        servo.position = 0.5
-    }
-    val angle_kindaUP = InstantCommand {
-        servo.position = 0.525
+        servo.position = 0.225
+        //was 0.5
     }
 
-    val angle_middle = InstantCommand {
-        servo.position = 0.6
-    }
+//    val angle_kindaUP = InstantCommand {
+//        servo.position = 0.525
+//    }
+//
+//    val angle_middle = InstantCommand {
+//        servo.position = 0.6
+//    }
 
     val angle_down = InstantCommand {
-        servo.position = 0.7
+        servo.position = 0.09
+        // was 0.7
     }
 
     fun toAngle(angle: Double) =
