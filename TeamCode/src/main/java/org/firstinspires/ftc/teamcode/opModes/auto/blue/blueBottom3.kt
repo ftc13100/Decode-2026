@@ -13,6 +13,7 @@ import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomLeave
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomShoot
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
@@ -41,7 +42,7 @@ class blueBottom3 : NextFTCOpMode() {
             SequentialGroup(
                 ParallelGroup(
                     ShooterAngle.angle_up,
-                    Shooter.spinAtSpeed(1450.0),
+                    Shooter.spinAtSpeed(1525.0),
                     TurretAuto.toLeftMohit,
                     Gate.gate_open,
                     FollowPath(bottomShoot)

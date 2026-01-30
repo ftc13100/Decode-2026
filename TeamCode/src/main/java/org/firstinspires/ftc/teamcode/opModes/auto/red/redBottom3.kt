@@ -39,11 +39,10 @@ class redBottom3 : NextFTCOpMode() {
             SequentialGroup(
                 ParallelGroup(
                     ShooterAngle.angle_up,
-                    Shooter.spinAtSpeed(1450.0),
+                    Shooter.spinAtSpeed(1525.0),
                     TurretAuto.toRightMohit,
                     Gate.gate_open,
                     FollowPath(redAutoPaths.bottomShoot)
-
                 ),
                 Intake.spinFastAuto,
                 Delay(2.3.seconds),

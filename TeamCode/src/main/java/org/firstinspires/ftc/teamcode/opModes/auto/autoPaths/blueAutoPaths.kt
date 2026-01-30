@@ -19,12 +19,9 @@ object blueAutoPaths : Subsystem {
     //Sequential Groups  == Everything within happens chronologically
 
     val startPose = Pose(125.23, 121.52, Math.toRadians(37.0)).mirror()
-
     val pushStart = Pose(62.5615763546798, 9.596059113300495, Math.toRadians(90.0))
     val dopush = Pose(47.665024630541865,   9.753694581280788, Math.toRadians(90.0))
-    val pushToShoot = Pose(60.0, 84.0, Math.toRadians(90.0))
-
-
+    val pushToShoot = Pose(60.0, 84.0, Math.toRadians(180.0))
 
     val shootPose = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
     val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0)).mirror()
@@ -40,7 +37,6 @@ object blueAutoPaths : Subsystem {
 
     val gate = Pose(125.0271186440678, 78.65254237288136, Math.toRadians(110.0)).mirror()
 
-    val secretTunnel = Pose(130.3050847457627, 55.983050847457626, Math.toRadians(0.0)).mirror()
 
     val leavePoint = Pose(87.73, 110.42, Math.toRadians(40.67)).mirror()
     val hitGate = Pose(134.91525423728814, 59.79661016949153, Math.toRadians(45.0)).mirror()
@@ -48,9 +44,9 @@ object blueAutoPaths : Subsystem {
     val eat = Pose(134.91525423728814, 57.79661016949153, Math.toRadians(45.0)).mirror()
 
     val hitGateControl = Pose(89.31958762886597, 70.76288659793815, Math.toRadians(45.0)).mirror()
-    val bottomStartPose = Pose(56.0, 7.5, Math.toRadians(90.0)).mirror()
-    val bottomShootPose = Pose(56.0, 10.5, Math.toRadians(90.0)).mirror()
-    val bottomLeavePoint = Pose(36.49261083743842, 8.20935960591133, Math.toRadians(90.0)).mirror()
+    val bottomStartPose = Pose(56.0, 7.5, Math.toRadians(90.0))
+    val bottomShootPose = Pose(56.0, 10.5, Math.toRadians(90.0))
+    val bottomLeavePoint = Pose(36.49261083743842, 8.20935960591133, Math.toRadians(90.0))
 
     lateinit var PPGfirst: PathChain
     lateinit var PPGsecond: PathChain
@@ -93,11 +89,11 @@ object blueAutoPaths : Subsystem {
             .build()
         bottomShoot = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(bottomStartPose, bottomShootPose))
-            .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
+            .setLinearHeadingInterpolation(bottomStartPose.heading, bottomShootPose.heading)
             .build()
         bottomLeave = PedroComponent.Companion.follower.pathBuilder()
-            .addPath(BezierLine(bottomStartPose, bottomLeavePoint))
-            .setLinearHeadingInterpolation(shootPose.heading, leavePoint.heading)
+            .addPath(BezierLine(bottomShootPose, bottomLeavePoint))
+            .setLinearHeadingInterpolation(bottomShootPose.heading, bottomLeavePoint.heading)
             .build()
         GoToShot = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(startPose, shootPose))

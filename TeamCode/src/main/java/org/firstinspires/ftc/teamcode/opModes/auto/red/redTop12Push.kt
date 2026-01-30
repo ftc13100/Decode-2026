@@ -10,21 +10,19 @@ import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.DeadhuzzLeave
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.GPPfirst
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.GPPsecond
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.GPPtoShotMove
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.GoToShot
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.MohitHitGate
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.PGPfirst
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.PGPsecond
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.PGPtoShotMove
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.PPGfirst
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.PPGsecond
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.PPGtoShotMove
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.push
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.pushShoot
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.DeadhuzzLeave
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GPPfirst
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GPPsecond
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GPPtoShotMove
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.MohitHitGate
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PGPfirst
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PGPsecond
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PGPtoShotMove
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PPGfirst
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PPGsecond
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PPGtoShotMove
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.push
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.pushShoot
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
@@ -36,7 +34,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
-@Autonomous(name = "blueTop12Push")
+@Autonomous(name = "redTop12Push")
 class redTop12Push: NextFTCOpMode() {
     init {
         addComponents(
@@ -135,10 +133,10 @@ class redTop12Push: NextFTCOpMode() {
     }
 
     override fun onStartButtonPressed() {
-        PedroComponent.Companion.follower.setStartingPose(blueAutoPaths.pushStart)
-        blueAutoPaths.buildPaths()
-        PoseStorage.blueAlliance = true
-        PoseStorage.redAlliance = false
+        PedroComponent.Companion.follower.setStartingPose(redAutoPaths.pushStart)
+        redAutoPaths.buildPaths()
+        PoseStorage.blueAlliance = false
+        PoseStorage.redAlliance = true
         autoRoutine()
     }
 

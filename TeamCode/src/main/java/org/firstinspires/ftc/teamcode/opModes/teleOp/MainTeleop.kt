@@ -247,7 +247,7 @@ class MainTeleop : NextFTCOpMode() {
                     WaitUntil { Shooter.shooterReady && GoalFinder.gfReady },
                     InstantCommand {
                         Gate.gate_open()
-                        Intake.spinStop()
+                        Intake.spinShoot()
                         gateOpen = true
                         intakeRunning = true
                     }
