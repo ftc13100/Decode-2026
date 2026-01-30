@@ -370,24 +370,24 @@ class MainTeleop : NextFTCOpMode() {
             telemetry.addData("Alliance", "RED")
         }
 
-        var llBotpose = Pose(Double.NaN, Double.NaN, Double.NaN)
-        var llTx = Double.NaN
-
-        if (llResult != null && llResult.isValid) {
-            // botpose gives in meters with 0,0 at center of field.
-            val position = llResult.botpose.position.toUnit(DistanceUnit.INCH)
-            val orientation = llResult.botpose.orientation
-
-            llBotpose =
-                FTCCoordinates.INSTANCE.convertToPedro(
-                    Pose(
-                        position.x,
-                        position.y,
-                        Math.toRadians(orientation.yaw + Turret.turretAzDeg()),
-                    )
-                )
-            llTx = llResult.tx
-        }
+//        var llBotpose = Pose(Double.NaN, Double.NaN, Double.NaN)
+//        var llTx = Double.NaN
+//
+//        if (llResult != null && llResult.isValid) {
+//            // botpose gives in meters with 0,0 at center of field.
+//            val position = llResult.botpose.position.toUnit(DistanceUnit.INCH)
+//            val orientation = llResult.botpose.orientation
+//
+//            llBotpose =
+//                FTCCoordinates.INSTANCE.convertToPedro(
+//                    Pose(
+//                        position.x,
+//                        position.y,
+//                        Math.toRadians(orientation.yaw + Turret.turretAzDeg()),
+//                    )
+//                )
+//            llTx = llResult.tx
+//        }
 
         telemetry.addData(
             "X",
