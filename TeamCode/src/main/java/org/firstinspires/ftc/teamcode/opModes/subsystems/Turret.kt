@@ -89,7 +89,7 @@ object Turret : Subsystem {
         target = startPosition
         rightLimit = startPosition + 1055.0
         leftLimit = startPosition - 1055.0
-//        trackTarget()
+        trackTarget()
     }
 
     /**
@@ -108,86 +108,84 @@ object Turret : Subsystem {
     fun resetToStartPosition() {
         turn(startPosition - turret.currentPosition)
     }
-//
-//    /**
-//     * Enable auto tracking; PID will follow continuously in periodic.
-//     */
-//    fun trackTarget() {
-//        goalTrackingActive = true
-//        turretActive = false
-//        turretReady = false
-//        turretReadyMs = 0.0
-//    }
-//
-//    /**
-//     * Compute a new turret angle target during auto-tracking.
-//     */
-//    fun updateTarget() {
-//        val x = abs(follower.pose.x)
-//        val y = abs(follower.pose.y)
-//        heading = follower.heading
-//
-//        targetAngle = if (PoseStorage.blueAlliance) {
-//            Math.PI - atan2(abs(goal.y - y), abs(goal.x - x))
-//        } else {
-//            atan2(abs(goal.y - y), abs(goal.x - (144.0 - x)))
-//        }
-//
-//        turretAngle =
-//            heading - turretCurrentPos * TURRET_TICKS_TO_RADS
-//
-//        turretError = targetAngle - turretAngle
-//        if (turretError > Math.PI) turretError -= 2 * Math.PI
-//
-//        if (goalTrackingActive) {
-//            target =
-//                (turret.currentPosition - turretError / TURRET_TICKS_TO_RADS).coerceIn(
-//                    leftLimit,
-//                    rightLimit
-//                )
-//        }
-//    }
-//
-//    fun turretHeadingWithMargin(heading: Double): Double {
-//        val curPos = turret.currentPosition.coerceIn(leftLimit + 175, rightLimit - 175)
-//        return (heading - (curPos - startPosition) * TURRET_TICKS_TO_RADS)
-//    }
-//
-//    fun turretHeading(heading: Double): Double {
-//        return (heading - (turretCurrentPos) * TURRET_TICKS_TO_RADS)
-//    }
-//
-//    fun turretAzDeg(): Double {
-//        return Math.toDegrees((turretCurrentPos) * TURRET_TICKS_TO_RADS)
-//    }
+
+    /**
+     * Enable auto tracking; PID will follow continuously in periodic.
+     */
+    fun trackTarget() {
+        goalTrackingActive = true
+        turretActive = false
+        turretReady = false
+        turretReadyMs = 0.0
+    }
+
+    /**
+     * Compute a new turret angle target during auto-tracking.
+     */
+    fun updateTarget() {
+        val x = abs(follower.pose.x)
+        val y = abs(follower.pose.y)
+        heading = follower.heading
+
+        targetAngle = if (PoseStorage.blueAlliance) {
+            Math.PI - atan2(abs(goal.y - y), abs(goal.x - x))
+        } else {
+            atan2(abs(goal.y - y), abs(goal.x - (144.0 - x)))
+        }
+
+        turretAngle =
+            heading - turretCurrentPos * TURRET_TICKS_TO_RADS
+
+        turretError = targetAngle - turretAngle
+        if (turretError > Math.PI) turretError -= 2 * Math.PI
+
+        if (goalTrackingActive) {
+            target =
+                (turret.currentPosition - turretError / TURRET_TICKS_TO_RADS).coerceIn(
+                    leftLimit,
+                    rightLimit
+                )
+        }
+    }
+
+    fun turretHeadingWithMargin(heading: Double): Double {
+        val curPos = turret.currentPosition.coerceIn(leftLimit + 175, rightLimit - 175)
+        return (heading - (curPos - startPosition) * TURRET_TICKS_TO_RADS)
+    }
+
+    fun turretHeading(heading: Double): Double {
+        return (heading - (turretCurrentPos) * TURRET_TICKS_TO_RADS)
+    }
+
+    fun turretAzDeg(): Double {
+        return Math.toDegrees((turretCurrentPos) * TURRET_TICKS_TO_RADS)
+    }
 
     override fun periodic() {
-        controlSystem.goal = KineticState(target)
-        turret.power = controlSystem.calculate(turret.state)
-    //        val current = turret.currentPosition
-//        updateTarget()
-//
-//        // 1. TARGET TRACKING MODE
-//        if (goalTrackingActive) {
-//            controlSystem.goal = KineticState(target)
-//            turret.power = controlSystem.calculate(turret.state)
-//            return
-//        }
-//
-//        // 2. PID HOLD MODE
-//        if (turretActive) {
-//            controlSystem.goal = KineticState(position = target)
-//            turret.power = controlSystem.calculate(turret.state)
-//
-//            // Determine when turret is "ready"
-//            if (!turretReady && abs(current - target) < 4.0 && ++turretTolearanceCount >= 3) {
-//                turretReady = true
-//                turretReadyMs = runtime.milliseconds()
-//            }
-//            return
-//        }
-//
-//        // 3. IDLE MODE
-//        turret.power = 0.0
+        val current = turret.currentPosition
+        updateTarget()
+
+        // 1. TARGET TRACKING MODE
+        if (goalTrackingActive) {
+            controlSystem.goal = KineticState(target)
+            turret.power = controlSystem.calculate(turret.state)
+            return
+        }
+
+        // 2. PID HOLD MODE
+        if (turretActive) {
+            controlSystem.goal = KineticState(position = target)
+            turret.power = controlSystem.calculate(turret.state)
+
+            // Determine when turret is "ready"
+            if (!turretReady && abs(current - target) < 4.0 && ++turretTolearanceCount >= 3) {
+                turretReady = true
+                turretReadyMs = runtime.milliseconds()
+            }
+            return
+        }
+
+        // 3. IDLE MODE
+        turret.power = 0.0
     }
 }
