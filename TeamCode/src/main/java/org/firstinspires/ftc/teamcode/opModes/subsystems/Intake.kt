@@ -19,10 +19,6 @@ object Intake : Subsystem {
         SetPower(intake, 1.0)
             .requires(this)
 
-    val spinStopAuto =
-        SetPower(intake, 0.0)
-            .requires(this)
-
     val spinFast =
         SequentialGroup(
         SetPower(intake, 1.0),
@@ -30,6 +26,13 @@ object Intake : Subsystem {
             WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD },
             SetPower(intake, 0.0),
             InstantCommand { isRunning = false }
+        )
+            .requires(this)
+
+    val spinShoot =
+        SequentialGroup(
+            SetPower(intake, 1.0),
+            InstantCommand { isRunning = true }
         )
             .requires(this)
 
@@ -43,20 +46,14 @@ object Intake : Subsystem {
     val spinSlowSpeed =
         SequentialGroup(
             SetPower(intake, 0.8),
-            InstantCommand { isRunning = true },
-            WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD },
-            SetPower(intake, 0.0),
-            InstantCommand { isRunning = false }
+            InstantCommand { isRunning = true }
         )
             .requires(this)
 
     val spinReverse =
         SequentialGroup(
             SetPower(intake, -0.7),
-            InstantCommand { isRunning = true },
-            WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD },
-            SetPower(intake, 0.0),
-            InstantCommand { isRunning = false }
+            InstantCommand { isRunning = true }
         )
             .requires(this)
 }
