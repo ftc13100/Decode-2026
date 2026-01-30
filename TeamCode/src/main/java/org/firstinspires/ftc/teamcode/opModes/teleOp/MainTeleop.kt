@@ -187,15 +187,7 @@ class MainTeleop : NextFTCOpMode() {
                 }
             }
 
-        button { gamepad1.b }
-            .whenBecomesTrue {
-                Shooter.stallSpeed = 1200.0
-                Shooter.stallShooter().schedule()
-            }
-            .whenBecomesFalse {
-                Shooter.stallSpeed = 1000.0
-                Shooter.stallShooter().schedule()
-            }
+
 
 ////////////////////////////////////////////////////////////////////////////
 //        GamePad 2 - Operator Commands
