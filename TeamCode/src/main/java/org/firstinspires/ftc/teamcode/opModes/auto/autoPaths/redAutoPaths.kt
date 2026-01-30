@@ -20,6 +20,9 @@ object redAutoPaths : Subsystem {
 
      val startPose = Pose(125.23, 121.52, Math.toRadians(37.0))
      val shootPose = Pose(84.0, 84.0, Math.toRadians(0.0))
+     val pushStart = Pose(62.5615763546798, 9.596059113300495, Math.toRadians(90.0)).mirror()
+     val dopush = Pose(47.665024630541865,   9.753694581280788, Math.toRadians(90.0)).mirror()
+     val pushToShoot = Pose(60.0, 84.0, Math.toRadians(90.0)).mirror()
      val pickUpPPG1 = Pose(98.35, 84.0, Math.toRadians(0.0))
      val pickUpPPG2 = Pose(126.5, 84.0, Math.toRadians(0.0))
      val PPGtoShot = Pose(84.0, 84.0, Math.toRadians(0.0))
@@ -67,11 +70,21 @@ object redAutoPaths : Subsystem {
      lateinit var DeadhuzzLeave: PathChain
 
     lateinit var eatup: PathChain
+    lateinit var push: PathChain
+    lateinit var pushShoot: PathChain
 
 
 
 
     fun buildPaths() {
+        push= PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(pushStart, dopush))
+            .setLinearHeadingInterpolation(pushStart.heading, dopush.heading)
+            .build()
+        pushShoot = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(dopush, pushToShoot))
+            .setLinearHeadingInterpolation(dopush.heading, pushToShoot.heading)
+            .build()
         bottomShoot = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(bottomStartPose, bottomShootPose))
             .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
