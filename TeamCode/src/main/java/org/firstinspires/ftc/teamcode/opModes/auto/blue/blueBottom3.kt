@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes.auto.blue
 
+import com.pedropathing.ftc.drivetrains.Mecanum
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
@@ -8,6 +9,7 @@ import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
+import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths
@@ -46,7 +48,7 @@ class blueBottom3 : NextFTCOpMode() {
             SequentialGroup(
                 ParallelGroup(
                     ShooterAngle.angle_up,
-                    Shooter.spinAtSpeed(1525.0),
+                    Shooter.spinAtSpeed(1505.0),
                     TurretAuto.toLeftMohit,
                     Gate.gate_open,
                     FollowPath(bottomShoot)
@@ -59,6 +61,11 @@ class blueBottom3 : NextFTCOpMode() {
                     Intake.spinFastAuto,
                     Gate.gate_close,
                     FollowPath(bottomHP)
+                ),
+                Delay(3.0),
+                ParallelGroup(
+                    Intake.spinStop,
+                    Gate.gate_close,
                 ),
                 ParallelGroup(
                     ShooterAngle.angle_up,
@@ -77,6 +84,7 @@ class blueBottom3 : NextFTCOpMode() {
                     Gate.gate_close,
                     FollowPath(bottomIntake)
                 ),
+                Delay(3.0),
                 ParallelGroup(
                     ShooterAngle.angle_up,
                     Intake.spinStop,
@@ -93,6 +101,7 @@ class blueBottom3 : NextFTCOpMode() {
                     FollowPath(bottomLeave),
                     Gate.gate_close,
                     Intake.spinStop,
+                    Shooter.stopShooter
 
                     )
 
@@ -116,6 +125,12 @@ class blueBottom3 : NextFTCOpMode() {
         PoseStorage.poseEnd = PedroComponent.Companion.follower.pose
     }
 
+
     override fun onUpdate() {
+        val dt = follower.drivetrain as Mecanum
+        val powers = dt.motors.map { it.power }
+        telemetry.addData("Power", powers)
+        telemetry.update()
     }
+
 }

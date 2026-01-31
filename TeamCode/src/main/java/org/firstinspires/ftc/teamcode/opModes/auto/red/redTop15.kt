@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes.auto.red
 
+import com.pedropathing.ftc.drivetrains.Mecanum
 import com.pedropathing.geometry.BezierCurve
 import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
@@ -151,4 +152,13 @@ class redTop15 : NextFTCOpMode() {
     override fun onStop() {
         PoseStorage.poseEnd = follower.pose
     }
+
+
+    override fun onUpdate() {
+        val dt = follower.drivetrain as Mecanum
+        val powers = dt.motors.map { it.power }
+        telemetry.addData("Power", powers)
+        telemetry.update()
+    }
+
 }

@@ -47,7 +47,7 @@ object blueAutoPaths : Subsystem {
     val bottomStartPose = Pose(56.0, 7.5, Math.toRadians(90.0))
     val bottomShootPose = Pose(56.0, 10.5, Math.toRadians(90.0))
     val bottomHPpose = Pose(11.907244983779883, 8.961972846329473, Math.toRadians(179.5))
-    val bottomPickUppose = Pose(8.78048780487805, 14.299651567944245, Math.toRadians(90.0))
+    val bottomPickUppose = Pose(8.78048780487805, 14.299651567944245, Math.toRadians(179.5))
 
     val bottomLeavePoint = Pose(36.49261083743842, 10.5, Math.toRadians(90.0))
 
@@ -102,7 +102,7 @@ object blueAutoPaths : Subsystem {
             .build()
         bottomHP = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(bottomShootPose, bottomHPpose))
-            .setLinearHeadingInterpolation(bottomShootPose.heading, bottomHPpose.heading)
+            .setTangentHeadingInterpolation()
             .build()
         HPshoot = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(bottomHPpose, bottomShootPose))
@@ -114,7 +114,7 @@ object blueAutoPaths : Subsystem {
             .build()
         bottomIntake = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(bottomShootPose, bottomPickUppose))
-            .setLinearHeadingInterpolation(bottomShootPose.heading, bottomPickUppose.heading)
+            .setTangentHeadingInterpolation()
             .build()
         bottomLeave = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(bottomShootPose, bottomLeavePoint))

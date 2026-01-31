@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes.auto.red
 
+import com.pedropathing.ftc.drivetrains.Mecanum
 import com.pedropathing.geometry.BezierCurve
 import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
@@ -12,6 +13,7 @@ import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
+import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.DeadhuzzLeave
@@ -147,6 +149,12 @@ class redTop12: NextFTCOpMode() {
         PoseStorage.poseEnd = PedroComponent.Companion.follower.pose
     }
 
+
     override fun onUpdate() {
+        val dt = follower.drivetrain as Mecanum
+        val powers = dt.motors.map { it.power }
+        telemetry.addData("Power", powers)
+        telemetry.update()
     }
+
 }
