@@ -10,6 +10,12 @@ import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.HPshoot
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.bottomHP
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.bottomIntake
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.bottomLeave
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.bottomShoot
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.intakeShoot
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
@@ -42,20 +48,52 @@ class redBottom3 : NextFTCOpMode() {
                     Shooter.spinAtSpeed(1525.0),
                     TurretAuto.toRightMohit,
                     Gate.gate_open,
-                    FollowPath(redAutoPaths.bottomShoot)
+                    FollowPath(bottomShoot)
+
                 ),
                 Intake.spinFastAuto,
                 Delay(2.3.seconds),
                 ParallelGroup(
-                    Shooter.stopShooter,
-                    Intake.spinStop,
-                    Gate.gate_close
+                    Shooter.stallShooter,
+                    Intake.spinFastAuto,
+                    Gate.gate_close,
+                    FollowPath(bottomHP)
                 ),
                 ParallelGroup(
+                    ShooterAngle.angle_up,
+                    Intake.spinStop,
+                    Shooter.spinAtSpeed(1525.0),
+                    TurretAuto.toLeftMohit,
+                    Gate.gate_open,
+                    FollowPath(HPshoot)
+
+                ),
+                Intake.spinFastAuto,
+                Delay(2.3.seconds),
+                ParallelGroup(
+                    Shooter.stallShooter,
+                    Intake.spinFastAuto,
+                    Gate.gate_close,
+                    FollowPath(bottomIntake)
+                ),
+                ParallelGroup(
+                    ShooterAngle.angle_up,
+                    Intake.spinStop,
+                    Shooter.spinAtSpeed(1525.0),
+                    TurretAuto.toLeftMohit,
+                    Gate.gate_open,
+                    FollowPath(intakeShoot)
+
+                ),
+                Intake.spinFastAuto,
+                Delay(2.3.seconds),
+                ParallelGroup(
                     TurretAuto.toMid,
-                    FollowPath(redAutoPaths.bottomLeave),
-                    Gate.gate_close
-                )
+                    FollowPath(bottomLeave),
+                    Gate.gate_close,
+                    Intake.spinStop,
+
+                    )
 
             )
 
@@ -68,7 +106,7 @@ class redBottom3 : NextFTCOpMode() {
     override fun onStartButtonPressed() {
         PedroComponent.Companion.follower.setStartingPose(redAutoPaths.bottomStartPose)
         redAutoPaths.buildPaths()
-        PoseStorage.blueAlliance = false
+        PoseStorage.redAlliance = false
         PoseStorage.redAlliance = true
         autoRoutine()
     }

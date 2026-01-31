@@ -11,8 +11,12 @@ import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.HPshoot
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomHP
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomIntake
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomLeave
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomShoot
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.intakeShoot
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
@@ -51,15 +55,46 @@ class blueBottom3 : NextFTCOpMode() {
                 Intake.spinFastAuto,
                 Delay(2.3.seconds),
                 ParallelGroup(
-                    Shooter.stopShooter,
-                    Intake.spinStop,
-                    Gate.gate_close
+                    Shooter.stallShooter,
+                    Intake.spinFastAuto,
+                    Gate.gate_close,
+                    FollowPath(bottomHP)
                 ),
+                ParallelGroup(
+                    ShooterAngle.angle_up,
+                    Intake.spinStop,
+                    Shooter.spinAtSpeed(1525.0),
+                    TurretAuto.toLeftMohit,
+                    Gate.gate_open,
+                    FollowPath(HPshoot)
+
+                ),
+                Intake.spinFastAuto,
+                Delay(2.3.seconds),
+                ParallelGroup(
+                    Shooter.stallShooter,
+                    Intake.spinFastAuto,
+                    Gate.gate_close,
+                    FollowPath(bottomIntake)
+                ),
+                ParallelGroup(
+                    ShooterAngle.angle_up,
+                    Intake.spinStop,
+                    Shooter.spinAtSpeed(1525.0),
+                    TurretAuto.toLeftMohit,
+                    Gate.gate_open,
+                    FollowPath(intakeShoot)
+
+                ),
+                Intake.spinFastAuto,
+                Delay(2.3.seconds),
                 ParallelGroup(
                     TurretAuto.toMid,
                     FollowPath(bottomLeave),
-                    Gate.gate_close
-                )
+                    Gate.gate_close,
+                    Intake.spinStop,
+
+                    )
 
             )
 

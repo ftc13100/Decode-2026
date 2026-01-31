@@ -44,10 +44,12 @@ object redAutoPaths : Subsystem {
     val eat = Pose(134.91525423728814, 57.79661016949153, Math.toRadians(45.0))
 
     val hitGateControl = Pose(89.31958762886597, 70.76288659793815, Math.toRadians(45.0))
-     val bottomStartPose = Pose(56.0, 7.5, Math.toRadians(90.0)).mirror()
-     val bottomShootPose = Pose(56.0, 10.5, Math.toRadians(90.0)).mirror()
-     val bottomLeavePoint = Pose(36.49261083743842, 8.20935960591133, Math.toRadians(90.0)).mirror()
+    val bottomStartPose = Pose(56.0, 7.5, Math.toRadians(90.0)).mirror()
+    val bottomShootPose = Pose(56.0, 10.5, Math.toRadians(90.0))
+    val bottomHPpose = Pose(11.907244983779883, 8.961972846329473, Math.toRadians(179.5)).mirror()
+    val bottomPickUppose = Pose(8.78048780487805, 14.299651567944245, Math.toRadians(90.0)).mirror()
 
+    val bottomLeavePoint = Pose(36.49261083743842, 10.5, Math.toRadians(90.0)).mirror()
      lateinit var PPGfirst: PathChain
      lateinit var PPGsecond: PathChain
      lateinit var PPGtoShotMove: PathChain
@@ -73,6 +75,12 @@ object redAutoPaths : Subsystem {
     lateinit var push: PathChain
     lateinit var pushShoot: PathChain
 
+    lateinit var bottomHP: PathChain
+    lateinit var HPshoot: PathChain
+    lateinit var bottomIntake: PathChain
+    lateinit var intakeShoot: PathChain
+
+
 
 
 
@@ -88,6 +96,22 @@ object redAutoPaths : Subsystem {
         bottomShoot = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(bottomStartPose, bottomShootPose))
             .setLinearHeadingInterpolation(bottomStartPose.heading, bottomShootPose.heading)
+            .build()
+        bottomHP = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(bottomShootPose, bottomHPpose))
+            .setLinearHeadingInterpolation(bottomShootPose.heading, bottomHPpose.heading)
+            .build()
+        HPshoot = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(bottomHPpose, bottomShootPose))
+            .setLinearHeadingInterpolation(bottomHPpose.heading, bottomShootPose.heading)
+            .build()
+        intakeShoot = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(bottomPickUppose, bottomShootPose))
+            .setLinearHeadingInterpolation(bottomPickUppose.heading, bottomShootPose.heading)
+            .build()
+        bottomIntake = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(bottomShootPose, bottomPickUppose))
+            .setLinearHeadingInterpolation(bottomShootPose.heading, bottomPickUppose.heading)
             .build()
         bottomLeave = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(bottomShootPose, bottomLeavePoint))
