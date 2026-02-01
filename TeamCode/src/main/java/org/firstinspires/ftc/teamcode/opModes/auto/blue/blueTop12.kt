@@ -53,7 +53,7 @@ class blueTop12: NextFTCOpMode() {
             SequentialGroup(
                 ParallelGroup(
                     ShooterAngle.angle_kindaUP,
-                    Shooter.spinAtSpeed(1150.0),
+                    Shooter.spinAtSpeed(1180.0),
                     FollowPath(GoToShot),
                     TurretAuto.toRight,
                     Gate.gate_open

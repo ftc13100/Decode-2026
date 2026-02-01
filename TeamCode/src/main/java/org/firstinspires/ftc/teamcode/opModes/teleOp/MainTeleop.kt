@@ -59,7 +59,7 @@ class MainTeleop : NextFTCOpMode() {
     private val frontRightName = "frontRight"
     private val backLeftName = "backLeft"
     private val backRightName = "backRight"
-    private val imu = IMUEx("imu", Direction.UP, Direction.FORWARD).zeroed()
+//    private val imu = IMUEx("imu", Direction.LEFT, Direction.UP).zeroed()
     // change directions accordingly
 
     private val shooterController = ShooterController
@@ -124,7 +124,8 @@ class MainTeleop : NextFTCOpMode() {
             -Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
             Gamepads.gamepad1.rightStickX,
-            FieldCentric(imu)
+
+//            FieldCentric(imu)
         )
         driverControlled.scalar = 0.95
         Shooter.stallShooter()
@@ -183,8 +184,6 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad1.y }
             .whenTrue { driverControlled.scalar = 0.4 }
             .whenFalse { driverControlled.scalar = 0.95 }
-
-
 
         // Reset location and heading
         Gamepads.gamepad1.leftTrigger.asButton { it > 0.5 } and Gamepads.gamepad1.rightTrigger.asButton { it > 0.5 }
