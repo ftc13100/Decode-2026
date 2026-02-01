@@ -46,6 +46,7 @@ class blueBottom3 : NextFTCOpMode() {
     val autoRoutine: Command
         get() =
             SequentialGroup(
+                Delay(8.0),
                 ParallelGroup(
                     ShooterAngle.angle_up,
                     Shooter.spinAtSpeed(1505.0),
@@ -62,7 +63,7 @@ class blueBottom3 : NextFTCOpMode() {
                     Gate.gate_close,
                     FollowPath(bottomHP)
                 ),
-                Delay(3.0),
+                Delay(2.0),
                 ParallelGroup(
                     Intake.spinStop,
                     Gate.gate_close,
