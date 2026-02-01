@@ -41,6 +41,8 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.trackTarget
 import org.firstinspires.ftc.teamcode.opModes.subsystems.TurretAuto
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
@@ -52,92 +54,191 @@ class redTop15 : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
-                TurretAuto,
+                MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage, Turret
             ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
     }
+    val startPose = Pose(123.500, 122.200, Math.toRadians(36.0))
 
+val turn = follower.pathBuilder().addPath(
+    BezierLine(
+        Pose(123.500, 122.200),
+        Pose(123.500, 122.200)
+    )
+).setLinearHeadingInterpolation(Math.toRadians(36.0), Math.toRadians(44.0))
+    .setReversed()
+    .build()
+
+val shoot = follower.pathBuilder().addPath(
+    BezierLine(
+        Pose(123.500, 122.200),
+        Pose(84.000, 84.000)
+    )
+).setLinearHeadingInterpolation(Math.toRadians(40.0), Math.toRadians(360.0))
+    .setReversed()
+    .build()
+
+val shootPGP = follower.pathBuilder().addPath(
+    BezierCurve(
+        Pose(84.000, 84.000),
+        Pose(91.317, 48.669),
+        Pose(107.009, 65.990),
+        Pose(70.354, 58.941),
+        Pose(129.000, 60.000),
+        Pose(133.000, 60.000)
+    )
+).setTangentHeadingInterpolation()
+    .build()
+
+val PGPshoot = follower.pathBuilder().addPath(
+    BezierLine(
+        Pose(133.000, 60.000),
+        Pose(84.000, 84.000)
+    )
+).setTangentHeadingInterpolation()
+    .setReversed()
+    .build()
+
+val shootGate = follower.pathBuilder().addPath(
+    BezierLine(
+        Pose(84.000, 84.000),
+        Pose(127.900, 65.100)
+    )
+).setLinearHeadingInterpolation(Math.toRadians(334.0), Math.toRadians(360.0))
+    .build()
+
+val gateIntake = follower.pathBuilder().addPath(
+    BezierLine(
+        Pose(127.900, 65.100),
+        Pose(136.000, 48.890)
+    )
+).setLinearHeadingInterpolation(Math.toRadians(360.0), Math.toRadians(90.0))
+    .build()
+
+val intakeShoot = follower.pathBuilder().addPath(
+    BezierLine(
+        Pose(136.000, 48.890),
+        Pose(84.000, 84.000)
+    )
+).setTangentHeadingInterpolation()
+    .build()
+
+val shootPPG = follower.pathBuilder().addPath(
+    BezierLine(
+        Pose(84.000, 84.000),
+        Pose(128.000, 84.000)
+    )
+).setTangentHeadingInterpolation()
+    .build()
+
+val PPGshoot = follower.pathBuilder().addPath(
+    BezierLine(
+        Pose(128.000, 84.000),
+        Pose(84.000, 84.000)
+    )
+).setTangentHeadingInterpolation()
+    .setReversed()
+    .build()
+
+val shootGPP = follower.pathBuilder().addPath(
+    BezierCurve(
+        Pose(84.000, 84.000),
+        Pose(101.101, 51.178),
+        Pose(96.204, 28.150),
+        Pose(97.956, 37.937),
+        Pose(133.000, 36.000)
+    )
+).setTangentHeadingInterpolation()
+    .build()
+
+val GPPshoot = follower.pathBuilder().addPath(
+    BezierLine(
+        Pose(133.000, 36.000),
+        Pose(84.000, 84.000)
+    )
+).setTangentHeadingInterpolation()
+    .setReversed()
+    .build()
+
+val shootLeave = follower.pathBuilder().addPath(
+    BezierLine(
+        Pose(84.000, 84.000),
+        Pose(121.660, 72.500)
+    )
+).setTangentHeadingInterpolation()
+    .build()
 
     val autoRoutine: Command
         get() =
             SequentialGroup(
+            FollowPath(turn),
                 ParallelGroup(
+                    FollowPath(shoot),
                     ShooterAngle.angle_kindaUP,
-                    Shooter.spinAtSpeed(1180.0),
-                    FollowPath(GoToShot),
-                    TurretAuto.toLeft,
-                    Gate.gate_open,
-                ),
-                Intake.spinFastAuto,
-                Delay(1.8.seconds),
-                ParallelGroup(
-                    FollowPath(PGPfirst),
-                    Gate.gate_close
-                ),
-                FollowPath(PGPsecond, holdEnd = true, maxPower = 1.0),
-                Intake.spinStop,
-                ParallelGroup(
-                    FollowPath(PGPtoShotMove),
-                    ShooterAngle.angle_kindaUP,
-                    Gate.gate_open,
-                ),
-                Intake.spinFastAuto,
-                Delay(1.8.seconds),
-                ParallelGroup(
-                    FollowPath(TheGate),
-                    Gate.gate_close,
-                ),
-                FollowPath(eatup),
-                Delay(1.8),
-                ParallelGroup(
-                    Intake.spinStop,
-                    FollowPath(PGPtoShotMove),
-                    ShooterAngle.angle_kindaUP,
-                    Gate.gate_open,
-                ),
-                Intake.spinFastAuto,
-                Delay(1.8.seconds),
-                ParallelDeadlineGroup(
-                    FollowPath(PPGsecond, holdEnd = true, maxPower = 1.0),
-                    Gate.gate_close,
-                    Intake.spinFastAuto
-                ),
-                ParallelGroup(
-                    Intake.spinStop,
-                    FollowPath(PPGtoShotMove),
-                    ShooterAngle.angle_kindaUP,
-                    Gate.gate_open,
-                ),
-                Intake.spinFastAuto,
-                Delay(1.8.seconds),
-                ParallelDeadlineGroup(
-                    FollowPath(GPPfirst),
-                    Gate.gate_close,
-                    Intake.spinFastAuto
-                ),
-                FollowPath(GPPsecond, holdEnd = true, maxPower = 1.0),
-                Intake.spinStop,
-                ParallelGroup(
-                    FollowPath(GPPtoShotMove),
-                    ShooterAngle.angle_kindaUP,
+                    Shooter.spinAtSpeed(1200.0),
                     Gate.gate_open
                 ),
                 Intake.spinFastAuto,
-                Delay(1.8.seconds),
+                Delay(2.3),
                 ParallelGroup(
-                    FollowPath(DeadhuzzLeave),
-                    Shooter.stopShooter,
+                    FollowPath(shootPGP),
+                    Gate.gate_close
+                    ),
+                Intake.spinStop,
+                ParallelGroup(
+                    FollowPath(PGPshoot),
+                    Gate.gate_open
+                ),
+                Intake.spinFastAuto,
+                Delay(2.3),
+                ParallelGroup(
+                    FollowPath(shootGate),
+                    Gate.gate_close
+                ),
+                FollowPath(gateIntake),
+                Intake.spinStop,
+                ParallelGroup(
+                    FollowPath(intakeShoot),
+                    Gate.gate_open
+                ),
+                Intake.spinFastAuto,
+                Delay(2.3),
+                ParallelGroup(
+                    FollowPath(shootPPG),
+                    Gate.gate_close
+                ),
+                Intake.spinStop,
+                ParallelGroup(
+                    FollowPath(PPGshoot),
+                    Gate.gate_open
+                ),
+                Intake.spinFastAuto,
+                Delay(2.3),
+                ParallelGroup(
+                    FollowPath(shootGPP),
+                    Gate.gate_close
+                ),
+                Intake.spinStop,
+                ParallelGroup(
+                    FollowPath(GPPshoot),
+                    Gate.gate_open
+                ),
+                Intake.spinFastAuto,
+                Delay(2.3),
+                ParallelGroup(
+                    FollowPath(shootLeave),
                     Gate.gate_close,
-                    Intake.spinStop,
-                )
+                    Shooter.stopShooter,
+                ),
             )
 
     override fun onInit() {
         follower.setMaxPower(1.0)
         Gate.gate_close()
+        PoseStorage.redAlliance = true
+
     }
 
     override fun onStartButtonPressed() {
@@ -145,6 +246,7 @@ class redTop15 : NextFTCOpMode() {
         buildPaths()
         PoseStorage.blueAlliance = false
         PoseStorage.redAlliance = true
+        trackTarget()
         autoRoutine()
     }
 

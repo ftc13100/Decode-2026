@@ -25,11 +25,12 @@ object TurretAuto : Subsystem {
         posPid(posPIDCoefficients)
     }
 
+
     val toMid = RunToPosition(controlSystem, 0.0).requires(this)
     val toLeft = RunToPosition(controlSystem, -527.0).requires(this)
     val toRight = RunToPosition(controlSystem, 527.0).requires(this)
 
-    val toLeftMohit = RunToPosition(controlSystem, -26.0).requires(this)
+    val toLeftMohit = RunToPosition(controlSystem, -264.0).requires(this)
     val toRightMohit = RunToPosition(controlSystem, 264.0).requires(this)
 
     override fun periodic() {

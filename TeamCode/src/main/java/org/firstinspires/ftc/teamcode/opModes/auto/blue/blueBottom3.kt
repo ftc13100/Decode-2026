@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.opModes.auto.blue
 
+import com.pedropathing.geometry.BezierLine
+import com.pedropathing.geometry.Pose
+import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
@@ -10,14 +13,7 @@ import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.HPshoot
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomHP
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomIntake
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomLeave
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomShoot
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.intakeShoot
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths
+
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
@@ -34,13 +30,58 @@ class blueBottom3 : NextFTCOpMode() {
         addComponents(
             SubsystemComponent(
                 MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
-                TurretAuto, blueAutoPaths
+                TurretAuto
             ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
     }
+    val bottomStartPose = Pose(56.0, 7.5, Math.toRadians(90.0))
+    val bottomShootPose = Pose(56.0, 10.5, Math.toRadians(90.0))
+    val bottomHPpose = Pose(11.907244983779883, 8.961972846329473, Math.toRadians(179.5))
+    val bottomPickUppose = Pose(8.78048780487805, 14.299651567944245, Math.toRadians(90.0))
 
+    val bottomLeavePoint = Pose(36.49261083743842, 10.5, Math.toRadians(90.0))
+
+    lateinit var bottomShoot: PathChain
+    lateinit var bottomLeave: PathChain
+    lateinit var bottomHP: PathChain
+    lateinit var HPshoot: PathChain
+
+    lateinit var intakeShoot: PathChain
+
+    lateinit var bottomIntake: PathChain
+
+
+
+
+    fun buildPaths() {
+
+        bottomShoot = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(bottomStartPose, bottomShootPose))
+            .setLinearHeadingInterpolation(bottomStartPose.heading, bottomShootPose.heading)
+            .build()
+        bottomHP = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(bottomShootPose, bottomHPpose))
+            .setLinearHeadingInterpolation(bottomShootPose.heading, bottomHPpose.heading)
+            .build()
+        HPshoot = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(bottomHPpose, bottomShootPose))
+            .setLinearHeadingInterpolation(bottomHPpose.heading, bottomShootPose.heading)
+            .build()
+        intakeShoot = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(bottomPickUppose, bottomShootPose))
+            .setLinearHeadingInterpolation(bottomPickUppose.heading, bottomShootPose.heading)
+            .build()
+        bottomIntake = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(bottomShootPose, bottomPickUppose))
+            .setLinearHeadingInterpolation(bottomShootPose.heading, bottomPickUppose.heading)
+            .build()
+        bottomLeave = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(bottomShootPose, bottomLeavePoint))
+            .setLinearHeadingInterpolation(bottomShootPose.heading, bottomLeavePoint.heading)
+            .build()
+    }
     val autoRoutine: Command
         get() =
             SequentialGroup(
@@ -55,47 +96,11 @@ class blueBottom3 : NextFTCOpMode() {
                 Intake.spinFastAuto,
                 Delay(2.3.seconds),
                 ParallelGroup(
-                    Shooter.stallShooter,
-                    Intake.spinFastAuto,
-                    Gate.gate_close,
-                    FollowPath(bottomHP)
-                ),
-                ParallelGroup(
-                    ShooterAngle.angle_up,
-                    Intake.spinStop,
-                    Shooter.spinAtSpeed(1525.0),
-                    TurretAuto.toLeftMohit,
-                    Gate.gate_open,
-                    FollowPath(HPshoot)
-
-                ),
-                Intake.spinFastAuto,
-                Delay(2.3.seconds),
-                ParallelGroup(
-                    Shooter.stallShooter,
-                    Intake.spinFastAuto,
-                    Gate.gate_close,
-                    FollowPath(bottomIntake)
-                ),
-                ParallelGroup(
-                    ShooterAngle.angle_up,
-                    Intake.spinStop,
-                    Shooter.spinAtSpeed(1525.0),
-                    TurretAuto.toLeftMohit,
-                    Gate.gate_open,
-                    FollowPath(intakeShoot)
-
-                ),
-                Intake.spinFastAuto,
-                Delay(2.3.seconds),
-                ParallelGroup(
                     TurretAuto.toMid,
                     FollowPath(bottomLeave),
                     Gate.gate_close,
                     Intake.spinStop,
-
                     )
-
             )
 
 
@@ -105,8 +110,8 @@ class blueBottom3 : NextFTCOpMode() {
     }
 
     override fun onStartButtonPressed() {
-        PedroComponent.Companion.follower.setStartingPose(blueAutoPaths.bottomStartPose)
-        blueAutoPaths.buildPaths()
+        PedroComponent.Companion.follower.setStartingPose(bottomStartPose)
+        buildPaths()
         PoseStorage.blueAlliance = true
         PoseStorage.redAlliance = false
         autoRoutine()
