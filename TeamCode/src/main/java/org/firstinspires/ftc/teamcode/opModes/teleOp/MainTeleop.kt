@@ -23,7 +23,10 @@ import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import dev.nextftc.hardware.driving.FieldCentric
 import dev.nextftc.hardware.driving.MecanumDriverControlled
+import dev.nextftc.hardware.impl.Direction
+import dev.nextftc.hardware.impl.IMUEx
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
@@ -56,6 +59,8 @@ class MainTeleop : NextFTCOpMode() {
     private val frontRightName = "frontRight"
     private val backLeftName = "backLeft"
     private val backRightName = "backRight"
+    private val imu = IMUEx("imu", Direction.UP, Direction.FORWARD).zeroed()
+    // change directions accordingly
 
     private val shooterController = ShooterController
 
@@ -99,6 +104,7 @@ class MainTeleop : NextFTCOpMode() {
             it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
 
+
         limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
         telemetry.msTransmissionInterval = 11
         limelight.pipelineSwitch(1)
@@ -118,7 +124,7 @@ class MainTeleop : NextFTCOpMode() {
             -Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
             Gamepads.gamepad1.rightStickX,
-//            FieldCentric(imu)
+            FieldCentric(imu)
         )
         driverControlled.scalar = 0.95
         Shooter.stallShooter()
