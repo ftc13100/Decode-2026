@@ -11,6 +11,7 @@ import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goal
+import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
 
@@ -54,6 +55,9 @@ object Turret : Subsystem {
 
     @JvmField
     var turretTolearanceCount = 0
+
+    @JvmField
+    var leadCompensation = 0.0
 
     val turretCurrentPos: Double
         get() = turret.currentPosition - startPosition
@@ -127,24 +131,27 @@ object Turret : Subsystem {
         val y = abs(follower.pose.y)
         heading = follower.heading
 
-        targetAngle = if (PoseStorage.blueAlliance) {
-            Math.PI - atan2(abs(goal.y - y), abs(goal.x - x))
+        // Base angle to goal
+        val baseTargetAngle = if (PoseStorage.blueAlliance) {
+            PI - atan2(abs(goal.y - y), abs(goal.x - x))
         } else {
             atan2(abs(goal.y - y), abs(goal.x - (144.0 - x)))
         }
 
-        turretAngle =
-            heading - turretCurrentPos * TURRET_TICKS_TO_RADS
+        // Add the lead compensation from SOTM
+        targetAngle = baseTargetAngle + leadCompensation
+
+        turretAngle = heading - turretCurrentPos * TURRET_TICKS_TO_RADS
 
         turretError = targetAngle - turretAngle
-        if (turretError > Math.PI) turretError -= 2 * Math.PI
+
+        // Wrap angle to find shortest path
+        while (turretError > PI) turretError -= 2 * PI
+        while (turretError < -PI) turretError += 2 * PI
 
         if (goalTrackingActive) {
-            target =
-                (turret.currentPosition - turretError / TURRET_TICKS_TO_RADS).coerceIn(
-                    leftLimit,
-                    rightLimit
-                )
+            target = (turret.currentPosition - turretError / TURRET_TICKS_TO_RADS)
+                .coerceIn(leftLimit, rightLimit)
         }
     }
 
@@ -188,4 +195,9 @@ object Turret : Subsystem {
         // 3. IDLE MODE
         turret.power = 0.0
     }
+
+    fun setLeadCompensation(offset: Double) {
+        leadCompensation = offset
+    }
+
 }

@@ -32,6 +32,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
+import org.firstinspires.ftc.teamcode.opModes.subsystems.SOTM
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
@@ -44,7 +45,7 @@ class MainTeleop : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                ShooterAngle, Shooter, Gate, Intake, Turret, PoseStorage, GoalFinder
+                ShooterAngle, Shooter, Gate, Intake, Turret, PoseStorage, GoalFinder, SOTM
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -234,15 +235,24 @@ class MainTeleop : NextFTCOpMode() {
                 gateOpen = true
             }
 // Start shooter and set hood angle / Stop shooter
+
+        button { gamepad2.y }
+            .toggleOnBecomesTrue()
+            .whenBecomesTrue { SOTM.enable() }
+            .whenBecomesFalse {
+                SOTM.disable()
+                Turret.trackTarget()
+            }
+
+
+
         button { gamepad2.y }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 val currentShot = shooterController.getShot(GoalFinder.gfGoalDistance)
-
                 val commands = SequentialGroup(
-                    WaitUntil { currentShot != null },
                     InstantCommand {
-                        currentShotVelocity = currentShot!!.velocity
+                        currentShotVelocity = currentShot.velocity
                         currentShotAngle = currentShot.angle
                         currentShotDistance = currentShot.distance
                         shooterController.applyShot(currentShot)
