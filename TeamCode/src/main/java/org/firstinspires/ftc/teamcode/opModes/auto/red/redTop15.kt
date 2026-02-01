@@ -60,7 +60,9 @@ class redTop15 : NextFTCOpMode() {
             PedroComponent(Constants::createFollower)
         )
     }
+
     val startPose = Pose(123.500, 122.200, Math.toRadians(36.0))
+
 
 val turn = follower.pathBuilder().addPath(
     BezierLine(
