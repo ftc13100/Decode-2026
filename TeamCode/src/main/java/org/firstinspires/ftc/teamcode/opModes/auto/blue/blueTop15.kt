@@ -61,116 +61,121 @@ class blueTop15 : NextFTCOpMode() {
         )
     }
 
-    val startPose = Pose(123.500, 122.200, Math.toRadians(36.0))
+    val startPose = Pose(123.500, 122.200, Math.toRadians(36.0)).mirror()
 
 
-val turn : PathChain  = follower.pathBuilder().addPath(
-    BezierLine(
-        Pose(20.500, 122.200),
-        Pose(20.500, 122.200)
-    )
-).setLinearHeadingInterpolation(Math.toRadians(144.0), Math.toRadians(136.0))
-    .setReversed()
-    .build()
+    lateinit var turn: PathChain
+    lateinit var shoot: PathChain
+    lateinit var shootPGP: PathChain
+    lateinit var PGPshoot: PathChain
+    lateinit var shootGate: PathChain
+    lateinit var gateIntake: PathChain
+    lateinit var intakeShoot: PathChain
+    lateinit var shootPPG: PathChain
+    lateinit var PPGshoot: PathChain
+    lateinit var shootGPP: PathChain
+    lateinit var GPPshoot: PathChain
+    lateinit var shootLeave: PathChain
 
-val shoot : PathChain  = follower.pathBuilder().addPath(
-    BezierLine(
-        Pose(20.500, 122.200),
-        Pose(60.000, 84.000)
-    )
-).setLinearHeadingInterpolation(Math.toRadians(140.0), Math.toRadians(-180.0))
-    .setReversed()
-    .build()
+    fun buildPaths() {
+        turn  = follower.pathBuilder().addPath(
+            BezierLine(
+                Pose(20.500, 122.200),
+                Pose(20.500, 122.200)
+            )
+        ).setLinearHeadingInterpolation(Math.toRadians(144.0), Math.toRadians(136.0))
+            .setReversed()
+            .build()
+        shoot  = follower.pathBuilder().addPath(
+            BezierLine(
+                Pose(20.500, 122.200),
+                Pose(60.000, 84.000)
+            )
+        ).setLinearHeadingInterpolation(Math.toRadians(140.0), Math.toRadians(-180.0))
+            .setReversed()
+            .build()
+        shootPGP  = follower.pathBuilder().addPath(
+            BezierCurve(
+                Pose(60.000, 84.000),
+                Pose(52.683, 48.669),
+                Pose(36.991, 65.990),
+                Pose(73.646, 58.941),
+                Pose(15.000, 60.000),
+                Pose(11.000, 60.000)
+            )
+        ).setTangentHeadingInterpolation()
+            .build()
+        PGPshoot  = follower.pathBuilder().addPath(
+            BezierLine(
+                Pose(11.000, 60.000),
+                Pose(60.000, 84.000)
+            )
+        ).setTangentHeadingInterpolation()
+            .setReversed()
+            .build()
+        shootGate  = follower.pathBuilder().addPath(
+            BezierLine(
+                Pose(60.000, 84.000),
+                Pose(16.100, 65.100)
+            )
+        ).setLinearHeadingInterpolation(Math.toRadians(-154.0), Math.toRadians(-180.0))
+            .build()
+        gateIntake  = follower.pathBuilder().addPath(
+            BezierLine(
+                Pose(16.100, 65.100),
+                Pose(8.000, 48.890)
+            )
+        ).setLinearHeadingInterpolation(Math.toRadians(-180.0), Math.toRadians(90.0))
+            .build()
+        intakeShoot  = follower.pathBuilder().addPath(
+            BezierLine(
+                Pose(8.000, 48.890),
+                Pose(60.000, 84.000)
+            )
+        ).setTangentHeadingInterpolation()
+            .build()
+        shootPPG  = follower.pathBuilder().addPath(
+            BezierLine(
+                Pose(60.000, 84.000),
+                Pose(16.000, 84.000)
+            )
+        ).setTangentHeadingInterpolation()
+            .build()
+        PPGshoot  = follower.pathBuilder().addPath(
+            BezierLine(
+                Pose(16.000, 84.000),
+                Pose(60.000, 84.000)
+            )
+        ).setTangentHeadingInterpolation()
+            .setReversed()
+            .build()
+        shootGPP  = follower.pathBuilder().addPath(
+            BezierCurve(
+                Pose(60.000, 84.000),
+                Pose(42.899, 51.178),
+                Pose(47.796, 28.150),
+                Pose(46.044, 37.937),
+                Pose(11.000, 36.000)
+            )
+        ).setTangentHeadingInterpolation()
+            .build()
+        GPPshoot  = follower.pathBuilder().addPath(
+            BezierLine(
+                Pose(11.000, 36.000),
+                Pose(60.000, 84.000)
+            )
+        ).setTangentHeadingInterpolation()
+            .setReversed()
+            .build()
+        shootLeave  = follower.pathBuilder().addPath(
+            BezierLine(
+                Pose(60.000, 84.000),
+                Pose(22.340, 72.500)
+            )
+        ).setTangentHeadingInterpolation()
+            .build()
 
-val shootPGP : PathChain  = follower.pathBuilder().addPath(
-    BezierCurve(
-        Pose(60.000, 84.000),
-        Pose(52.683, 48.669),
-        Pose(36.991, 65.990),
-        Pose(73.646, 58.941),
-        Pose(15.000, 60.000),
-        Pose(11.000, 60.000)
-    )
-).setTangentHeadingInterpolation()
-    .build()
-
-val PGPshoot : PathChain  = follower.pathBuilder().addPath(
-    BezierLine(
-        Pose(11.000, 60.000),
-        Pose(60.000, 84.000)
-    )
-).setTangentHeadingInterpolation()
-    .setReversed()
-    .build()
-
-val shootGate : PathChain  = follower.pathBuilder().addPath(
-    BezierLine(
-        Pose(60.000, 84.000),
-        Pose(16.100, 65.100)
-    )
-).setLinearHeadingInterpolation(Math.toRadians(-154.0), Math.toRadians(-180.0))
-    .build()
-
-val gateIntake : PathChain  = follower.pathBuilder().addPath(
-    BezierLine(
-        Pose(16.100, 65.100),
-        Pose(8.000, 48.890)
-    )
-).setLinearHeadingInterpolation(Math.toRadians(-180.0), Math.toRadians(90.0))
-    .build()
-
-val intakeShoot : PathChain  = follower.pathBuilder().addPath(
-    BezierLine(
-        Pose(8.000, 48.890),
-        Pose(60.000, 84.000)
-    )
-).setTangentHeadingInterpolation()
-    .build()
-
-val shootPPG : PathChain  = follower.pathBuilder().addPath(
-    BezierLine(
-        Pose(60.000, 84.000),
-        Pose(16.000, 84.000)
-    )
-).setTangentHeadingInterpolation()
-    .build()
-
-val PPGshoot : PathChain  = follower.pathBuilder().addPath(
-    BezierLine(
-        Pose(16.000, 84.000),
-        Pose(60.000, 84.000)
-    )
-).setTangentHeadingInterpolation()
-    .setReversed()
-    .build()
-
-val shootGPP : PathChain  = follower.pathBuilder().addPath(
-    BezierCurve(
-        Pose(60.000, 84.000),
-        Pose(42.899, 51.178),
-        Pose(47.796, 28.150),
-        Pose(46.044, 37.937),
-        Pose(11.000, 36.000)
-    )
-).setTangentHeadingInterpolation()
-    .build()
-
-val GPPshoot : PathChain  = follower.pathBuilder().addPath(
-    BezierLine(
-        Pose(11.000, 36.000),
-        Pose(60.000, 84.000)
-    )
-).setTangentHeadingInterpolation()
-    .setReversed()
-    .build()
-
-val shootLeave : PathChain  = follower.pathBuilder().addPath(
-    BezierLine(
-        Pose(60.000, 84.000),
-        Pose(22.340, 72.500)
-    )
-).setTangentHeadingInterpolation()
-    .build()
+    }
     val autoRoutine: Command
         get() =
             SequentialGroup(
