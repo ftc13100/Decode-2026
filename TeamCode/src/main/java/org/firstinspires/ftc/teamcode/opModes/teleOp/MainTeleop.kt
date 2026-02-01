@@ -77,6 +77,9 @@ class MainTeleop : NextFTCOpMode() {
     private var gateOpen = false
     private var intakeRunning = false
     private var initialized = false
+    private var continuous = false
+    val goal = shooterController.goal
+
 
     override fun onInit() {
         if (abs(startPose.x) < 0.1 && abs(startPose.y) < 0.1) {
@@ -237,29 +240,10 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad2.y }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                val currentShot = shooterController.getShot(GoalFinder.gfGoalDistance)
-
-                val commands = SequentialGroup(
-                    WaitUntil { currentShot != null },
-                    InstantCommand {
-                        currentShotVelocity = currentShot!!.velocity
-                        currentShotAngle = currentShot.angle
-                        currentShotDistance = currentShot.distance
-                        shooterController.applyShot(currentShot)
-                    },
-                    WaitUntil { Shooter.shooterReady && GoalFinder.gfReady },
-                    InstantCommand {
-                        Gate.gate_open()
-                        Intake.spinShoot()
-                        gateOpen = true
-                        intakeRunning = true
-                    }
-                )
-                commands()
+                Gate.gate_open()
+                Intake.spinShoot()
             }
-
             .whenBecomesFalse {
-                Shooter.stallShooter()
                 Gate.gate_close()
                 Intake.spinStop()
                 Turret.trackTarget()
@@ -348,6 +332,20 @@ class MainTeleop : NextFTCOpMode() {
         if (!initialized) {
             Turret.initPos()
             initialized = true
+        }
+
+        val distanceToGoal = GoalFinder.gfGoalDistance
+        val currentShot = ShooterController.getShot(distanceToGoal)
+        if (currentShot != null) {
+            currentShotDistance = currentShot.distance
+            currentShotVelocity = currentShot.velocity
+            currentShotAngle = currentShot.angle
+            // Apply continuously
+            if (abs(ShooterAngle.targetPosition - currentShotAngle) > 0.005) {
+                ShooterAngle.targetPosition = currentShotAngle
+                CommandManager.scheduleCommand(ShooterAngle.update())
+            }
+            Shooter.spinAtSpeed(currentShotVelocity).schedule()
         }
 
         val llResult: LLResult? = limelight.latestResult
