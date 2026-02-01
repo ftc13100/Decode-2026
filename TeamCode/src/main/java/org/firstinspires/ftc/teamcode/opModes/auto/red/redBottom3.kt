@@ -68,7 +68,7 @@ class redBottom3 : NextFTCOpMode() {
                 ),
                 ParallelGroup(
                     ShooterAngle.angle_up,
-                    Shooter.spinAtSpeed(1525.0),
+                    Shooter.spinAtSpeed(1505.0),
                     Gate.gate_open,
                     FollowPath(HPshoot)
                 ),
@@ -84,7 +84,7 @@ class redBottom3 : NextFTCOpMode() {
                 ParallelGroup(
                     ShooterAngle.angle_up,
                     Intake.spinStop,
-                    Shooter.spinAtSpeed(1495.0),
+                    Shooter.spinAtSpeed(1505.0),
                     Gate.gate_open,
                     FollowPath(intakeShoot)
 
