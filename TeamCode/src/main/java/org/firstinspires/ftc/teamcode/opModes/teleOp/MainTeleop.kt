@@ -196,26 +196,26 @@ class MainTeleop : NextFTCOpMode() {
         // Fine jump turret right
         button { gamepad2.right_bumper }
             .whenTrue {
-                Turret.turn(50.0)
+                Turret.turn(20.0)
             }
 
 
         // Fine jump turret left
         button { gamepad2.left_bumper }
             .whenTrue {
-                Turret.turn(-50.0)
+                Turret.turn(-20.0)
             }
 
         // Coarse jump turret right
         button { gamepad2.right_trigger > 0.5 }
             .whenBecomesTrue {
-                Turret.turn(500.0)
+                Turret.turn(180.0)
             }
 
         // Coarse jump turret left
         button { gamepad2.left_trigger > 0.5 }
             .whenBecomesTrue {
-                Turret.turn(-500.0)
+                Turret.turn(-180.0)
             }
 
         // Turret Tracking
