@@ -41,6 +41,8 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.trackTarget
 import org.firstinspires.ftc.teamcode.opModes.subsystems.TurretAuto
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
@@ -53,7 +55,7 @@ class redTop15 : NextFTCOpMode() {
         addComponents(
             SubsystemComponent(
                 MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
-                TurretAuto,
+                Turret,
             ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
@@ -68,7 +70,6 @@ class redTop15 : NextFTCOpMode() {
                     ShooterAngle.angle_kindaUP,
                     Shooter.spinAtSpeed(1180.0),
                     FollowPath(GoToShot),
-                    TurretAuto.toLeft,
                     Gate.gate_open,
                 ),
                 Intake.spinFastAuto,
@@ -128,7 +129,6 @@ class redTop15 : NextFTCOpMode() {
                 Intake.spinFastAuto,
                 Delay(1.8.seconds),
                 ParallelGroup(
-                    FollowPath(DeadhuzzLeave),
                     Shooter.stopShooter,
                     Gate.gate_close,
                     Intake.spinStop,
@@ -145,6 +145,7 @@ class redTop15 : NextFTCOpMode() {
         buildPaths()
         PoseStorage.blueAlliance = false
         PoseStorage.redAlliance = true
+        trackTarget()
         autoRoutine()
     }
 

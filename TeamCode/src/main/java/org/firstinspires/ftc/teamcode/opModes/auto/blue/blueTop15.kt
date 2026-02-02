@@ -113,7 +113,6 @@ class blueTop15 : NextFTCOpMode() {
                 Intake.spinFastAuto,
                 Delay(1.8.seconds),
                 ParallelGroup(
-                    FollowPath(DeadhuzzLeave),
                     Shooter.stopShooter,
                     Gate.gate_close,
                     Intake.spinStop,
