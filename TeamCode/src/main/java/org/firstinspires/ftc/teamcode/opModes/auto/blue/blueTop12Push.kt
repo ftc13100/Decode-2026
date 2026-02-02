@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes.auto.blue
 
+import com.pedropathing.ftc.drivetrains.Mecanum
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
@@ -8,6 +9,7 @@ import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
+import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths
@@ -146,5 +148,11 @@ class blueTop12Push: NextFTCOpMode() {
     }
 
     override fun onUpdate() {
+        val dt = follower.drivetrain as Mecanum
+        val powers = dt.motors.map { it.power }
+        telemetry.addData("Power", powers)
+        telemetry.update()
     }
+
+
 }
