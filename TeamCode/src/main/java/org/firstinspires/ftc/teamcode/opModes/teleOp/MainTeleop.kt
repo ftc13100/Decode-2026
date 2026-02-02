@@ -233,17 +233,21 @@ class MainTeleop : NextFTCOpMode() {
                 }
             }
 
+        // probably delete
         button { gamepad2.x }
             .whenBecomesTrue {
                 Gate.gate_open()
                 gateOpen = true
             }
-// Start shooter and set hood angle / Stop shooter
+
+// open gate, spin intake, balls go to shooter, or stops
         button { gamepad2.y }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 Gate.gate_open()
                 Intake.spinShoot()
+                gateOpen = true
+                intakeRunning = true
             }
             .whenBecomesFalse {
                 Gate.gate_close()
@@ -302,6 +306,7 @@ class MainTeleop : NextFTCOpMode() {
                 }
             }
 
+        //Or use these for reset
         // Switch alliance (works only in test mode where Teleop was started without Auto)
         button { gamepad2.left_stick_button }
             .toggleOnBecomesTrue()

@@ -238,14 +238,33 @@ class LookupTesting: NextFTCOpMode() {
                 Gate.gate_open()
                 gateOpen = true
             }
+
 // Start shooter and set hood angle / Stop shooter
         button { gamepad2.y }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                Gate.gate_open()
-                Intake.spinShoot()
+                val currentShot = shooterController.getShot(GoalFinder.gfGoalDistance)
+
+                val commands = SequentialGroup(
+                    WaitUntil { currentShot != null },
+                    InstantCommand {
+                        currentShotVelocity = currentShot!!.velocity
+                        currentShotAngle = currentShot.angle
+                        currentShotDistance = currentShot.distance
+                        shooterController.applyShot(currentShot)
+                    },
+                    WaitUntil { Shooter.shooterReady && GoalFinder.gfReady },
+                    InstantCommand {
+                        Gate.gate_open()
+                        Intake.spinShoot()
+                        gateOpen = true
+                        intakeRunning = true
+                    }
+                )
+                commands()
             }
             .whenBecomesFalse {
+                Shooter.stallShooter()
                 Gate.gate_close()
                 Intake.spinStop()
                 Turret.trackTarget()
