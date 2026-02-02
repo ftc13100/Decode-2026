@@ -30,6 +30,8 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.trackTarget
 import org.firstinspires.ftc.teamcode.opModes.subsystems.TurretAuto
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
@@ -42,7 +44,7 @@ class blueTop15 : NextFTCOpMode() {
         addComponents(
             SubsystemComponent(
                 MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
-                TurretAuto, blueAutoPaths
+                TurretAuto, blueAutoPaths, Turret
             ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
@@ -55,7 +57,6 @@ class blueTop15 : NextFTCOpMode() {
                     ShooterAngle.angle_kindaUP,
                     Shooter.spinAtSpeed(1180.0),
                     FollowPath(GoToShot),
-                    TurretAuto.toRight,
                     Gate.gate_open,
                 ),
                 Intake.spinFastAuto,
@@ -131,6 +132,7 @@ class blueTop15 : NextFTCOpMode() {
         blueAutoPaths.buildPaths()
         PoseStorage.blueAlliance = true
         PoseStorage.redAlliance = false
+        trackTarget()
         autoRoutine()
     }
 
