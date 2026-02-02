@@ -26,8 +26,8 @@ object TurretAuto : Subsystem {
     }
 
     val toMid = RunToPosition(controlSystem, 0.0).requires(this)
-    val toLeft = RunToPosition(controlSystem, -527.0).requires(this)
-    val toRight = RunToPosition(controlSystem, 527.0).requires(this)
+    val toLeft = RunToPosition(controlSystem, -549.0).requires(this)
+    val toRight = RunToPosition(controlSystem, 549.0).requires(this)
 
     val toLeftMohit = RunToPosition(controlSystem, -245.0).requires(this)
     val toRightMohit = RunToPosition(controlSystem, 245.0).requires(this)

@@ -56,7 +56,7 @@ class redTop15 : NextFTCOpMode() {
         addComponents(
             SubsystemComponent(
                 MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
-                Turret,
+                Turret, TurretAuto
             ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
@@ -71,6 +71,7 @@ class redTop15 : NextFTCOpMode() {
                     ShooterAngle.angle_kindaUP,
                     Shooter.spinAtSpeed(1180.0),
                     FollowPath(GoToShot),
+                    TurretAuto.toLeft,
                     Gate.gate_open,
                 ),
                 Intake.spinFastAuto,
@@ -133,6 +134,7 @@ class redTop15 : NextFTCOpMode() {
                     Shooter.stopShooter,
                     Gate.gate_close,
                     Intake.spinStop,
+                    TurretAuto.toMid
                 )
             )
 
@@ -146,7 +148,6 @@ class redTop15 : NextFTCOpMode() {
         buildPaths()
         PoseStorage.blueAlliance = false
         PoseStorage.redAlliance = true
-        trackTarget()
         autoRoutine()
     }
 

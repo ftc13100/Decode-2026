@@ -33,7 +33,7 @@ object blueAutoPaths : Subsystem {
     val PGPtoShot = Pose(84.0, 84.0, Math.toRadians(0.0)).mirror()
     val pickUpGPP1 = Pose(98.25, 36.0, Math.toRadians(0.0)).mirror()
     val pickUpGPP2 = Pose(131.3, 36.0, Math.toRadians(0.0)).mirror()
-    val GPPtoShot = Pose(85.16523235800345, 107.3803786574871, Math.toRadians(0.0)).mirror()
+    val GPPtoShot = Pose(85.16523235800345, 107.3803786574871, Math.toRadians(34.0)).mirror()
 
     val gate = Pose(125.0271186440678, 78.65254237288136, Math.toRadians(110.0)).mirror()
 
