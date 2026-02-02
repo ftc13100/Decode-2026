@@ -167,6 +167,7 @@ class MainTeleop : NextFTCOpMode() {
                 Intake.spinStop()
                 intakeRunning = false
             }
+
         // Point to Target
         button { gamepad1.a }
             .whenBecomesTrue {
@@ -186,9 +187,9 @@ class MainTeleop : NextFTCOpMode() {
         Gamepads.gamepad1.leftTrigger.asButton { it > 0.5 } and Gamepads.gamepad1.rightTrigger.asButton { it > 0.5 }
             .whenBecomesTrue {
                 if (PoseStorage.blueAlliance) {
-                    follower.pose = Pose(135.75, 8.5, Math.toRadians(-90.0))
+                    follower.pose = Pose(18.77, 121.52, Math.toRadians(143.0))
                 } else {
-                    follower.pose = Pose(8.25, 8.5, Math.toRadians(-90.0))
+                    follower.pose = Pose(125.23, 121.52, Math.toRadians(37.0))
                 }
             }
 
