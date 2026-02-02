@@ -43,7 +43,7 @@ import kotlin.math.abs
 
 @Configurable
 @TeleOp(name = "Lookup Testing")
-class Lookup_Testing: NextFTCOpMode() {
+class LookupTesting: NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
