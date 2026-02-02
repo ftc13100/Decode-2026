@@ -108,9 +108,12 @@ class blueTop15 : NextFTCOpMode() {
                 FollowPath(GPPsecond, holdEnd = true, maxPower = 1.0),
                 Intake.spinStop,
                 ParallelGroup(
+                    Shooter.spinAtSpeed(1100.0),
                     FollowPath(GPPtoShotMove),
                     ShooterAngle.angle_kindaUP,
-                    Gate.gate_open
+                    Gate.gate_open,
+                    TurretAuto.toMid
+
                 ),
                 Intake.spinFastAuto,
                 Delay(1.8.seconds),
@@ -118,17 +121,16 @@ class blueTop15 : NextFTCOpMode() {
                     Shooter.stopShooter,
                     Gate.gate_close,
                     Intake.spinStop,
-                    TurretAuto.toMid
                 )
             )
 
     override fun onInit() {
-        PedroComponent.Companion.follower.setMaxPower(1.0)
+        follower.setMaxPower(1.0)
         Gate.gate_close()
     }
 
     override fun onStartButtonPressed() {
-        PedroComponent.Companion.follower.setStartingPose(blueAutoPaths.startPose)
+        follower.setStartingPose(blueAutoPaths.startPose)
         blueAutoPaths.buildPaths()
         PoseStorage.blueAlliance = true
         PoseStorage.redAlliance = false
@@ -136,7 +138,7 @@ class blueTop15 : NextFTCOpMode() {
     }
 
     override fun onStop() {
-        PoseStorage.poseEnd = PedroComponent.Companion.follower.pose
+        PoseStorage.poseEnd = follower.pose
 
     }
 

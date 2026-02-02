@@ -4,6 +4,7 @@ import com.pedropathing.ftc.drivetrains.Mecanum
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
+import dev.nextftc.core.commands.groups.ParallelDeadlineGroup
 import dev.nextftc.core.commands.groups.ParallelGroup
 import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.SubsystemComponent
@@ -19,6 +20,11 @@ import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.bottom
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.bottomShoot
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.intakeShoot
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.HPviggle
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.HPviggleagain
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.HPviggletoShoot
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.bottomIntake2
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.bottomIntake2toShoot
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
@@ -44,13 +50,12 @@ class redBottom3 : NextFTCOpMode() {
 
     val autoRoutine: Command
         get() =
-            SequentialGroup(
+             SequentialGroup(
                 ParallelGroup(
                     ShooterAngle.angle_up,
                     Shooter.spinAtSpeed(1500.0),
-                    TurretAuto.toRightMohit,
+                    TurretAuto.toLeftMohitFar,
                     Gate.gate_open,
-                    FollowPath(bottomShoot)
                 ),
                 Intake.spinFastAuto,
                 Delay(2.3.seconds),
@@ -60,16 +65,18 @@ class redBottom3 : NextFTCOpMode() {
                     Gate.gate_close,
                     FollowPath(bottomHP)
                 ),
-                Delay(2.0),
+                FollowPath(HPviggle),
+                FollowPath(HPviggleagain),
                 ParallelGroup(
-                Intake.spinStop,
+                    Intake.spinStop,
                     Gate.gate_close,
                 ),
                 ParallelGroup(
                     ShooterAngle.angle_up,
+                    Intake.spinStop,
                     Shooter.spinAtSpeed(1500.0),
                     Gate.gate_open,
-                    FollowPath(HPshoot)
+                    FollowPath(HPviggletoShoot)
                 ),
                 Intake.spinFastAuto,
                 Delay(2.3.seconds),
@@ -77,15 +84,19 @@ class redBottom3 : NextFTCOpMode() {
                     Shooter.stallerShooterFar,
                     Intake.spinFastAuto,
                     Gate.gate_close,
-                    FollowPath(bottomIntake)
+                    FollowPath(intakeShoot)
                 ),
-                Delay(3.0),
+                FollowPath(bottomIntake),
+                 ParallelDeadlineGroup(
+                     Delay(4.0),
+                    FollowPath(bottomIntake2)
+                 ),
                 ParallelGroup(
                     ShooterAngle.angle_up,
                     Intake.spinStop,
                     Shooter.spinAtSpeed(1500.0),
                     Gate.gate_open,
-                    FollowPath(intakeShoot)
+                    FollowPath(bottomIntake2toShoot)
 
                 ),
                 Intake.spinFastAuto,
@@ -96,8 +107,8 @@ class redBottom3 : NextFTCOpMode() {
                     Gate.gate_close,
                     Intake.spinStop,
                     Shooter.stopShooter
-                    )
 
+                    )
             )
 
 

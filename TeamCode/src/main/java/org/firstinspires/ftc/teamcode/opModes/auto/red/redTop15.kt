@@ -124,9 +124,13 @@ class redTop15 : NextFTCOpMode() {
                 FollowPath(GPPsecond, holdEnd = true, maxPower = 1.0),
                 Intake.spinStop,
                 ParallelGroup(
+                    Shooter.spinAtSpeed(1100.0),
+
                     FollowPath(GPPtoShotMove),
                     ShooterAngle.angle_kindaUP,
-                    Gate.gate_open
+                    Gate.gate_open,
+                            TurretAuto.toMid
+
                 ),
                 Intake.spinFastAuto,
                 Delay(1.8.seconds),
@@ -134,7 +138,6 @@ class redTop15 : NextFTCOpMode() {
                     Shooter.stopShooter,
                     Gate.gate_close,
                     Intake.spinStop,
-                    TurretAuto.toMid
                 )
             )
 
