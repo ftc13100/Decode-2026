@@ -23,7 +23,10 @@ import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import dev.nextftc.hardware.driving.FieldCentric
 import dev.nextftc.hardware.driving.MecanumDriverControlled
+import dev.nextftc.hardware.impl.Direction
+import dev.nextftc.hardware.impl.IMUEx
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
@@ -56,6 +59,8 @@ class MainTeleop : NextFTCOpMode() {
     private val frontRightName = "frontRight"
     private val backLeftName = "backLeft"
     private val backRightName = "backRight"
+//    private val imu = IMUEx("imu", Direction.LEFT, Direction.UP).zeroed()
+    // change directions accordingly
 
     private val shooterController = ShooterController
 
@@ -96,6 +101,7 @@ class MainTeleop : NextFTCOpMode() {
             it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
 
+
         limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
         telemetry.msTransmissionInterval = 11
         limelight.pipelineSwitch(1)
@@ -115,9 +121,10 @@ class MainTeleop : NextFTCOpMode() {
             -Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
             Gamepads.gamepad1.rightStickX,
+
 //            FieldCentric(imu)
         )
-        driverControlled.scalar = 0.95
+        driverControlled.scalar = 1.0
         Shooter.stallShooter()
 
 ////////////////////////////////////////////////////////////////////////////
@@ -160,6 +167,7 @@ class MainTeleop : NextFTCOpMode() {
                 Intake.spinStop()
                 intakeRunning = false
             }
+
         // Point to Target
         button { gamepad1.a }
             .whenBecomesTrue {
@@ -172,18 +180,16 @@ class MainTeleop : NextFTCOpMode() {
 
         // Drivetrain Slow-fast speed
         button { gamepad1.y }
-            .whenTrue { driverControlled.scalar = 0.4 }
-            .whenFalse { driverControlled.scalar = 0.95 }
-
-
+            .whenTrue { driverControlled.scalar = 0.45 }
+            .whenFalse { driverControlled.scalar = 1.0 }
 
         // Reset location and heading
         Gamepads.gamepad1.leftTrigger.asButton { it > 0.5 } and Gamepads.gamepad1.rightTrigger.asButton { it > 0.5 }
             .whenBecomesTrue {
                 if (PoseStorage.blueAlliance) {
-                    follower.pose = Pose(135.75, 8.5, Math.toRadians(-90.0))
+                    follower.pose = Pose(18.77, 121.52, Math.toRadians(143.0))
                 } else {
-                    follower.pose = Pose(8.25, 8.5, Math.toRadians(-90.0))
+                    follower.pose = Pose(125.23, 121.52, Math.toRadians(37.0))
                 }
             }
 
@@ -196,14 +202,14 @@ class MainTeleop : NextFTCOpMode() {
         // Fine jump turret right
         button { gamepad2.right_bumper }
             .whenTrue {
-                Turret.turn(20.0)
+                Turret.turn(2.0)
             }
 
 
         // Fine jump turret left
         button { gamepad2.left_bumper }
             .whenTrue {
-                Turret.turn(-20.0)
+                Turret.turn(-2.0)
             }
 
         // Coarse jump turret right
@@ -228,38 +234,23 @@ class MainTeleop : NextFTCOpMode() {
                 }
             }
 
+        // probably delete
         button { gamepad2.x }
             .whenBecomesTrue {
                 Gate.gate_open()
                 gateOpen = true
             }
-// Start shooter and set hood angle / Stop shooter
+
+// open gate, spin intake, balls go to shooter, or stops
         button { gamepad2.y }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                val currentShot = shooterController.getShot(GoalFinder.gfGoalDistance)
-
-                val commands = SequentialGroup(
-                    WaitUntil { currentShot != null },
-                    InstantCommand {
-                        currentShotVelocity = currentShot!!.velocity
-                        currentShotAngle = currentShot.angle
-                        currentShotDistance = currentShot.distance
-                        shooterController.applyShot(currentShot)
-                    },
-                    WaitUntil { Shooter.shooterReady && GoalFinder.gfReady },
-                    InstantCommand {
-                        Gate.gate_open()
-                        Intake.spinShoot()
-                        gateOpen = true
-                        intakeRunning = true
-                    }
-                )
-                commands()
+                Gate.gate_open()
+                Intake.spinShoot()
+                gateOpen = true
+                intakeRunning = true
             }
-
             .whenBecomesFalse {
-                Shooter.stallShooter()
                 Gate.gate_close()
                 Intake.spinStop()
                 Turret.trackTarget()
@@ -316,6 +307,7 @@ class MainTeleop : NextFTCOpMode() {
                 }
             }
 
+        //Or use these for reset
         // Switch alliance (works only in test mode where Teleop was started without Auto)
         button { gamepad2.left_stick_button }
             .toggleOnBecomesTrue()
@@ -348,6 +340,21 @@ class MainTeleop : NextFTCOpMode() {
         if (!initialized) {
             Turret.initPos()
             initialized = true
+        }
+
+        val distanceToGoal = GoalFinder.gfGoalDistance
+        val currentShot = ShooterController.getShot(distanceToGoal)
+        if (currentShot != null) {
+            currentShotDistance = currentShot.distance
+            currentShotVelocity = currentShot.velocity
+            currentShotAngle = currentShot.angle
+            // Apply continuously
+            // less than 0.05 isn't a required change
+            if (abs(ShooterAngle.targetPosition - currentShotAngle) > 0.005) {
+                ShooterAngle.targetPosition = currentShotAngle
+                CommandManager.scheduleCommand(ShooterAngle.update())
+            }
+            Shooter.spinAtSpeed(currentShotVelocity).schedule()
         }
 
         val llResult: LLResult? = limelight.latestResult
