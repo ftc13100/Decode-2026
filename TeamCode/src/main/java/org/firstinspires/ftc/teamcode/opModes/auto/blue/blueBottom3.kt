@@ -57,7 +57,7 @@ class blueBottom3 : NextFTCOpMode() {
                 Intake.spinFastAuto,
                 Delay(2.3.seconds),
                 ParallelGroup(
-                    Shooter.stallShooter,
+                    Shooter.stallerShooterFar,
                     Intake.spinFastAuto,
                     Gate.gate_close,
                     FollowPath(bottomHP)
@@ -79,7 +79,7 @@ class blueBottom3 : NextFTCOpMode() {
                 Intake.spinFastAuto,
                 Delay(2.3.seconds),
                 ParallelGroup(
-                    Shooter.stallShooter,
+                    Shooter.stallerShooterFar,
                     Intake.spinFastAuto,
                     Gate.gate_close,
                     FollowPath(bottomIntake)
