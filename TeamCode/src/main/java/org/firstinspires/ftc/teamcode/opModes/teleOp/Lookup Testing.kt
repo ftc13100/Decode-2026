@@ -42,8 +42,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.math.abs
 
 @Configurable
-@TeleOp(name = "MainTeleop")
-class MainTeleop : NextFTCOpMode() {
+@TeleOp(name = "Lookup Testing")
+class Lookup_Testing: NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
@@ -124,7 +124,7 @@ class MainTeleop : NextFTCOpMode() {
 
 //            FieldCentric(imu)
         )
-        driverControlled.scalar = 1.0
+        driverControlled.scalar = 0.95
         Shooter.stallShooter()
 
 ////////////////////////////////////////////////////////////////////////////
@@ -179,8 +179,8 @@ class MainTeleop : NextFTCOpMode() {
 
         // Drivetrain Slow-fast speed
         button { gamepad1.y }
-            .whenTrue { driverControlled.scalar = 0.45 }
-            .whenFalse { driverControlled.scalar = 1.0 }
+            .whenTrue { driverControlled.scalar = 0.4 }
+            .whenFalse { driverControlled.scalar = 0.95 }
 
         // Reset location and heading
         Gamepads.gamepad1.leftTrigger.asButton { it > 0.5 } and Gamepads.gamepad1.rightTrigger.asButton { it > 0.5 }
@@ -336,21 +336,6 @@ class MainTeleop : NextFTCOpMode() {
             initialized = true
         }
 
-        val distanceToGoal = GoalFinder.gfGoalDistance
-        val currentShot = ShooterController.getShot(distanceToGoal)
-        if (currentShot != null) {
-            currentShotDistance = currentShot.distance
-            currentShotVelocity = currentShot.velocity
-            currentShotAngle = currentShot.angle
-            // Apply continuously
-            // less than 0.05 isn't a required change
-            if (abs(ShooterAngle.targetPosition - currentShotAngle) > 0.005) {
-                ShooterAngle.targetPosition = currentShotAngle
-                CommandManager.scheduleCommand(ShooterAngle.update())
-            }
-            Shooter.spinAtSpeed(currentShotVelocity).schedule()
-        }
-
         val llResult: LLResult? = limelight.latestResult
         val turnPower = GoalFinder.calculate(
             follower.pose,
@@ -373,25 +358,6 @@ class MainTeleop : NextFTCOpMode() {
         } else {
             telemetry.addData("Alliance", "RED")
         }
-
-//        var llBotpose = Pose(Double.NaN, Double.NaN, Double.NaN)
-//        var llTx = Double.NaN
-//
-//        if (llResult != null && llResult.isValid) {
-//            // botpose gives in meters with 0,0 at center of field.
-//            val position = llResult.botpose.position.toUnit(DistanceUnit.INCH)
-//            val orientation = llResult.botpose.orientation
-//
-//            llBotpose =
-//                FTCCoordinates.INSTANCE.convertToPedro(
-//                    Pose(
-//                        position.x,
-//                        position.y,
-//                        Math.toRadians(orientation.yaw + Turret.turretAzDeg()),
-//                    )
-//                )
-//            llTx = llResult.tx
-//        }
 
         telemetry.addData(
             "X",
