@@ -7,6 +7,7 @@ import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.hardware.powerable.SetPower
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
+import org.firstinspires.ftc.teamcode.opModes.SequentialGroupLocal
 
 object Intake : Subsystem {
 
@@ -20,7 +21,7 @@ object Intake : Subsystem {
             .requires(this)
 
     val spinFast =
-        SequentialGroup(
+        SequentialGroupLocal(
         SetPower(intake, 1.0),
             InstantCommand { isRunning = true },
             WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD },
@@ -30,31 +31,31 @@ object Intake : Subsystem {
             .requires(this)
 
     val spinShoot =
-        SequentialGroup(
-            SetPower(intake, 1.0),
-            InstantCommand { isRunning = true }
-        )
+//        SequentialGroup(
+            SetPower(intake, 1.0)//,
+//            InstantCommand { isRunning = true }
+//        )
             .requires(this)
 
     val spinStop =
-        SequentialGroup(
-        SetPower(intake, 0.0),
-            InstantCommand { isRunning = false }
-        )
+//        SequentialGroup(
+        SetPower(intake, 0.0)//,
+//            InstantCommand { isRunning = false }
+//        )
             .requires(this)
 
     val spinSlowSpeed =
-        SequentialGroup(
-            SetPower(intake, 0.8),
-            InstantCommand { isRunning = true }
-        )
+//        SequentialGroup(
+            SetPower(intake, 0.8)//,
+//            InstantCommand { isRunning = true }
+//        )
             .requires(this)
 
     val spinReverse =
-        SequentialGroup(
-            SetPower(intake, -0.7),
-            InstantCommand { isRunning = true }
-        )
+//        SequentialGroup(
+            SetPower(intake, -0.9)//,
+//            InstantCommand { isRunning = true }
+//        )
             .requires(this)
 }
 

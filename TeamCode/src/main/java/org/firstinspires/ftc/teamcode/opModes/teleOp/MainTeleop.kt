@@ -144,16 +144,6 @@ class MainTeleop : NextFTCOpMode() {
                 intakeRunning = false
             }
 
-//        button { gamepad1.x }
-//            .whenBecomesTrue {
-//               if(PoseStorage.blueAlliance == true){
-//                   Park = follower.pathBuilder()
-//                       .addPath(BezierLine(,shootPose))
-//                       .setLinearHeadingInterpolation(startPose.heading, shootPose.heading)
-//                       .build()
-//               }
-//            }
-
         //Outtake artifact
         button { gamepad1.right_bumper }
             .toggleOnBecomesTrue()
