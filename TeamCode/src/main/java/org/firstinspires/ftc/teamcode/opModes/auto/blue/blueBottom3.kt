@@ -23,6 +23,8 @@ import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.botto
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomIntake2toShoot
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomLeave
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomShoot
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomSpikeGet
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomSpikeGetBack
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.intakeShoot
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
@@ -96,6 +98,13 @@ class blueBottom3 : NextFTCOpMode() {
                     FollowPath(bottomIntake2toShoot)
 
                 ),
+                ParallelGroup(
+                    FollowPath(bottomSpikeGet),
+                    Intake.spinFastAuto,
+                    Gate.gate_close,
+                ),
+                Intake.spinStop,
+                FollowPath(bottomSpikeGetBack),
                 Intake.spinFastAuto,
                 Delay(2.3.seconds),
                 ParallelGroup(

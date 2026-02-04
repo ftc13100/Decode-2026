@@ -53,6 +53,8 @@ object redAutoPaths : Subsystem {
     val bottomintakeviggle = Pose(19.0, 10.0, Math.toRadians(180.0)).mirror()
     val bottomintakepose2 = Pose(9.0, 10.0, Math.toRadians(200.0)).mirror()
 
+    val bottomSpikemark = Pose(8.0, 35.8, Math.toRadians(180.0)).mirror()
+    val bottomSpikemarkControl = Pose(58.0, 39.7, Math.toRadians(180.0)).mirror()
 
     val bottomLeavePoint = Pose(36.667814113597245, 14.196213425129093, Math.toRadians(0.0)).mirror()
      lateinit var PPGfirst: PathChain
