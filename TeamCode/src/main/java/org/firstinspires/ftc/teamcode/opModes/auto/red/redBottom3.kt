@@ -53,10 +53,10 @@ class redBottom3 : NextFTCOpMode() {
 
     val autoRoutine: Command
         get() =
-            SequentialGroup(
+             SequentialGroup(
                 ParallelGroup(
                     ShooterAngle.angle_up,
-                    Shooter.spinAtSpeed(1500.0),
+                    Shooter.spinAtSpeed(1450.0),
                     TurretAuto.toLeftMohitFar,
                     Gate.gate_open,
                 ),
@@ -66,10 +66,10 @@ class redBottom3 : NextFTCOpMode() {
                     Shooter.stallerShooterFar,
                     Intake.spinFastAuto,
                     Gate.gate_close,
-                    FollowPath(blueAutoPaths.bottomHP)
+                    FollowPath(bottomHP)
                 ),
-                FollowPath(blueAutoPaths.HPviggle),
-                FollowPath(blueAutoPaths.HPviggleagain),
+                FollowPath(HPviggle),
+                FollowPath(HPviggleagain),
                 ParallelGroup(
                     Intake.spinStop,
                     Gate.gate_close,
@@ -77,9 +77,9 @@ class redBottom3 : NextFTCOpMode() {
                 ParallelGroup(
                     ShooterAngle.angle_up,
                     Intake.spinStop,
-                    Shooter.spinAtSpeed(1500.0),
+                    Shooter.spinAtSpeed(1450.0),
                     Gate.gate_open,
-                    FollowPath(blueAutoPaths.HPviggletoShoot)
+                    FollowPath(HPviggletoShoot)
                 ),
                 Intake.spinFastAuto,
                 Delay(2.3.seconds),
@@ -87,35 +87,51 @@ class redBottom3 : NextFTCOpMode() {
                     Shooter.stallerShooterFar,
                     Intake.spinFastAuto,
                     Gate.gate_close,
-                    FollowPath(blueAutoPaths.intakeShoot)
+                    FollowPath(intakeShoot)
                 ),
-                FollowPath(blueAutoPaths.bottomIntake),
-                FollowPath(blueAutoPaths.bottomIntake2),
+                FollowPath(bottomIntake),
+                FollowPath(bottomIntake2),
                 ParallelGroup(
                     ShooterAngle.angle_up,
                     Intake.spinStop,
-                    Shooter.spinAtSpeed(1500.0),
+                    Shooter.spinAtSpeed(1450.0),
                     Gate.gate_open,
-                    FollowPath(blueAutoPaths.bottomIntake2toShoot)
-
+                    FollowPath(bottomIntake2toShoot)
                 ),
+                Intake.spinFastAuto,
+                Delay(2.3.seconds),
                 ParallelGroup(
                     FollowPath(bottomSpikeGet),
                     Intake.spinFastAuto,
                     Gate.gate_close,
                 ),
                 Intake.spinStop,
+                ParallelGroup(
                 FollowPath(bottomSpikeGetBack),
+                    Gate.gate_open
+                ),
                 Intake.spinFastAuto,
                 Delay(2.3.seconds),
                 ParallelGroup(
+                    Shooter.stallerShooterFar,
+                    Intake.spinFastAuto,
+                    Gate.gate_close,
+                    FollowPath(bottomHP)
+                ),
+                FollowPath(HPviggle),
+                FollowPath(HPviggleagain),
+                ParallelGroup(
+                    Intake.spinStop,
+                    Gate.gate_close,
+                ),
+                ParallelGroup(
                     TurretAuto.toMid,
-                    FollowPath(blueAutoPaths.bottomLeave),
+                    FollowPath(bottomLeave),
                     Gate.gate_close,
                     Intake.spinStop,
                     Shooter.stopShooter
 
-                )
+                    )
             )
 
 

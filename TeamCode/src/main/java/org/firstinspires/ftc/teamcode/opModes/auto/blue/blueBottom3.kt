@@ -55,7 +55,7 @@ class blueBottom3 : NextFTCOpMode() {
             SequentialGroup(
                 ParallelGroup(
                     ShooterAngle.angle_up,
-                    Shooter.spinAtSpeed(1500.0),
+                    Shooter.spinAtSpeed(1450.0),
                     TurretAuto.toRightMohitFar,
                     Gate.gate_open,
                 ),
@@ -76,7 +76,7 @@ class blueBottom3 : NextFTCOpMode() {
                 ParallelGroup(
                     ShooterAngle.angle_up,
                     Intake.spinStop,
-                    Shooter.spinAtSpeed(1500.0),
+                    Shooter.spinAtSpeed(1450.0),
                     Gate.gate_open,
                     FollowPath(HPviggletoShoot)
                 ),
@@ -93,20 +93,37 @@ class blueBottom3 : NextFTCOpMode() {
                 ParallelGroup(
                     ShooterAngle.angle_up,
                     Intake.spinStop,
-                    Shooter.spinAtSpeed(1500.0),
+                    Shooter.spinAtSpeed(1450.0),
                     Gate.gate_open,
                     FollowPath(bottomIntake2toShoot)
-
                 ),
+                Intake.spinFastAuto,
+                Delay(2.3.seconds),
                 ParallelGroup(
                     FollowPath(bottomSpikeGet),
                     Intake.spinFastAuto,
                     Gate.gate_close,
                 ),
                 Intake.spinStop,
+                ParallelGroup(
                 FollowPath(bottomSpikeGetBack),
+                    Gate.gate_open
+                ),
                 Intake.spinFastAuto,
                 Delay(2.3.seconds),
+                ParallelGroup(
+                    Shooter.stallerShooterFar,
+                    Intake.spinFastAuto,
+                    Gate.gate_close,
+                    FollowPath(bottomHP)
+                ),
+                FollowPath(HPviggle),
+                FollowPath(HPviggleagain),
+                ParallelGroup(
+                    Intake.spinStop,
+                    Gate.gate_close,
+                ),
+
                 ParallelGroup(
                     TurretAuto.toMid,
                     FollowPath(bottomLeave),

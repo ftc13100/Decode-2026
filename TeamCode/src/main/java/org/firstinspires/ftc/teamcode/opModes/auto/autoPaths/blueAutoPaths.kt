@@ -56,7 +56,7 @@ object blueAutoPaths : Subsystem {
     val bottomSpikemark = Pose(8.0, 35.8, Math.toRadians(180.0))
     val bottomSpikemarkControl = Pose(58.0, 39.7, Math.toRadians(180.0))
 
-    val bottomLeavePoint = Pose(36.667814113597245, 14.196213425129093, Math.toRadians(0.0))
+    val bottomLeavePoint = Pose(36.667814113597245, 14.196213425129093, Math.toRadians(180.0))
 
     lateinit var PPGfirst: PathChain
     lateinit var PPGsecond: PathChain

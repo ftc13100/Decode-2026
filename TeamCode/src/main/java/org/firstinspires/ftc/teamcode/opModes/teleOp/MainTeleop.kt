@@ -135,9 +135,11 @@ class MainTeleop : NextFTCOpMode() {
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 Gate.gate_close()
+                gateOpen = false
+            }
+            .whenTrue {
                 Intake.spinFast()
                 intakeRunning = true
-                gateOpen = false
             }
             .whenBecomesFalse {
                 Intake.spinStop()
@@ -170,7 +172,7 @@ class MainTeleop : NextFTCOpMode() {
 
         // Drivetrain Slow-fast speed
         button { gamepad1.y }
-            .whenTrue { driverControlled.scalar = 0.45 }
+            .whenTrue { driverControlled.scalar = 0.55 }
             .whenFalse { driverControlled.scalar = 1.0 }
 
         // Reset location and heading

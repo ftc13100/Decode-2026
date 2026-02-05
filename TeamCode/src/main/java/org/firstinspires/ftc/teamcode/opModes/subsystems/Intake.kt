@@ -21,13 +21,13 @@ object Intake : Subsystem {
             .requires(this)
 
     val spinFast =
-        SequentialGroupLocal(
-        SetPower(intake, 1.0),
-            InstantCommand { isRunning = true },
-            WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD },
-            SetPower(intake, 0.0),
-            InstantCommand { isRunning = false }
-        )
+//        SequentialGroupLocal(
+            SetPower(intake, 1.0)//,
+//            InstantCommand { isRunning = true },
+//            WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD },
+//            SetPower(intake, 0.0),
+//            InstantCommand { isRunning = false }
+//        )
             .requires(this)
 
     val spinShoot =
