@@ -45,19 +45,20 @@ object redAutoPaths : Subsystem {
 
     val hitGateControl = Pose(89.31958762886597, 70.76288659793815, Math.toRadians(45.0))
     val bottomStartPose = Pose(56.0, 8.0, Math.toRadians(180.0)).mirror()
-    val bottomHPpose = Pose(9.0, 10.0, Math.toRadians(160.0)).mirror()
+    val bottomHPpose = Pose(9.0, 10.0, Math.toRadians(170.0)).mirror()
     val bottomHPviggle = Pose(19.0, 10.0, Math.toRadians(180.0)).mirror()
-    val bottomHPpose2 = Pose(9.0, 10.0, Math.toRadians(200.0)).mirror()
+    val bottomHPpose2 = Pose(9.0, 10.0, Math.toRadians(190.0)).mirror()
 
-    val bottomintakepose = Pose(9.0, 10.0, Math.toRadians(160.0)).mirror()
+    val bottomintakepose = Pose(9.0, 10.0, Math.toRadians(170.0)).mirror()
     val bottomintakeviggle = Pose(19.0, 10.0, Math.toRadians(180.0)).mirror()
-    val bottomintakepose2 = Pose(9.0, 10.0, Math.toRadians(200.0)).mirror()
+    val bottomintakepose2 = Pose(9.0, 10.0, Math.toRadians(190.0)).mirror()
 
     val bottomSpikemark = Pose(8.0, 35.8, Math.toRadians(180.0)).mirror()
     val bottomSpikemarkControl = Pose(58.0, 39.7, Math.toRadians(180.0)).mirror()
 
-    val bottomLeavePoint = Pose(36.667814113597245, 14.196213425129093, Math.toRadians(0.0)).mirror()
-     lateinit var PPGfirst: PathChain
+    val bottomLeavePoint = Pose(36.667814113597245, 14.196213425129093, Math.toRadians(180.0)).mirror()
+
+    lateinit var PPGfirst: PathChain
      lateinit var PPGsecond: PathChain
      lateinit var PPGtoShotMove: PathChain
      lateinit var PGPfirst: PathChain
@@ -88,6 +89,9 @@ object redAutoPaths : Subsystem {
     lateinit var HPviggleagain: PathChain
     lateinit var bottomIntake: PathChain
     lateinit var intakeShoot: PathChain
+    lateinit var bottomSpikeGet: PathChain
+    lateinit var bottomSpikeGetBack: PathChain
+
 
     lateinit var bottomIntake2: PathChain
     lateinit var HPviggletoShoot: PathChain
@@ -142,6 +146,14 @@ object redAutoPaths : Subsystem {
         bottomLeave = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(bottomStartPose, bottomLeavePoint))
             .setLinearHeadingInterpolation(bottomStartPose.heading, bottomLeavePoint.heading)
+            .build()
+        bottomSpikeGet = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierCurve(bottomStartPose, bottomSpikemarkControl, bottomSpikemark))
+            .setLinearHeadingInterpolation(bottomStartPose.heading, bottomSpikemark.heading)
+            .build()
+        bottomSpikeGetBack = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(bottomSpikemark, bottomStartPose))
+            .setLinearHeadingInterpolation(bottomStartPose.heading, bottomSpikemark.heading)
             .build()
         GoToShot = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(startPose, shootPose))
