@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opModes.auto.blue
+package org.firstinspires.ftc.teamcode.opModes.auto.red
 
 import com.pedropathing.ftc.drivetrains.Mecanum
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
@@ -12,18 +12,19 @@ import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.HPviggle
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.HPviggleagain
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.HPviggletoShoot
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomHP
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomIntake
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomIntake2
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomIntake2toShoot
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomLeave
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomSpikeGet
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.bottomSpikeGetBack
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.intakeShoot
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.HPviggle
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.HPviggleagain
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.HPviggletoShoot
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.bottomHP
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.bottomIntake
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.bottomIntake2
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.bottomIntake2toShoot
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.bottomLeave
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.bottomSpikeGet
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.bottomSpikeGetBack
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.intakeShoot
+
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
@@ -34,13 +35,13 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
-@Autonomous(name = "blueBottom3")
-class blueBottom3 : NextFTCOpMode() {
+@Autonomous(name = "redBottomMinerva")
+class redBottomMinerva : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
                 MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
-                TurretAuto, blueAutoPaths
+                TurretAuto, redAutoPaths
             ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
@@ -49,11 +50,11 @@ class blueBottom3 : NextFTCOpMode() {
 
     val autoRoutine: Command
         get() =
-            SequentialGroup(
+             SequentialGroup(
                 ParallelGroup(
                     ShooterAngle.angle_up,
                     Shooter.spinAtSpeed(1450.0),
-                    TurretAuto.toRightMohitFar,
+                    TurretAuto.toLeftMohitFar,
                     Gate.gate_open,
                 ),
                 Intake.spinFastAuto,
@@ -97,6 +98,18 @@ class blueBottom3 : NextFTCOpMode() {
                 Intake.spinFastAuto,
                 Delay(2.3.seconds),
                 ParallelGroup(
+                    FollowPath(bottomSpikeGet),
+                    Intake.spinFastAuto,
+                    Gate.gate_close,
+                ),
+                Intake.spinStop,
+                ParallelGroup(
+                FollowPath(bottomSpikeGetBack),
+                    Gate.gate_open
+                ),
+                Intake.spinFastAuto,
+                Delay(2.3.seconds),
+                ParallelGroup(
                     Shooter.stallerShooterFar,
                     Intake.spinFastAuto,
                     Gate.gate_close,
@@ -108,7 +121,6 @@ class blueBottom3 : NextFTCOpMode() {
                     Intake.spinStop,
                     Gate.gate_close,
                 ),
-
                 ParallelGroup(
                     TurretAuto.toMid,
                     FollowPath(bottomLeave),
@@ -116,7 +128,7 @@ class blueBottom3 : NextFTCOpMode() {
                     Intake.spinStop,
                     Shooter.stopShooter
 
-                )
+                    )
             )
 
 
@@ -126,17 +138,16 @@ class blueBottom3 : NextFTCOpMode() {
     }
 
     override fun onStartButtonPressed() {
-        PedroComponent.Companion.follower.setStartingPose(blueAutoPaths.bottomStartPose)
-        blueAutoPaths.buildPaths()
-        PoseStorage.blueAlliance = true
-        PoseStorage.redAlliance = false
+        PedroComponent.Companion.follower.setStartingPose(redAutoPaths.bottomStartPose)
+        redAutoPaths.buildPaths()
+        PoseStorage.blueAlliance = false
+        PoseStorage.redAlliance = true
         autoRoutine()
     }
 
     override fun onStop() {
         PoseStorage.poseEnd = PedroComponent.Companion.follower.pose
     }
-
 
     override fun onUpdate() {
         val dt = follower.drivetrain as Mecanum

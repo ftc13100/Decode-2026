@@ -4,7 +4,6 @@ import com.pedropathing.ftc.drivetrains.Mecanum
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
-import dev.nextftc.core.commands.groups.ParallelDeadlineGroup
 import dev.nextftc.core.commands.groups.ParallelGroup
 import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.SubsystemComponent
@@ -51,7 +50,7 @@ class redBottom3 : NextFTCOpMode() {
 
     val autoRoutine: Command
         get() =
-             SequentialGroup(
+            SequentialGroup(
                 ParallelGroup(
                     ShooterAngle.angle_up,
                     Shooter.spinAtSpeed(1450.0),
@@ -99,18 +98,6 @@ class redBottom3 : NextFTCOpMode() {
                 Intake.spinFastAuto,
                 Delay(2.3.seconds),
                 ParallelGroup(
-                    FollowPath(bottomSpikeGet),
-                    Intake.spinFastAuto,
-                    Gate.gate_close,
-                ),
-                Intake.spinStop,
-                ParallelGroup(
-                FollowPath(bottomSpikeGetBack),
-                    Gate.gate_open
-                ),
-                Intake.spinFastAuto,
-                Delay(2.3.seconds),
-                ParallelGroup(
                     Shooter.stallerShooterFar,
                     Intake.spinFastAuto,
                     Gate.gate_close,
@@ -129,7 +116,7 @@ class redBottom3 : NextFTCOpMode() {
                     Intake.spinStop,
                     Shooter.stopShooter
 
-                    )
+                )
             )
 
 

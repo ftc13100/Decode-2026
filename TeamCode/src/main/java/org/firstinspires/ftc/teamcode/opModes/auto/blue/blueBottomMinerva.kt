@@ -34,8 +34,8 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
-@Autonomous(name = "blueBottom3")
-class blueBottom3 : NextFTCOpMode() {
+@Autonomous(name = "blueBottomMinerva")
+class blueBottomMinerva : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
@@ -97,6 +97,18 @@ class blueBottom3 : NextFTCOpMode() {
                 Intake.spinFastAuto,
                 Delay(2.3.seconds),
                 ParallelGroup(
+                    FollowPath(bottomSpikeGet),
+                    Intake.spinFastAuto,
+                    Gate.gate_close,
+                ),
+                Intake.spinStop,
+                ParallelGroup(
+                FollowPath(bottomSpikeGetBack),
+                    Gate.gate_open
+                ),
+                Intake.spinFastAuto,
+                Delay(2.3.seconds),
+                ParallelGroup(
                     Shooter.stallerShooterFar,
                     Intake.spinFastAuto,
                     Gate.gate_close,
@@ -116,7 +128,7 @@ class blueBottom3 : NextFTCOpMode() {
                     Intake.spinStop,
                     Shooter.stopShooter
 
-                )
+                    )
             )
 
 
