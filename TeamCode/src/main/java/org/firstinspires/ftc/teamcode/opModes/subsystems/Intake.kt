@@ -9,6 +9,7 @@ import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.hardware.powerable.SetPower
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.opModes.SequentialGroupFixed
+import org.firstinspires.ftc.teamcode.opModes.teleOp.MainTeleop
 
 object Intake : Subsystem {
 
@@ -22,10 +23,7 @@ object Intake : Subsystem {
             .requires(this)
 
     val spinFast =
-        LambdaCommand("SpinFastCommand")
-            .setStart { intake.power = 1.0 }
-            .setIsDone { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD }
-            .setStop { intake.power = 0.0 }
+        SetPower(intake, 1.0)
             .requires(this)
 
     val spinShoot =
@@ -33,7 +31,7 @@ object Intake : Subsystem {
             SetPower(intake, 1.0)//,
 //            InstantCommand { isRunning = true }
 //        )
-            .requires(this)
+                .requires(this)
 
     val spinStop =
 //        SequentialGroup(
