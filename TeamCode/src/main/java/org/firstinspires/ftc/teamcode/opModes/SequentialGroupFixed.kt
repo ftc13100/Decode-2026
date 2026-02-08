@@ -3,10 +3,7 @@ package org.firstinspires.ftc.teamcode.opModes
 import dev.nextftc.core.commands.groups.CommandGroup
 import dev.nextftc.core.commands.Command
 
-/**
- * A [CommandGroup] that runs its children one at a time.
- */
-class SequentialGroupLocal(vararg commands: Command) : CommandGroup(*commands) {
+class SequentialGroupFixed(vararg commands: Command) : CommandGroup(*commands) {
     init {
         named("SequentialGroup(${children.joinToString { it.name }})")
     }

@@ -132,7 +132,6 @@ class MainTeleop : NextFTCOpMode() {
 ////////////////////////////////////////////////////////////////////////////
         //Intake artifact
         button { gamepad1.left_bumper }
-            .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 Gate.gate_close()
                 gateOpen = false
