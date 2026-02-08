@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opModes.subsystems
 import dev.nextftc.core.commands.delays.WaitUntil
 import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.commands.utility.InstantCommand
+import dev.nextftc.core.commands.utility.LambdaCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.hardware.powerable.SetPower
@@ -21,13 +22,10 @@ object Intake : Subsystem {
             .requires(this)
 
     val spinFast =
-//       SequentialGroupFixed(
-           SetPower(intake, 1.0)//,
-//           InstantCommand { isRunning = true },
-//           WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD },
-//           SetPower(intake, 0.0),
-//           InstantCommand { isRunning = false }
-//       )
+        LambdaCommand("SpinFastCommand")
+            .setStart { intake.power = 1.0 }
+            .setIsDone { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD }
+            .setStop { intake.power = 0.0 }
             .requires(this)
 
     val spinShoot =
