@@ -16,6 +16,7 @@ import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.DeadhuzzLeave
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GoToShot
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.Leave
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.MohitHitGate
@@ -31,6 +32,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.TurretAuto
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
@@ -53,6 +55,7 @@ class redTop9 : NextFTCOpMode() {
     val autoRoutine: Command
         get() =
             SequentialGroup(
+                Delay(3.0),
                 ParallelGroup(
                     ShooterAngle.angle_kindaUP,
                     Shooter.spinAtSpeed(1150.0),
@@ -107,7 +110,8 @@ class redTop9 : NextFTCOpMode() {
                     Gate.gate_close,
                     FollowPath(Leave),
                     Intake.spinFastAuto
-                )
+                ),
+                FollowPath(DeadhuzzLeave)
             )
 
     override fun onInit() {
@@ -120,6 +124,7 @@ class redTop9 : NextFTCOpMode() {
         buildPaths()
         PoseStorage.blueAlliance = false
         PoseStorage.redAlliance = true
+        PoseStorage.turretStartPos = Turret.startPosition
         autoRoutine()
     }
 

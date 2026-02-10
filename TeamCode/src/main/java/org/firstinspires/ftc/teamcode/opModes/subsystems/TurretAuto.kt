@@ -32,8 +32,8 @@ object TurretAuto : Subsystem {
     val toLeftMohit = RunToPosition(controlSystem, -245.0).requires(this)
     val toRightMohit = RunToPosition(controlSystem, 245.0).requires(this)
 
-    val toLeftMohitFar = RunToPosition(controlSystem, -835.0).requires(this)
-    val toRightMohitFar = RunToPosition(controlSystem, 835.0).requires(this)
+    val toLeftMohitFar = RunToPosition(controlSystem, -830.0).requires(this)
+    val toRightMohitFar = RunToPosition(controlSystem, 830.0).requires(this)
 
     override fun periodic() {
         turret.power = controlSystem.calculate(turret.state)

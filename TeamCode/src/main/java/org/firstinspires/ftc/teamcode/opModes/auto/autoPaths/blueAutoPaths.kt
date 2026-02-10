@@ -147,7 +147,7 @@ object blueAutoPaths : Subsystem {
             .build()
         bottomSpikeGet = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierCurve(bottomStartPose, bottomSpikemarkControl, bottomSpikemark))
-            .setLinearHeadingInterpolation(bottomStartPose.heading, bottomSpikemark.heading)
+            .setTangentHeadingInterpolation()
             .build()
         bottomSpikeGetBack = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(bottomSpikemark, bottomStartPose))
