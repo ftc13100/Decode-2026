@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -14,6 +15,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
+@Autonomous
 public class VeryEasyCV extends OpMode {
 
     OpenCvWebcam logiCam = null;
@@ -27,12 +29,10 @@ public class VeryEasyCV extends OpMode {
         logiCam.setPipeline(new autoPipeline());
 
         logiCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
             public void onOpened() {
                 logiCam.startStreaming(640, 360, OpenCvCameraRotation.UPRIGHT);
             }
 
-            @Override
             public void onError(int errorCode) {
 
             }
@@ -67,22 +67,22 @@ public class VeryEasyCV extends OpMode {
             leftCrop = YCbCR.submat(leftRect);
             rightCrop = YCbCR.submat(rightRect);
 
+            Core.extractChannel(leftCrop, leftCrop, 2);
+            Core.extractChannel(rightCrop, rightCrop, 2);
+
 
             Scalar leftavg = Core.mean(leftCrop);
             Scalar rightavg = Core.mean(rightCrop);
 
             leftavgfin = leftavg.val[0];
-            rightavgfin = leftavg.val[0];
+            rightavgfin = rightavg.val[0];
 
             if (leftavgfin > rightavgfin ) {
-                telemetry.addLine("Line");
+                telemetry.addLine("Right");
             }
                 else{
-                    telemetry.addLine("Right");
+                    telemetry.addLine("Left");
                 }
-
-
-
 
 
             return(outPut);
