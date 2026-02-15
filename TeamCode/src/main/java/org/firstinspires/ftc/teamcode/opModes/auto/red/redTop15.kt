@@ -25,6 +25,7 @@ import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GPPfir
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GPPsecond
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GPPtoShot
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GPPtoShotMove
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GoLeaveBoi
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GoToSecretTunnel
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.GoToShot
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.Leave
@@ -75,7 +76,7 @@ class redTop15 : NextFTCOpMode() {
                     Gate.gate_open,
                 ),
                 Intake.spinFastAuto,
-                Delay(1.8.seconds),
+                Delay(1.2.seconds),
                 ParallelGroup(
                     FollowPath(PGPfirst),
                     Gate.gate_close
@@ -88,7 +89,7 @@ class redTop15 : NextFTCOpMode() {
                     Gate.gate_open,
                 ),
                 Intake.spinFastAuto,
-                Delay(1.8.seconds),
+                Delay(1.2.seconds),
                 ParallelGroup(
                     FollowPath(TheGate),
                     Gate.gate_close,
@@ -102,7 +103,7 @@ class redTop15 : NextFTCOpMode() {
                     Gate.gate_open,
                 ),
                 Intake.spinFastAuto,
-                Delay(1.8.seconds),
+                Delay(1.2.seconds),
                 ParallelDeadlineGroup(
                     FollowPath(PPGsecond, holdEnd = true, maxPower = 1.0),
                     Gate.gate_close,
@@ -115,7 +116,7 @@ class redTop15 : NextFTCOpMode() {
                     Gate.gate_open,
                 ),
                 Intake.spinFastAuto,
-                Delay(1.8.seconds),
+                Delay(1.2.seconds),
                 ParallelDeadlineGroup(
                     FollowPath(GPPfirst),
                     Gate.gate_close,
@@ -133,11 +134,13 @@ class redTop15 : NextFTCOpMode() {
 
                 ),
                 Intake.spinFastAuto,
-                Delay(1.8.seconds),
+                Delay(1.2.seconds),
                 ParallelGroup(
                     Shooter.stopShooter,
                     Gate.gate_close,
                     Intake.spinStop,
+                    FollowPath(GoLeaveBoi)
+
                 )
             )
 

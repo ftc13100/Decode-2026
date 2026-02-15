@@ -71,7 +71,7 @@ class MainTeleop : NextFTCOpMode() {
 
     private lateinit var driverControlled: MecanumDriverControlled
 
-    lateinit var limelight: Limelight3A
+//    lateinit var limelight: Limelight3A
 
     private val startPose = PoseStorage.poseEnd  // Pose(72.0,72.0, Math.toRadians(90.0))
     private val testingPose = Pose(72.0, 72.0, Math.toRadians(90.0))
@@ -102,10 +102,10 @@ class MainTeleop : NextFTCOpMode() {
         }
 
 
-        limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
-        telemetry.msTransmissionInterval = 11
-        limelight.pipelineSwitch(1)
-        limelight.start()
+//        limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
+//        telemetry.msTransmissionInterval = 11
+//        limelight.pipelineSwitch(1)
+//        limelight.start()
         follower.update()
 
         telemetry = JoinedTelemetry(telemetry, PanelsTelemetry.ftcTelemetry)
@@ -306,13 +306,13 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesTrue {
                 if (testMode) {
                     PoseStorage.blueAlliance = false
-                    limelight.pipelineSwitch(2)
+//                    limelight.pipelineSwitch(2)
                 }
             }
             .whenBecomesFalse {
                 if (testMode) {
                     PoseStorage.blueAlliance = true
-                    limelight.pipelineSwitch(1)
+//                    limelight.pipelineSwitch(1)
                 }
             }
 
@@ -349,22 +349,22 @@ class MainTeleop : NextFTCOpMode() {
             Shooter.spinAtSpeed(currentShotVelocity).schedule()
         }
 
-        val llResult: LLResult? = limelight.latestResult
-        val turnPower = GoalFinder.calculate(
-            follower.pose,
-            llResult,
-            PoseStorage.blueAlliance
-        )
+//        val llResult: LLResult? = limelight.latestResult
+//        val turnPower = GoalFinder.calculate(
+//            follower.pose,
+////            llResult,
+//            PoseStorage.blueAlliance
+//        )
 
-        if (GoalFinder.gfActive) {
-            frontLeftMotor.power = turnPower
-            frontRightMotor.power = -turnPower
-            backLeftMotor.power = turnPower
-            backRightMotor.power = -turnPower
-        } else {
-            // Manual Control
-            driverControlled.update()
-        } // end tracking goal
+//        if (GoalFinder.gfActive) {
+//            frontLeftMotor.power = turnPower
+//            frontRightMotor.power = -turnPower
+//            backLeftMotor.power = turnPower
+//            backRightMotor.power = -turnPower
+//        } else {
+//            // Manual Control
+//            driverControlled.update()
+//        } // end tracking goal
 
         if (PoseStorage.blueAlliance) {
             telemetry.addData("Alliance", "BLUE")

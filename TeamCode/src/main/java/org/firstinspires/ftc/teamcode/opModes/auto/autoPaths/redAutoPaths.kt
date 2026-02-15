@@ -39,7 +39,10 @@ object redAutoPaths : Subsystem {
      val secretTunnel = Pose(130.3050847457627, 55.983050847457626, Math.toRadians(0.0))
 
     val leavePoint = Pose(87.73, 110.42, Math.toRadians(40.67))
-     val hitGate = Pose(134.91525423728814, 59.79661016949153, Math.toRadians(45.0))
+
+    val broLEAVEE = Pose(122.49915110356537, 70.09847198641768, Math.toRadians(0.0))
+
+    val hitGate = Pose(134.91525423728814, 59.79661016949153, Math.toRadians(45.0))
 
     val eat = Pose(134.91525423728814, 57.79661016949153, Math.toRadians(45.0))
 
@@ -95,6 +98,9 @@ object redAutoPaths : Subsystem {
 
     lateinit var bottomIntake2: PathChain
     lateinit var HPviggletoShoot: PathChain
+
+    lateinit var GoLeaveBoi: PathChain
+
 
     lateinit var  bottomIntake2toShoot: PathChain
 
@@ -211,6 +217,10 @@ object redAutoPaths : Subsystem {
         GPPtoShotMove = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(pickUpGPP2, GPPtoShot))
             .setLinearHeadingInterpolation(pickUpGPP2.heading, GPPtoShot.heading)
+            .build()
+        GoLeaveBoi = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(GPPtoShot, broLEAVEE))
+            .setLinearHeadingInterpolation(pickUpGPP2.heading, broLEAVEE.heading)
             .build()
         MohitHitGate = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(pickUpPPG2, gate))
