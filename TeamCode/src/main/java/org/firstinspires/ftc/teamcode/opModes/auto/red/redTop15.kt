@@ -69,13 +69,13 @@ class redTop15 : NextFTCOpMode() {
             SequentialGroup(
                 ParallelGroup(
                     ShooterAngle.angle_kindaUP,
-                    Shooter.spinAtSpeed(1180.0),
+                    Shooter.spinAtSpeed(1140.0),
                     FollowPath(GoToShot),
                     TurretAuto.toLeft,
                     Gate.gate_open,
                 ),
                 Intake.spinFastAuto,
-                Delay(1.8.seconds),
+                Delay(1.2.seconds),
                 ParallelGroup(
                     FollowPath(PGPfirst),
                     Gate.gate_close
@@ -88,7 +88,7 @@ class redTop15 : NextFTCOpMode() {
                     Gate.gate_open,
                 ),
                 Intake.spinFastAuto,
-                Delay(1.8.seconds),
+                Delay(1.2.seconds),
                 ParallelGroup(
                     FollowPath(TheGate),
                     Gate.gate_close,
@@ -102,7 +102,7 @@ class redTop15 : NextFTCOpMode() {
                     Gate.gate_open,
                 ),
                 Intake.spinFastAuto,
-                Delay(1.8.seconds),
+                Delay(1.2.seconds),
                 ParallelDeadlineGroup(
                     FollowPath(PPGsecond, holdEnd = true, maxPower = 1.0),
                     Gate.gate_close,
@@ -115,7 +115,7 @@ class redTop15 : NextFTCOpMode() {
                     Gate.gate_open,
                 ),
                 Intake.spinFastAuto,
-                Delay(1.8.seconds),
+                Delay(1.2.seconds),
                 ParallelDeadlineGroup(
                     FollowPath(GPPfirst),
                     Gate.gate_close,
@@ -133,7 +133,7 @@ class redTop15 : NextFTCOpMode() {
 
                 ),
                 Intake.spinFastAuto,
-                Delay(1.8.seconds),
+                Delay(1.2.seconds),
                 ParallelGroup(
                     Shooter.stopShooter,
                     Gate.gate_close,
