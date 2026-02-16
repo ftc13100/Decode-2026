@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp;
 
+import com.pedropathing.util.PoseHistory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -80,9 +81,12 @@ public class VeryEasyCV extends OpMode {
             if (leftavgfin > rightavgfin ) {
                 telemetry.addLine("Right");
             }
-                else{
+                else if (rightavgfin > leftavgfin){
+
                     telemetry.addLine("Left");
-                }
+                } else {
+                    telemetry.addLine("nothing found");
+            }
 
 
             return(outPut);
