@@ -12,7 +12,9 @@ object ShooterController {
     const val SHOOTER_TO_GOAL_Z_SQRD = 1056.25 // (46.0 - 13.5).pow(2.0)
 
     data class ShotParameters(val distance: Double, val velocity: Double, val angle: Double)
-
+// note: all of these points and distances were created considered robot facing the goal with minimal turret angle
+// basically if goal was 24,24 and robot was at 24,20, distance of shooter was actually 24,18 if shooter offset was 2 in behind
+// does this mean you can just subtract 2 from distance? i don"t think so i can't fully think abt it rn gn
     private val shooterLookupTable = mapOf(
    //Distance to ShotParameters(Dist,            Velocity,        Angle)            // Origin (X, Y)
         41.28 to ShotParameters(41.28, 985.0, 0.680),      // Pair(24, 120)
