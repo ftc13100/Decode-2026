@@ -125,11 +125,12 @@ class MainTeleop : NextFTCOpMode() {
 //            FieldCentric(imu)
         )
         driverControlled.scalar = 1.0
-        Shooter.stallShooter()
+//        Shooter.stallShooter()
 
 ////////////////////////////////////////////////////////////////////////////
-//        GamePad 2 - Operator Commands
+//        GamePad 1 - Driver Commands
 ////////////////////////////////////////////////////////////////////////////
+
         //Intake artifact
         button { gamepad1.left_bumper }
 //            .toggleOnBecomesTrue()
@@ -184,8 +185,6 @@ class MainTeleop : NextFTCOpMode() {
                     follower.pose = Pose(125.23, 121.52, Math.toRadians(37.0))
                 }
             }
-
-
 
 ////////////////////////////////////////////////////////////////////////////
 //        GamePad 2 - Operator Commands
