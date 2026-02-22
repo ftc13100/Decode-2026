@@ -6,9 +6,16 @@ import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
+import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.TURRET_TICKS_TO_RADS
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.turretCurrentPos
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
+import kotlin.math.pow
+import kotlin.math.sqrt
+
 
 object NewGoalFinder {
-    const val TURRET_OFFSET = 2.695
+    const val TURRET_OFFSET = 3.055
 
     // Matrix multiplication
     operator fun SimpleMatrix.times(other: SimpleMatrix): SimpleMatrix =
@@ -100,7 +107,11 @@ object NewGoalFinder {
         pose: Pose,
         phi: Double,
         oX: Double = TURRET_OFFSET,
-        goalPose: Pose = ShooterController.goal
+        goalPose: Pose = if (PoseStorage.blueAlliance) {
+            ShooterController.goal
+        } else {
+            ShooterController.goalRed
+        }
     ): Double {
         val goalT = goalInTurretFrame(
             pose.x, pose.y, pose.heading, oX, phi, goalPose.x, goalPose.y
@@ -110,5 +121,12 @@ object NewGoalFinder {
         val yT = goalT.get(1)
 
         return atan2(yT, xT)
+    }
+
+    fun turretOffsetDistance(): Double {
+        val goalT = goalInTurretFrame(follower.pose.x,follower.pose.y, follower.heading, TURRET_OFFSET, turretCurrentPos * TURRET_TICKS_TO_RADS, 0.0, 0.0)
+        val xT = goalT.get(0)
+        val yT = goalT.get(1)
+        return (sqrt(xT.pow(2.0) + yT.pow(2.0) + ShooterController.SHOOTER_TO_GOAL_Z_SQRD))
     }
 }

@@ -168,7 +168,7 @@ object Turret : Subsystem {
         // 1. TARGET TRACKING MODE
         if (goalTrackingActive) {
             controlSystem.goal = KineticState(target)
-            turret.power = controlSystem.calculate(turret.state)
+            turret.power = controlSystem.calculate(turret.state) //controlSystem.calculate(KineticState(NewGoalFinder.turretAimError(follower.pose, turretCurrentPos * TURRET_TICKS_TO_RADS)))
             return
         }
 
