@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode.opModes.subsystems
 
 import com.pedropathing.geometry.Pose
+import com.sun.tools.doclint.Entity
 import org.ejml.simple.SimpleMatrix
 import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
+import kotlin.math.*
 
 object NewGoalFinder {
     const val TURRET_OFFSET = 2.695
@@ -43,10 +42,10 @@ object NewGoalFinder {
         }
     }
 
-    fun turretOffset(oX: Double): SimpleMatrix {
+    fun turretOffset(oY: Double): SimpleMatrix {
         return SimpleMatrix(3, 3).apply {
-            setRow(0, 0, 1.0, 0.0, oX)
-            setRow(1, 0, 0.0, 1.0, 0.0)
+            setRow(0, 0, 1.0, 0.0, 0.0)
+            setRow(1, 0, 0.0, 1.0, oY)
             setRow(2, 0, 0.0, 0.0, 1.0)
         }
     }
@@ -66,12 +65,12 @@ object NewGoalFinder {
         X: Double,
         Y: Double,
         theta: Double,
-        oX: Double,
+        oY: Double,
         phi: Double
     ): SimpleMatrix {
 
         val T_WR = se2(X, Y, theta) // transform robot coordinates into world frame
-        val T_off = turretOffset(oX) // turret offset
+        val T_off = turretOffset(oY) // turret offset
         val T_phi = turretRotation(phi) // turret current rotation
 
         return T_WR * T_off * T_phi
@@ -81,13 +80,13 @@ object NewGoalFinder {
         X: Double,
         Y: Double,
         theta: Double,
-        oX: Double,
+        oY: Double,
         phi: Double,
         xGoal: Double,
         yGoal: Double
     ): SimpleMatrix {
 
-        val T_WT = worldToTurret(X, Y, theta, oX, phi)
+        val T_WT = worldToTurret(X, Y, theta, oY, phi)
 
         val goalW = SimpleMatrix(3, 1).apply {
             setColumn(0, 0, xGoal, yGoal, 1.0)
@@ -99,11 +98,11 @@ object NewGoalFinder {
     fun turretAimError(
         pose: Pose,
         phi: Double,
-        oX: Double = TURRET_OFFSET,
+        oY: Double = TURRET_OFFSET,
         goalPose: Pose = ShooterController.goal
     ): Double {
         val goalT = goalInTurretFrame(
-            pose.x, pose.y, pose.heading, oX, phi, goalPose.x, goalPose.y
+            pose.x, pose.y, pose.heading, oY, phi, goalPose.x, goalPose.y
         )
 
         val xT = goalT.get(0)
@@ -112,4 +111,3 @@ object NewGoalFinder {
         return atan2(yT, xT)
     }
 }
-
