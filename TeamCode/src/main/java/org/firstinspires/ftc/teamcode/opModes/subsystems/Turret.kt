@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes.subsystems
 
 import com.bylazar.configurables.annotations.Configurable
-import com.pedropathing.geometry.Pose
-import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
@@ -10,7 +8,7 @@ import dev.nextftc.control.feedback.PIDCoefficients
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.hardware.impl.MotorEx
-import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goal
+import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goalBlue
 import kotlin.math.abs
 import kotlin.math.atan2
 
@@ -128,9 +126,9 @@ object Turret : Subsystem {
         heading = follower.heading
 
         targetAngle = if (PoseStorage.blueAlliance) {
-            Math.PI - atan2(abs(goal.y - y), abs(goal.x - x))
+            Math.PI - atan2(abs(goalBlue.y - y), abs(goalBlue.x - x))
         } else {
-            atan2(abs(goal.y - y), abs(goal.x - (144.0 - x)))
+            atan2(abs(goalBlue.y - y), abs(goalBlue.x - (144.0 - x)))
         }
 
         turretAngle =

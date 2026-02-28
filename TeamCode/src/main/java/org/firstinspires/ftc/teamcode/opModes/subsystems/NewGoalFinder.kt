@@ -9,7 +9,6 @@ import kotlin.math.sin
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.TURRET_TICKS_TO_RADS
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.turretCurrentPos
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -108,7 +107,7 @@ object NewGoalFinder {
         phi: Double,
         oX: Double = TURRET_OFFSET,
         goalPose: Pose = if (PoseStorage.blueAlliance) {
-            ShooterController.goal
+            ShooterController.goalBlue
         } else {
             ShooterController.goalRed
         }
@@ -124,7 +123,22 @@ object NewGoalFinder {
     }
 
     fun turretOffsetDistance(): Double {
-        val goalT = goalInTurretFrame(follower.pose.x,follower.pose.y, follower.heading, TURRET_OFFSET, turretCurrentPos * TURRET_TICKS_TO_RADS, 0.0, 0.0)
+        val goalPose = if (PoseStorage.blueAlliance) {
+            ShooterController.goalBlue
+        } else {
+            ShooterController.goalRed
+        }
+
+        val goalT = goalInTurretFrame(
+            follower.pose.x,
+            follower.pose.y,
+            follower.heading,
+            TURRET_OFFSET,
+            turretCurrentPos * TURRET_TICKS_TO_RADS,
+            goalPose.x,
+            goalPose.y
+        )
+
         val xT = goalT.get(0)
         val yT = goalT.get(1)
         return (sqrt(xT.pow(2.0) + yT.pow(2.0) + ShooterController.SHOOTER_TO_GOAL_Z_SQRD))

@@ -4,9 +4,8 @@ import com.pedropathing.geometry.Pose
 import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.core.subsystems.Subsystem
 import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.SHOOTER_TO_GOAL_Z_SQRD
-import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goal
+import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goalBlue
 import kotlin.math.abs
-import kotlin.math.acos
 import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -81,14 +80,14 @@ object GoalFinder : Subsystem {
 
         gfGoalDistance =
             sqrt(
-                (adjX - goal.x).pow(2.0) + (pose.y - goal.y).pow(2.0) +
+                (adjX - goalBlue.x).pow(2.0) + (pose.y - goalBlue.y).pow(2.0) +
                         SHOOTER_TO_GOAL_Z_SQRD
             )
 
         gfTargetAngle = if (blueAlliance) {
-            Math.PI - atan2(abs(goal.y - pose.y), abs(goal.x - adjX))
+            Math.PI - atan2(abs(goalBlue.y - pose.y), abs(goalBlue.x - adjX))
         } else {
-            atan2(abs(goal.y - pose.y), abs(goal.x - adjX))
+            atan2(abs(goalBlue.y - pose.y), abs(goalBlue.x - adjX))
         }
 
         gfHeadingError =

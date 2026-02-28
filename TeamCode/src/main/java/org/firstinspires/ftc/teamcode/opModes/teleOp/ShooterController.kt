@@ -2,13 +2,12 @@ package org.firstinspires.ftc.teamcode.opModes.teleOp
 
 import com.pedropathing.geometry.Pose
 import dev.nextftc.core.commands.CommandManager
-import dev.nextftc.ftc.ActiveOpMode
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 
 
 object ShooterController {
-    val goal = Pose(6.0, 138.0)
+    val goalBlue = Pose(6.0, 138.0)
     val goalRed = Pose(138.0, 138.0)
     const val SHOOTER_TO_GOAL_Z_SQRD = 1056.25 // (46.0 - 13.5).pow(2.0)
 
