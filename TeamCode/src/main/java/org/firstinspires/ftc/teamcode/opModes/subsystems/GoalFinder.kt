@@ -17,8 +17,7 @@ object GoalFinder : Subsystem {
     var gfDoneMs = 0.0
 
     var gfTargetAngle = 0.0
-    var gfHeadingError =
-        0.0 // Current angular error of Shooter to Goal with margin for shooter adjustment. This is used to rotate robot
+    var gfHeadingError = 0.0
 
     val gfReady: Boolean
         get() = if (Turret.goalTrackingActive) abs(Turret.turretErrorTicks) < 5.0 else true
@@ -110,12 +109,10 @@ object GoalFinder : Subsystem {
 
         if (blueAlliance) {
             if (gfTargetAngle < Math.PI * 3.0 / 4.0) {
-                // Turret has to turn left for adjustment
                 gfGoalAprilTagAdj = -gfGoalAprilTagAdj
             }
         } else {
             if (gfTargetAngle < Math.PI / 4.0) {
-                // Turret has to turn left for adjustment
                 gfGoalAprilTagAdj = -gfGoalAprilTagAdj
             }
         }
