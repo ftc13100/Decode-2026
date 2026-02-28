@@ -350,19 +350,19 @@ class MainTeleop : NextFTCOpMode() {
         }
 
         val distanceToGoal = NewGoalFinder.turretOffsetDistance() //GoalFinder.gfGoalDistance
-        val currentShot = ShooterController.getShot(distanceToGoal)
-        if (currentShot != null) {
-            currentShotDistance = currentShot.distance
-            currentShotVelocity = currentShot.velocity
-            currentShotAngle = currentShot.angle
-            // Apply continuously
-            // less than 0.05 isn't a required change
-            if (abs(ShooterAngle.targetPosition - currentShotAngle) > 0.005) {
-                ShooterAngle.targetPosition = currentShotAngle
-                CommandManager.scheduleCommand(ShooterAngle.update())
-            }
-            Shooter.spinAtSpeed(currentShotVelocity).schedule()
-        }
+//        val currentShot = ShooterController.getShot(distanceToGoal)
+//        if (currentShot != null) {
+//            currentShotDistance = currentShot.distance
+//            currentShotVelocity = currentShot.velocity
+//            currentShotAngle = currentShot.angle
+//            // Apply continuously
+//            // less than 0.05 isn't a required change
+//            if (abs(ShooterAngle.targetPosition - currentShotAngle) > 0.005) {
+//                ShooterAngle.targetPosition = currentShotAngle
+//                CommandManager.scheduleCommand(ShooterAngle.update())
+//            }
+//            Shooter.spinAtSpeed(currentShotVelocity).schedule()
+//        }
 
 //        val llResult: LLResult? = limelight.latestResult
         val turnPower = GoalFinder.calculate(
@@ -431,8 +431,9 @@ class MainTeleop : NextFTCOpMode() {
         )
         telemetry.addData(
             "Turret",
-            "Pos: %4.0f, Az: %4.1f, Tracking: %b, Start: %.1f, %b",
+            "Pos: %4.0f, TargetPos: %4.0f, Az: %4.1f, Tracking: %b, Start: %.1f, %b",
             Turret.turretCurrentPos,
+            Turret.target,
             Turret.turretAzDeg(),
             Turret.goalTrackingActive,
             Turret.startPosition,
