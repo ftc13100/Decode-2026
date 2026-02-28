@@ -34,6 +34,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
+import org.firstinspires.ftc.teamcode.opModes.subsystems.NewGoalFinder
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
@@ -71,7 +72,7 @@ class MainTeleop : NextFTCOpMode() {
 
     private lateinit var driverControlled: MecanumDriverControlled
 
-    lateinit var limelight: Limelight3A
+//    lateinit var limelight: Limelight3A
 
     private val startPose = PoseStorage.poseEnd  // Pose(72.0,72.0, Math.toRadians(90.0))
     private val testingPose = Pose(72.0, 72.0, Math.toRadians(90.0))
@@ -102,10 +103,10 @@ class MainTeleop : NextFTCOpMode() {
         }
 
 
-        limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
+//        limelight = hardwareMap.get(Limelight3A::class.java, "limelight")
         telemetry.msTransmissionInterval = 11
-        limelight.pipelineSwitch(1)
-        limelight.start()
+//        limelight.pipelineSwitch(1)
+//        limelight.start()
         follower.update()
 
         telemetry = JoinedTelemetry(telemetry, PanelsTelemetry.ftcTelemetry)
@@ -249,12 +250,12 @@ class MainTeleop : NextFTCOpMode() {
                 intakeRunning = false
             }
 
-        button { gamepad2.b }
-            .whenBecomesTrue {
-                if (GoalFinder.gfLLValid) {
-                    Turret.turn(GoalFinder.gfTurretAdj)
-                }
-            }
+//        button { gamepad2.b }
+//            .whenBecomesTrue {
+//                if (GoalFinder.gfLLValid) {
+//                    Turret.turn(GoalFinder.gfTurretAdj)
+//                }
+//            }
 
         // Increase shooter velocity
         button { gamepad2.dpad_up }
@@ -305,13 +306,13 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesTrue {
                 if (testMode) {
                     PoseStorage.blueAlliance = false
-                    limelight.pipelineSwitch(2)
+//                    limelight.pipelineSwitch(2)
                 }
             }
             .whenBecomesFalse {
                 if (testMode) {
                     PoseStorage.blueAlliance = true
-                    limelight.pipelineSwitch(1)
+//                    limelight.pipelineSwitch(1)
                 }
             }
 
@@ -348,10 +349,10 @@ class MainTeleop : NextFTCOpMode() {
             Shooter.spinAtSpeed(currentShotVelocity).schedule()
         }
 
-        val llResult: LLResult? = limelight.latestResult
+//        val llResult: LLResult? = limelight.latestResult
         val turnPower = GoalFinder.calculate(
             follower.pose,
-            llResult,
+//            llResult,
             PoseStorage.blueAlliance
         )
 
@@ -392,17 +393,19 @@ class MainTeleop : NextFTCOpMode() {
 
         telemetry.addData(
             "X",
-            "%3.1f, Y: %3.1f, Heading: %3.1f, Dist: %3.1f",
+            "%3.1f, Y: %3.1f, Heading: %3.1f, Dist: %3.1f, Dist: %3.1f",
             follower.pose.x,
             follower.pose.y,
             Math.toDegrees(follower.heading),
-            GoalFinder.gfGoalDistance
+            GoalFinder.gfGoalDistance,
+            NewGoalFinder.turretOffsetDistance()
         )
 
         telemetry.addData(
             "PointingVals",
             "Error: %.1f, Limelight: (%.1f, %.1f)",
-            Math.toDegrees(GoalFinder.gfHeadingError),GoalFinder.gfLLTx,GoalFinder.gfLLTy)
+            Math.toDegrees(GoalFinder.gfHeadingError), 0.0, 0.0 //GoalFinder.gfLLTx,GoalFinder.gfLLTy
+        )
 
         telemetry.addData(
             "Goal",
