@@ -33,10 +33,10 @@ object Turret : Subsystem {
     var startPosition = 0.0
 
     @JvmField
-    var leftLimit = -1060.0
+    var leftLimit = -1080.0
 
     @JvmField
-    var rightLimit = 1060.0
+    var rightLimit = 1080.0
 
     @JvmField
     var targetAngle = 0.0
@@ -85,8 +85,8 @@ object Turret : Subsystem {
                 turret.currentPosition
 
         target = startPosition
-        rightLimit = startPosition + 1060.0
-        leftLimit = startPosition - 1060.0
+        rightLimit = startPosition + 1080.0
+        leftLimit = startPosition - 1080.0
         trackTarget()
     }
 
@@ -161,12 +161,21 @@ object Turret : Subsystem {
 
     override fun periodic() {
         val current = turret.currentPosition
-        updateTarget()
 
         // 1. TARGET TRACKING MODE
         if (goalTrackingActive) {
-            controlSystem.goal = KineticState(target)
-            turret.power = controlSystem.calculate(turret.state) //controlSystem.calculate(KineticState(NewGoalFinder.turretAimError(follower.pose, turretCurrentPos * TURRET_TICKS_TO_RADS)))
+            // Calculate the error in radians using matrix math
+            val errorRads = NewGoalFinder.turretAimError(
+                follower.pose,
+                turretCurrentPos * TURRET_TICKS_TO_RADS
+            )
+
+            // update target position & keep within limits
+            target = (current + (errorRads / TURRET_TICKS_TO_RADS)).coerceIn(leftLimit, rightLimit)
+
+            // target to PID
+            controlSystem.goal = KineticState(position = target)
+            turret.power = controlSystem.calculate(turret.state)
             return
         }
 

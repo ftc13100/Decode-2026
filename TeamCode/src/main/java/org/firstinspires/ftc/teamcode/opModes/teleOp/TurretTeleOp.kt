@@ -45,7 +45,8 @@ class TurretTeleOp : NextFTCOpMode() {
     val turretCommand = PerpetualCommand(
         LambdaCommand()
             .setUpdate {
-                Turret.turn(0.0)
+                // trackTarget() instead of turn(0.0) for tracking mode
+                Turret.trackTarget()
             }
             .requires(Turret)
     )

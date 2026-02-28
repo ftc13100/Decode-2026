@@ -187,6 +187,22 @@ class MainTeleop : NextFTCOpMode() {
                 }
             }
 
+        // open gate, spin intake, balls go to shooter, or stops
+        button { gamepad1.b }
+            .toggleOnBecomesTrue()
+            .whenBecomesTrue {
+                Gate.gate_open()
+                Intake.spinShoot()
+                gateOpen = true
+                intakeRunning = true
+            }
+            .whenBecomesFalse {
+                Gate.gate_close()
+                Intake.spinStop()
+                gateOpen = false
+                intakeRunning = false
+            }
+
 ////////////////////////////////////////////////////////////////////////////
 //        GamePad 2 - Operator Commands
 ////////////////////////////////////////////////////////////////////////////
@@ -245,7 +261,6 @@ class MainTeleop : NextFTCOpMode() {
             .whenBecomesFalse {
                 Gate.gate_close()
                 Intake.spinStop()
-                Turret.trackTarget()
                 gateOpen = false
                 intakeRunning = false
             }
@@ -334,7 +349,7 @@ class MainTeleop : NextFTCOpMode() {
             initialized = true
         }
 
-        val distanceToGoal = GoalFinder.gfGoalDistance
+        val distanceToGoal = NewGoalFinder.turretOffsetDistance() //GoalFinder.gfGoalDistance
         val currentShot = ShooterController.getShot(distanceToGoal)
         if (currentShot != null) {
             currentShotDistance = currentShot.distance
@@ -422,6 +437,13 @@ class MainTeleop : NextFTCOpMode() {
             Turret.goalTrackingActive,
             Turret.startPosition,
             initialized
+        )
+        telemetry.addData(
+            "New Goal Finder Computed Angle",
+            NewGoalFinder.turretAimError(
+                follower.pose,
+                Turret.turretCurrentPos * Turret.TURRET_TICKS_TO_RADS
+            )
         )
 
         telemetry.addData("Current Shot", "Dist: %3.1f, Vel: %4.1f, Ang: %.3f",

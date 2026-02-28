@@ -7,6 +7,7 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
+import dev.nextftc.ftc.ActiveOpMode
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.TURRET_TICKS_TO_RADS
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.turretCurrentPos
 import kotlin.math.pow
@@ -14,7 +15,7 @@ import kotlin.math.sqrt
 
 
 object NewGoalFinder {
-    const val TURRET_OFFSET = 3.055
+    const val TURRET_OFFSET = -3.055
 
     // Matrix multiplication
     operator fun SimpleMatrix.times(other: SimpleMatrix): SimpleMatrix =
@@ -113,11 +114,22 @@ object NewGoalFinder {
         }
     ): Double {
         val goalT = goalInTurretFrame(
-            pose.x, pose.y, pose.heading, oX, phi, goalPose.x, goalPose.y
+            pose.x,
+            pose.y,
+            pose.heading,
+            oX,
+            phi,
+            goalPose.x,
+            goalPose.y
         )
 
         val xT = goalT.get(0)
         val yT = goalT.get(1)
+
+        ActiveOpMode.telemetry.addData("xT", xT)
+//        ActiveOpMode.telemetry.addData("yT", yT)
+        ActiveOpMode.telemetry.addData("phi", phi)
+//        ActiveOpMode.telemetry.addData("pose", pose)
 
         return atan2(yT, xT)
     }
