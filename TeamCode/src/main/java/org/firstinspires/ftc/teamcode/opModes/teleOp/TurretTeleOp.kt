@@ -1,64 +1,39 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp//package org.firstinspires.ftc.teamcode.opModes.teleOp
 
+import com.bylazar.telemetry.PanelsTelemetry
+import com.pedropathing.geometry.Pose
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import dev.nextftc.core.commands.Command
-import dev.nextftc.core.commands.utility.LambdaCommand
-import dev.nextftc.core.commands.utility.PerpetualCommand
-import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
+import dev.nextftc.extensions.pedro.PedroComponent
+import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import dev.nextftc.hardware.impl.MotorEx
-import com.bylazar.telemetry.PanelsTelemetry
-import com.qualcomm.hardware.limelightvision.LLResult
-import com.qualcomm.hardware.limelightvision.Limelight3A
-import com.qualcomm.robotcore.hardware.DcMotor
-import kotlin.concurrent.timer
-import com.qualcomm.robotcore.util.ElapsedTime
-import dev.nextftc.bindings.BindingManager
-import dev.nextftc.bindings.button
-import dev.nextftc.core.commands.CommandManager
-import dev.nextftc.extensions.pedro.PedroComponent
-import dev.nextftc.ftc.Gamepads
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
-import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime
+import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
-import kotlin.math.abs
 
 @TeleOp(name = "Turret Test & Tune")
 class TurretTeleOp : NextFTCOpMode() {
-
     init {
         addComponents(
-        SubsystemComponent(Turret),
-        BulkReadComponent,
-        PedroComponent(Constants::createFollower)
+            SubsystemComponent(Turret),
+            BulkReadComponent,
+            PedroComponent(Constants::createFollower)
         )
     }
 
     private val panelsTelemetry = PanelsTelemetry.telemetry
-    private val timer = ElapsedTime()
-    val turretCommand = PerpetualCommand(
-        LambdaCommand()
-            .setUpdate {
-                // trackTarget() instead of turn(0.0) for tracking mode
-                Turret.trackTarget()
-            }
-            .requires(Turret)
-    )
+
     override fun onInit() {
-        turretCommand()
-        timer.reset()
+        PoseStorage.blueAlliance = false
+        follower.pose = Pose(72.0, 72.0, Math.toRadians(90.0))
+        Turret.trackTarget()
     }
 
     override fun onUpdate() {
         telemetry.addData("Turret Position", Turret.turret.currentPosition)
-        panelsTelemetry.addData("Target", Turret.target)
-        panelsTelemetry.addData("Position", Turret.turret.currentPosition)
+//        panelsTelemetry.addData("Target", Turret.target)
+//        panelsTelemetry.addData("Position", Turret.turret.currentPosition)
         panelsTelemetry.update(telemetry)
         telemetry.update()
     }

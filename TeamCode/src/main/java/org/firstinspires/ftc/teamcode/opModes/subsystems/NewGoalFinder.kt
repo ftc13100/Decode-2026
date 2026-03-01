@@ -10,6 +10,7 @@ import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.ActiveOpMode
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.TURRET_TICKS_TO_RADS
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.turretCurrentPos
+import kotlin.math.PI
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -77,9 +78,9 @@ object NewGoalFinder {
         phi: Double
     ): SimpleMatrix {
 
-        val T_WR = se2(X, Y, theta) // transform robot coordinates into world frame
+        val T_WR = se2(X, Y, theta)  * se2(0.0, 0.0, -PI / 2) // transform robot coordinates into world frame
         val T_off = turretOffset(oX) // turret offset
-        val T_phi = turretRotation(phi) // turret current rotation
+        val T_phi = turretRotation(-phi) // turret current rotation
 
         return T_WR * T_off * T_phi
     }
@@ -93,7 +94,6 @@ object NewGoalFinder {
         xGoal: Double,
         yGoal: Double
     ): SimpleMatrix {
-
         val T_WT = worldToTurret(X, Y, theta, oX, phi)
 
         val goalW = SimpleMatrix(3, 1).apply {
@@ -125,11 +125,6 @@ object NewGoalFinder {
 
         val xT = goalT.get(0)
         val yT = goalT.get(1)
-
-        ActiveOpMode.telemetry.addData("xT", xT)
-//        ActiveOpMode.telemetry.addData("yT", yT)
-        ActiveOpMode.telemetry.addData("phi", phi)
-//        ActiveOpMode.telemetry.addData("pose", pose)
 
         return atan2(yT, xT)
     }

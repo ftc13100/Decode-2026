@@ -7,6 +7,7 @@ import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
+import dev.nextftc.ftc.ActiveOpMode
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goalBlue
 import kotlin.math.abs
@@ -171,7 +172,7 @@ object Turret : Subsystem {
             )
 
             // update target position & keep within limits
-            target = (current + (errorRads / TURRET_TICKS_TO_RADS)).coerceIn(leftLimit, rightLimit)
+            target = (current - (errorRads / TURRET_TICKS_TO_RADS)).coerceIn(leftLimit, rightLimit)
 
             // target to PID
             controlSystem.goal = KineticState(position = target)
