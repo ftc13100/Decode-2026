@@ -120,7 +120,7 @@ object GoalFinder : Subsystem {
         gfTurretAdj = gfTurretAdjGoalAprilTag
     }
 
-    fun calculate(pose: Pose, blueAlliance: Boolean): Double {
+    fun calculateTurn(pose: Pose, blueAlliance: Boolean): Double {
         if (pose.x < 0.0 || pose.x > 144.0 || pose.y < 0.0 || pose.y > 144.0) {
             gfAnglesValid = false
             return 0.0

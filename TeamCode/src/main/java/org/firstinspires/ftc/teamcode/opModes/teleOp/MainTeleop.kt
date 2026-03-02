@@ -1,21 +1,14 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import com.bylazar.configurables.annotations.Configurable
 import com.bylazar.telemetry.JoinedTelemetry
 import com.bylazar.telemetry.PanelsTelemetry
-import com.pedropathing.ftc.FTCCoordinates
 import com.pedropathing.geometry.Pose
-import com.qualcomm.hardware.limelightvision.LLResult
-import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
 import dev.nextftc.core.commands.CommandManager
-import dev.nextftc.core.commands.delays.WaitUntil
-import dev.nextftc.core.commands.groups.SequentialGroup
-import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.PedroComponent
@@ -23,18 +16,15 @@ import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import dev.nextftc.hardware.driving.FieldCentric
 import dev.nextftc.hardware.driving.MecanumDriverControlled
-import dev.nextftc.hardware.impl.Direction
-import dev.nextftc.hardware.impl.IMUEx
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
+import org.firstinspires.ftc.teamcode.opModes.subsystems.CleanGoalFinder
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
-import org.firstinspires.ftc.teamcode.opModes.subsystems.NewGoalFinder
+import org.firstinspires.ftc.teamcode.opModes.subsystems.NewGoalFinderMatrices
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
@@ -48,7 +38,8 @@ class MainTeleop : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                ShooterAngle, Shooter, Gate, Intake, Turret, PoseStorage, GoalFinder
+                ShooterAngle, Shooter, Gate, Intake, Turret, PoseStorage, GoalFinder,
+                CleanGoalFinder
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -349,23 +340,23 @@ class MainTeleop : NextFTCOpMode() {
             initialized = true
         }
 
-        val distanceToGoal = NewGoalFinder.turretOffsetDistance() //GoalFinder.gfGoalDistance
-//        val currentShot = ShooterController.getShot(distanceToGoal)
-//        if (currentShot != null) {
-//            currentShotDistance = currentShot.distance
-//            currentShotVelocity = currentShot.velocity
-//            currentShotAngle = currentShot.angle
-//            // Apply continuously
-//            // less than 0.05 isn't a required change
-//            if (abs(ShooterAngle.targetPosition - currentShotAngle) > 0.005) {
-//                ShooterAngle.targetPosition = currentShotAngle
-//                CommandManager.scheduleCommand(ShooterAngle.update())
-//            }
-//            Shooter.spinAtSpeed(currentShotVelocity).schedule()
-//        }
+        val distanceToGoal = CleanGoalFinder.gfGoalDistance //NewGoalFinder.turretOffsetDistance() //GoalFinder.gfGoalDistance
+        val currentShot = ShooterController.getShot(distanceToGoal)
+        if (currentShot != null) {
+            currentShotDistance = currentShot.distance
+            currentShotVelocity = currentShot.velocity
+            currentShotAngle = currentShot.angle
+            // Apply continuously
+            // less than 0.05 isn't a required change
+            if (abs(ShooterAngle.targetPosition - currentShotAngle) > 0.005) {
+                ShooterAngle.targetPosition = currentShotAngle
+                CommandManager.scheduleCommand(ShooterAngle.update())
+            }
+            Shooter.spinAtSpeed(currentShotVelocity).schedule()
+        }
 
 //        val llResult: LLResult? = limelight.latestResult
-        val turnPower = GoalFinder.calculate(
+        val turnPower = GoalFinder.calculateTurn(
             follower.pose,
 //            llResult,
             PoseStorage.blueAlliance
@@ -408,12 +399,12 @@ class MainTeleop : NextFTCOpMode() {
 
         telemetry.addData(
             "X",
-            "%3.1f, Y: %3.1f, Heading: %3.1f, Dist: %3.1f, Dist: %3.1f",
+            "%3.1f, Y: %3.1f, Heading: %3.1f, RoboDist: %3.1f, NewDist: %3.1f",
             follower.pose.x,
             follower.pose.y,
             Math.toDegrees(follower.heading),
             GoalFinder.gfGoalDistance,
-            NewGoalFinder.turretOffsetDistance()
+            CleanGoalFinder.gfGoalDistance//NewGoalFinderMatrices.turretOffsetDistance()
         )
 
         telemetry.addData(
@@ -439,13 +430,17 @@ class MainTeleop : NextFTCOpMode() {
             Turret.startPosition,
             initialized
         )
+
         telemetry.addData(
-            "New Goal Finder Computed Angle",
-            NewGoalFinder.turretAimError(
+            "Matrix Goal Finder Computed Angle",
+            NewGoalFinderMatrices.turretAimError(
                 follower.pose,
                 Turret.turretCurrentPos * Turret.TURRET_TICKS_TO_RADS
             )
         )
+
+        telemetry.addData("New Turret", "Old: %4.0f, New: %4.0f",
+            Turret.targetCenterTicks, Turret.targetOffsetTicks)
 
         telemetry.addData("Current Shot", "Dist: %3.1f, Vel: %4.1f, Ang: %.3f",
             currentShotDistance, currentShotVelocity, currentShotAngle)

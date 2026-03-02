@@ -7,7 +7,6 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
-import dev.nextftc.ftc.ActiveOpMode
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.TURRET_TICKS_TO_RADS
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret.turretCurrentPos
 import kotlin.math.PI
@@ -15,8 +14,8 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 
-object NewGoalFinder {
-    const val TURRET_OFFSET = -3.055
+object NewGoalFinderMatrices {
+    const val TURRET_OFFSET = -3.39191
 
     // Matrix multiplication
     operator fun SimpleMatrix.times(other: SimpleMatrix): SimpleMatrix =

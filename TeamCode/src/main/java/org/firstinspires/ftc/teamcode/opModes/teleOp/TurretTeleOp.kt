@@ -32,6 +32,7 @@ class TurretTeleOp : NextFTCOpMode() {
 
     override fun onUpdate() {
         telemetry.addData("Turret Position", Turret.turret.currentPosition)
+        telemetry.addData("pose", follower.pose)
 //        panelsTelemetry.addData("Target", Turret.target)
 //        panelsTelemetry.addData("Position", Turret.turret.currentPosition)
         panelsTelemetry.update(telemetry)

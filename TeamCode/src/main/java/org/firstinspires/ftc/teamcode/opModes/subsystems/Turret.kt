@@ -1,17 +1,20 @@
 package org.firstinspires.ftc.teamcode.opModes.subsystems
 
 import com.bylazar.configurables.annotations.Configurable
+import com.pedropathing.geometry.Pose
+import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
-import dev.nextftc.ftc.ActiveOpMode
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goalBlue
 import kotlin.math.abs
 import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 
 @Configurable
 object Turret : Subsystem {
@@ -72,6 +75,9 @@ object Turret : Subsystem {
         posPid(posPIDCoefficients)
     }
 
+    var targetCenterTicks = 0.0
+    var targetOffsetTicks = 0.0
+
     override fun initialize() {
 //        turret.zero()
 //        turret.motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -122,28 +128,43 @@ object Turret : Subsystem {
      * Compute a new turret angle target during auto-tracking.
      */
     fun updateTarget() {
+        val turretOffset = 3.392
         val x = abs(follower.pose.x)
         val y = abs(follower.pose.y)
-        heading = follower.heading
+        val heading = follower.heading
 
-        targetAngle = if (PoseStorage.blueAlliance) {
+        // center calculation
+        val targetAngleCenter = if (PoseStorage.blueAlliance) {
             Math.PI - atan2(abs(goalBlue.y - y), abs(goalBlue.x - x))
         } else {
             atan2(abs(goalBlue.y - y), abs(goalBlue.x - (144.0 - x)))
         }
 
-        turretAngle =
-            heading - turretCurrentPos * TURRET_TICKS_TO_RADS
+        val turretAngleCenter = heading - turretCurrentPos * TURRET_TICKS_TO_RADS
+        var errorCenter = targetAngleCenter - turretAngleCenter
+        if (errorCenter > Math.PI) errorCenter -= 2 * Math.PI
+        if (errorCenter < -Math.PI) errorCenter += 2 * Math.PI
 
+        targetCenterTicks = turret.currentPosition - errorCenter / TURRET_TICKS_TO_RADS
+
+        // offset calculation
+        val tx = follower.pose.x - turretOffset * cos(heading)
+        val ty = follower.pose.y - turretOffset * sin(heading)
+
+        targetAngle = if (PoseStorage.blueAlliance) {
+            Math.PI - atan2(abs(goalBlue.y - ty), abs(goalBlue.x - tx))
+        } else {
+            atan2(abs(goalBlue.y - ty), abs(goalBlue.x - (144.0 - tx)))
+        }
+
+        turretAngle = heading - turretCurrentPos * TURRET_TICKS_TO_RADS
         turretError = targetAngle - turretAngle
         if (turretError > Math.PI) turretError -= 2 * Math.PI
 
         if (goalTrackingActive) {
-            target =
-                (turret.currentPosition - turretError / TURRET_TICKS_TO_RADS).coerceIn(
-                    leftLimit,
-                    rightLimit
-                )
+            // target to the offset version
+            target = (turret.currentPosition - turretError / TURRET_TICKS_TO_RADS).coerceIn(leftLimit, rightLimit)
+            targetOffsetTicks = target
         }
     }
 
@@ -162,20 +183,11 @@ object Turret : Subsystem {
 
     override fun periodic() {
         val current = turret.currentPosition
+        updateTarget()
 
         // 1. TARGET TRACKING MODE
         if (goalTrackingActive) {
-            // Calculate the error in radians using matrix math
-            val errorRads = NewGoalFinder.turretAimError(
-                follower.pose,
-                turretCurrentPos * TURRET_TICKS_TO_RADS
-            )
-
-            // update target position & keep within limits
-            target = (current - (errorRads / TURRET_TICKS_TO_RADS)).coerceIn(leftLimit, rightLimit)
-
-            // target to PID
-            controlSystem.goal = KineticState(position = target)
+            controlSystem.goal = KineticState(target)
             turret.power = controlSystem.calculate(turret.state)
             return
         }
