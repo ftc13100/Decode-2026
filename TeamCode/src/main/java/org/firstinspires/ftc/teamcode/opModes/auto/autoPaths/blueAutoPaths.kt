@@ -67,7 +67,7 @@ object blueAutoPaths : Subsystem {
             .build()
         shootPPG= PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(gateBack, PPG))
-            .setLinearHeadingInterpolation(gateBack.heading, PPG.heading)
+            .setTangentHeadingInterpolation()
             .build()
         PPGshoot= PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(PPG, gateBack))
