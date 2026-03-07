@@ -201,8 +201,7 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad1.left_stick_button }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                AutoPark.buildPaths()
-                FollowPath(liftPath).schedule()
+                FollowPath(AutoPark.createLiftPath())
             }
 
 ////////////////////////////////////////////////////////////////////////////

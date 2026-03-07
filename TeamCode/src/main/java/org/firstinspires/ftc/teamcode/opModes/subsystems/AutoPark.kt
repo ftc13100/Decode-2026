@@ -19,15 +19,10 @@ object AutoPark : Subsystem {
             Pose(131.3, 36.0, Math.toRadians(0.0))
         }
 
-
-    lateinit var liftPath: PathChain
-
-    fun buildPaths() {
-
-        liftPath = PedroComponent.Companion.follower.pathBuilder()
+    fun createLiftPath(): PathChain {
+        return PedroComponent.follower.pathBuilder()
             .addPath(BezierCurve(currentPose, parkPose))
             .setLinearHeadingInterpolation(currentPose.heading, parkPose.heading)
             .build()
-
     }
 }
