@@ -9,8 +9,10 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
 import dev.nextftc.core.commands.CommandManager
+import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
+import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.Gamepads
@@ -19,6 +21,8 @@ import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.AutoPark
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.AutoPark.liftPath
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
 import org.firstinspires.ftc.teamcode.opModes.subsystems.CleanGoalFinder
@@ -39,7 +43,7 @@ class MainTeleop : NextFTCOpMode() {
         addComponents(
             SubsystemComponent(
                 ShooterAngle, Shooter, Gate, Intake, Turret, PoseStorage, GoalFinder,
-                CleanGoalFinder
+                CleanGoalFinder, AutoPark
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -192,6 +196,13 @@ class MainTeleop : NextFTCOpMode() {
                 Intake.spinStop()
                 gateOpen = false
                 intakeRunning = false
+            }
+
+        button { gamepad1.left_stick_button }
+            .toggleOnBecomesTrue()
+            .whenBecomesTrue {
+                AutoPark.buildPaths()
+                FollowPath(liftPath).schedule()
             }
 
 ////////////////////////////////////////////////////////////////////////////
