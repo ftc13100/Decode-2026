@@ -71,10 +71,10 @@ object CleanGoalFinder : Subsystem {
     }
 
     fun calculateAngles(pose: Pose, blueAlliance: Boolean) {
-        val turretOffset = 3.392
+        val turretOffset = -3.392
 
-        val turretX = pose.x - turretOffset * cos(pose.heading)
-        val turretY = pose.y - turretOffset * sin(pose.heading)
+        val turretX = pose.x + turretOffset * cos(pose.heading)
+        val turretY = pose.y + turretOffset * sin(pose.heading)
 
         val targetX = if (blueAlliance) goalBlue.x else goalRed.x
         val targetY = goalBlue.y

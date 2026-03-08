@@ -197,7 +197,7 @@ class MainTeleop : NextFTCOpMode() {
                 intakeRunning = false
             }
 
-        button { gamepad1.left_stick_button }
+        button { gamepad1.dpad_up }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 FollowPath(AutoPark.createLiftPath())
@@ -349,7 +349,7 @@ class MainTeleop : NextFTCOpMode() {
             initialized = true
         }
 
-        val distanceToGoal = CleanGoalFinder.gfGoalDistance //NewGoalFinder.turretOffsetDistance() //GoalFinder.gfGoalDistance
+        val distanceToGoal = GoalFinder.gfGoalDistance //NewGoalFinder.turretOffsetDistance() //GoalFinder.gfGoalDistance
         val currentShot = ShooterController.getShot(distanceToGoal)
         if (currentShot != null) {
             currentShotDistance = currentShot.distance
@@ -361,7 +361,7 @@ class MainTeleop : NextFTCOpMode() {
                 ShooterAngle.targetPosition = currentShotAngle
                 CommandManager.scheduleCommand(ShooterAngle.update())
             }
-            Shooter.spinAtSpeed(currentShotVelocity).schedule()
+            //Shooter.spinAtSpeed(currentShotVelocity).schedule()
         }
 
 //        val llResult: LLResult? = limelight.latestResult
@@ -450,6 +450,8 @@ class MainTeleop : NextFTCOpMode() {
 
         telemetry.addData("New Turret", "Old: %4.0f, New: %4.0f",
             Turret.targetCenterTicks, Turret.targetOffsetTicks)
+
+        telemetry.addData("Offsetted", "xOff: %3.2f, yOff: %3.2f",Turret.txOff, Turret.tyOff)
 
         telemetry.addData("Current Shot", "Dist: %3.1f, Vel: %4.1f, Ang: %.3f",
             currentShotDistance, currentShotVelocity, currentShotAngle)

@@ -78,6 +78,10 @@ object Turret : Subsystem {
     var targetCenterTicks = 0.0
     var targetOffsetTicks = 0.0
 
+    var txOff = 0.0
+
+    var tyOff = 0.0
+
     override fun initialize() {
 //        turret.zero()
 //        turret.motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -128,9 +132,9 @@ object Turret : Subsystem {
      * Compute a new turret angle target during auto-tracking.
      */
     fun updateTarget() {
-        val turretOffset = 3.392
-        val x = abs(follower.pose.x)
-        val y = abs(follower.pose.y)
+        val turretOffset = -3.392
+        val x = follower.pose.x
+        val y = follower.pose.y
         val heading = follower.heading
 
         // center calculation
@@ -148,13 +152,13 @@ object Turret : Subsystem {
         targetCenterTicks = turret.currentPosition - errorCenter / TURRET_TICKS_TO_RADS
 
         // offset calculation
-        val tx = follower.pose.x - turretOffset * cos(heading)
-        val ty = follower.pose.y - turretOffset * sin(heading)
+        txOff = follower.pose.x + turretOffset * cos(heading)
+        tyOff = follower.pose.y + turretOffset * sin(heading)
 
         targetAngle = if (PoseStorage.blueAlliance) {
-            Math.PI - atan2(abs(goalBlue.y - ty), abs(goalBlue.x - tx))
+            Math.PI - atan2(abs(goalBlue.y - tyOff), abs(goalBlue.x - txOff))
         } else {
-            atan2(abs(goalBlue.y - ty), abs(goalBlue.x - (144.0 - tx)))
+            atan2(abs(goalBlue.y - tyOff), abs(goalBlue.x - (144.0 - txOff)))
         }
 
         turretAngle = heading - turretCurrentPos * TURRET_TICKS_TO_RADS
