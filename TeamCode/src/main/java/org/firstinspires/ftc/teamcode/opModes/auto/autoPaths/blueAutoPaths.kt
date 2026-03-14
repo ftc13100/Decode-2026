@@ -8,7 +8,7 @@ import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.extensions.pedro.PedroComponent
 
 object blueAutoPaths : Subsystem {
-    val start = Pose(32.325, 135.89, Math.toRadians(180.0))
+    val start = Pose(18.0, 122.0, Math.toRadians(51.0))
     val shoot = Pose(60.0, 84.0, Math.toRadians(-131.0))
 
     val PGP = Pose(22.0, 60.0, Math.toRadians(-174.0))
@@ -61,7 +61,7 @@ object blueAutoPaths : Subsystem {
             .setLinearHeadingInterpolation(gate.heading, eat.heading)
             .build()
         eatShoot= PedroComponent.Companion.follower.pathBuilder()
-            .addPath(BezierLine(gate, gateBack))
+            .addPath(BezierLine(eat, gateBack))
             .setTangentHeadingInterpolation()
             .setReversed()
             .build()

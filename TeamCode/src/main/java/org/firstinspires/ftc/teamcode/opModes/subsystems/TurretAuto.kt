@@ -1,42 +1,42 @@
-package org.firstinspires.ftc.teamcode.opModes.subsystems
+package org.firstinspires.ftc.teamcode.opModes.subsystems.shooter
 
-import com.bylazar.configurables.annotations.Configurable
-import dev.nextftc.control.builder.controlSystem
-import dev.nextftc.control.feedback.PIDCoefficients
+import com.qualcomm.robotcore.hardware.Servo
+import dev.nextftc.core.commands.groups.ParallelGroup
+import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
-import dev.nextftc.hardware.controllable.RunToPosition
-import dev.nextftc.hardware.impl.MotorEx
+import dev.nextftc.ftc.ActiveOpMode
 
-@Configurable
 object TurretAuto : Subsystem {
-    @JvmField
-    var target = 0.0
-
-    @JvmField
-    var posPIDCoefficients = PIDCoefficients(0.01, 0.0, 0.00013)
-    val turret = MotorEx("turret").brakeMode().zeroed()
+    private lateinit var turret1: Servo
+    private lateinit var turret2: Servo
 
     override fun initialize() {
-        turret.zero()
-        PoseStorage.turretStartPos = turret.currentPosition
+        turret1 = ActiveOpMode.hardwareMap.get(Servo::class.java, "turret1")
+        turret2 = ActiveOpMode.hardwareMap.get(Servo::class.java, "turret2")
+
     }
 
-    val controlSystem = controlSystem {
-        posPid(posPIDCoefficients)
+
+
+    val toMid = InstantCommand {
+        turret1.position = 0.5
+    }
+    val toMid2 = InstantCommand {
+        turret2.position = 0.5
+    }
+    val toLeft = InstantCommand {
+        turret1.position = 0.75
+    }
+    val toLeft2 = InstantCommand {
+        turret2.position = 0.75
+    }
+    val toRight = InstantCommand {
+        turret1.position = 0.25
+    }
+    val toRight2 = InstantCommand {
+        turret2.position = 0.25
     }
 
-    val toMid = RunToPosition(controlSystem, 0.0).requires(this)
-    val toLeft = RunToPosition(controlSystem, -549.0).requires(this)
-    val toRight = RunToPosition(controlSystem, 549.0).requires(this)
 
-    val toLeftMohit = RunToPosition(controlSystem, -245.0).requires(this)
-    val toRightMohit = RunToPosition(controlSystem, 245.0).requires(this)
-
-    val toLeftMohitFar = RunToPosition(controlSystem, -830.0).requires(this)
-    val toRightMohitFar = RunToPosition(controlSystem, 830.0).requires(this)
-
-    override fun periodic() {
-        turret.power = controlSystem.calculate(turret.state)
-    }
 }
 

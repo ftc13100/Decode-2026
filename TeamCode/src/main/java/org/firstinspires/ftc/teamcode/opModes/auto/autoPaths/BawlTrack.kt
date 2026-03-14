@@ -15,6 +15,7 @@ import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
+import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
@@ -24,13 +25,13 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitBallTrack
 import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitBallTrack.limelight
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
-import org.firstinspires.ftc.teamcode.opModes.subsystems.TurretAuto
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.TurretAuto
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
-@Autonomous(name = "testauto")
+@Autonomous(name = "BawlTrack")
 class BawlTrack: NextFTCOpMode() {
     init {
         addComponents(
@@ -43,16 +44,19 @@ class BawlTrack: NextFTCOpMode() {
         )
     }
 
-    val bawlTrack = Pose(9.0, (limelight.latestResult.tx - 24.0), Math.toRadians(180.0))
-    val startPose = Pose(56.0, 24.0, Math.toRadians(180.0))
+    private val bawlTrack: Pose
+        get() = Pose(9.0, (limelight.latestResult.tx + 24.0), Math.toRadians(-180.0))
+    private val startPose = Pose(56.0, 24.0, Math.toRadians(-180.0))
 
 
-    lateinit var  bawlRight : PathChain
+    private lateinit var bawlRight: PathChain
 
-    fun buildPaths() {
-        bawlRight= PedroComponent.Companion.follower.pathBuilder()
+    private fun buildPaths() {
+
+
+        bawlRight = follower.pathBuilder()
             .addPath(BezierLine(startPose, bawlTrack))
-            .setConstantHeadingInterpolation(180.0)
+            .setConstantHeadingInterpolation(-180.0)
             .build()
     }
 
@@ -64,21 +68,21 @@ class BawlTrack: NextFTCOpMode() {
             )
 
     override fun onInit() {
-        PedroComponent.Companion.follower.setMaxPower(1.0)
+        PedroComponent.Companion.follower.setMaxPower(0.6)
         Gate.gate_close()
     }
 
     override fun onStartButtonPressed() {
-        PedroComponent.Companion.follower.setStartingPose(blueAutoPaths.start)
+        follower.setStartingPose(startPose)
         blueAutoPaths.buildPaths()
         PoseStorage.blueAlliance = true
         PoseStorage.redAlliance = false
         val result: LLResult? = limelight.latestResult
+        buildPaths()
         if (result != null && result.isValid) {
-                autoRoutine()
-            }
+            autoRoutine()
         }
-
+    }
 
 
     override fun onStop() {
@@ -86,8 +90,9 @@ class BawlTrack: NextFTCOpMode() {
     }
 
     override fun onUpdate() {
-        limelight.latestResult
+        val result: LLResult? = limelight.latestResult
+        if (result != null && result.isValid) {
+            telemetry.addData("tx", result.tx)
+        }
     }
-
-
 }

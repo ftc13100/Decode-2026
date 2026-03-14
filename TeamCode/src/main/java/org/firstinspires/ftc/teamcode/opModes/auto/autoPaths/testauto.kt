@@ -37,9 +37,10 @@ import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.start
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
-import org.firstinspires.ftc.teamcode.opModes.subsystems.TurretAuto
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.TurretAuto
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
@@ -59,6 +60,11 @@ class testauto: NextFTCOpMode() {
     val autoRoutine: Command
         get() =
             SequentialGroup(
+                Shooter.spinAtSpeed(1500.0),
+                ParallelGroup(
+                TurretAuto.toRight,
+                TurretAuto.toRight2
+                ),
                 FollowPath(startShoot),
                 FollowPath(shootPGP),
                 FollowPath(PGPshoot),
