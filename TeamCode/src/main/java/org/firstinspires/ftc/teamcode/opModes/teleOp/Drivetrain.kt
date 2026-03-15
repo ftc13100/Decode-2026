@@ -26,6 +26,8 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intakeRunning
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Lift
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
@@ -40,59 +42,123 @@ class Drivetrain : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-
+                Lift, Intake, Spindexer, PoseStorage
             ),
             BindingsComponent,
             BulkReadComponent,
+            PedroComponent(Constants::createFollower)
         )
     }
 
     private val frontLeftName = "frontLeft"
     private val frontRightName = "frontRight"
-    private val backLeftName = "backLeft"
-    private val backRightName = "backRight"
+//    private val backLeftName = "backLeft"
+//    private val backRightName = "backRight"
 
 
     private lateinit var frontLeftMotor: MotorEx
     private lateinit var frontRightMotor: MotorEx
-    private lateinit var backLeftMotor: MotorEx
-    private lateinit var backRightMotor: MotorEx
+//    private lateinit var backLeftMotor: MotorEx
+//    private lateinit var backRightMotor: MotorEx
 
     private lateinit var driverControlled: MecanumDriverControlled
 
+    private var lastLoopTime = 0L
+    private var loopTimeMs = 0.0
 
     override fun onInit() {
 
-        frontLeftMotor = MotorEx(frontLeftName)
+        frontLeftMotor = MotorEx(frontLeftName).reversed()
         frontRightMotor = MotorEx(frontRightName)
-        backLeftMotor = MotorEx(backLeftName)
-        backRightMotor = MotorEx(backRightName)
+//        backLeftMotor = MotorEx(backLeftName).reversed()
+//        backRightMotor = MotorEx(backRightName)
 
-        listOf(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor).forEach {
+        listOf(frontLeftMotor, frontRightMotor).forEach {
             it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
+
     }
 
     override fun onStartButtonPressed() {
         driverControlled = MecanumDriverControlled(
             frontLeftMotor,
             frontRightMotor,
-            backLeftMotor,
-            backRightMotor,
+            Lift.backLeftMotor,
+            Lift.backRightMotor,
             -Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
             Gamepads.gamepad1.rightStickX,
         )
         driverControlled.scalar = 0.95
 
+        // slow mode
         button { gamepad1.y }
             .whenTrue { driverControlled.scalar = 0.4 }
             .whenFalse { driverControlled.scalar = 0.95 }
+
+        // lift
+        button { gamepad1.dpad_up}
+            .whenBecomesTrue { Lift.full_Lift }
+
+        //Intake artifact
+        button { gamepad1.left_bumper }
+            .toggleOnBecomesTrue()
+            .whenBecomesTrue {
+                Intake.spinFast()
+            }
+            .whenBecomesFalse {
+                Intake.spinStop()
+            }
+
+        //Outtake artifact
+        button { gamepad1.right_bumper }
+            .toggleOnBecomesTrue()
+            .whenBecomesTrue {
+                Intake.spinReverse()
+            }
+            .whenBecomesFalse {
+                Intake.spinStop()
+            }
+
     }
 
     override fun onUpdate() {
         BindingManager.update()
-        driverControlled.update()
+        if (!Lift.isRunning) {
+            driverControlled.update()
+        }
+
+        // loop time check
+        val now = System.nanoTime()
+        if (lastLoopTime != 0L) {
+            loopTimeMs = (now - lastLoopTime) / 1_000_000.0
+        }
+        lastLoopTime = now
+
+
+
+        // telemetery
+        telemetry.addData("Loop Time (ms)", "%.2f", loopTimeMs)
+
+
+        telemetry.addData(
+            "Intake", "%s (Power: %+1.1f, Current: %3.2f mA)",
+            if (intakeRunning) {
+                "Running"
+            } else {
+                "Stopped"
+            }, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
+        )
+
+        telemetry.addData("Full?", Spindexer.isFull)
+        telemetry.addData("S0 ", Spindexer.detectColorRGB(Spindexer.color0))
+        telemetry.addData("Alpha", "%.3f", Spindexer.color0.normalizedColors.alpha)
+        telemetry.addData("S1 ", Spindexer.detectColorRGB(Spindexer.color1))
+        telemetry.addData("Alpha", "%.3f", Spindexer.color1.normalizedColors.alpha)
+        telemetry.addData("S2 ", Spindexer.detectColorRGB(Spindexer.color2))
+
+        telemetry.update()
+
     }
 
     override fun onStop() {

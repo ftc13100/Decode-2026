@@ -8,14 +8,15 @@ object PoseStorage : Subsystem {
     var blueAlliance = false
     var redAlliance = false
 
-    var turretValid = false
-        private set
+//    var turretValid = false
+//        private set
+//
+//    var turretStartPos = -1.0
+//        set(value) {
+//            turretValid = true
+//            field = value
+//        }
 
-    var turretStartPos = -1.0
-        set(value) {
-            turretValid = true
-            field = value
-        }
 }
 
 // add limelight storage and spindexer storage

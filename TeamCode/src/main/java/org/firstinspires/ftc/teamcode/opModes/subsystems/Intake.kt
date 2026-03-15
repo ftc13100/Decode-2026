@@ -12,43 +12,43 @@ object Intake : Subsystem {
 
     val intake = MotorEx("intake").brakeMode().reversed()
 
-    var isRunning = false
-    const val CURRENT_THRESHOLD = 12000.0
+    var intakeRunning = false
+    const val CURRENT_THRESHOLD = 10000.0
 
     val spinFast =
         SequentialGroup(
-        SetPower(intake, 1.0),
-            InstantCommand { isRunning = true },
+        SetPower(intake, 0.9),
+            InstantCommand { intakeRunning = true },
             WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD },
             SetPower(intake, 0.0),
-            InstantCommand { isRunning = false }
+            InstantCommand { intakeRunning = false }
         )
             .requires(this)
 
     val spinStop =
         SequentialGroup(
         SetPower(intake, 0.0),
-            InstantCommand { isRunning = false }
+            InstantCommand { intakeRunning = false }
         )
             .requires(this)
 
     val spinSlowSpeed =
         SequentialGroup(
-            SetPower(intake, 0.8),
-            InstantCommand { isRunning = true },
+            SetPower(intake, 0.7),
+            InstantCommand { intakeRunning = true },
             WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD },
             SetPower(intake, 0.0),
-            InstantCommand { isRunning = false }
+            InstantCommand { intakeRunning = false }
         )
             .requires(this)
 
     val spinReverse =
         SequentialGroup(
-            SetPower(intake, -0.8),
-            InstantCommand { isRunning = true },
+            SetPower(intake, -0.7),
+            InstantCommand { intakeRunning = true },
             WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD },
             SetPower(intake, 0.0),
-            InstantCommand { isRunning = false }
+            InstantCommand { intakeRunning = false }
         )
             .requires(this)
 }
