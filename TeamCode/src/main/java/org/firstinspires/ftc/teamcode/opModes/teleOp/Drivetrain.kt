@@ -135,8 +135,6 @@ class Drivetrain : NextFTCOpMode() {
         }
         lastLoopTime = now
 
-
-
         // telemetery
         telemetry.addData("Loop Time (ms)", "%.2f", loopTimeMs)
 
