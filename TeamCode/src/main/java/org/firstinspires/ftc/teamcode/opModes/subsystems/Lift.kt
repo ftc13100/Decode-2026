@@ -33,13 +33,13 @@ object Lift : Subsystem {
     }
 
     val pto_lift = InstantCommand {
-        ptoLeft.position = 0.0
-        ptoRight.position = 0.0
+        ptoLeft.position = 0.487
+        ptoRight.position = 0.513
     }
 
     val pto_drive = InstantCommand {
-        ptoLeft.position = 0.115
-        ptoRight.position = 1.0
+        ptoLeft.position = 0.5
+        ptoRight.position = 0.5
     }
 
     val lift_Motors =

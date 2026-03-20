@@ -1,26 +1,16 @@
 package org.firstinspires.ftc.teamcode.opModes.subsystems
 
-import android.graphics.Color
 import com.bylazar.configurables.annotations.Configurable
-import com.qualcomm.hardware.rev.RevColorSensorV3
-import com.qualcomm.robotcore.hardware.ColorSensor
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor
-import com.qualcomm.robotcore.hardware.Servo
-import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
-import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.commands.utility.LambdaCommand
 import dev.nextftc.core.subsystems.Subsystem
-import dev.nextftc.ftc.ActiveOpMode
 import dev.nextftc.ftc.ActiveOpMode.hardwareMap
-import dev.nextftc.hardware.controllable.RunToPosition
 import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.hardware.powerable.SetPower
-import java.time.Instant
-import kotlin.math.abs
 
 @Configurable
 object Spindexer : Subsystem {
@@ -28,7 +18,9 @@ object Spindexer : Subsystem {
     // Position PID used for indexing
     @JvmField var posPIDCoefficients = PIDCoefficients(0.006, 0.0, 0.0001)
 
-    var motif: Int = 0
+    //ID 23: PPG = 2
+    //ID 22: PGP = 1
+    //ID 21: GPP = 0
 
     val controlSystem = controlSystem {
         posPid(posPIDCoefficients)
@@ -37,7 +29,7 @@ object Spindexer : Subsystem {
     val tolerance = KineticState(10.0)
 
     val spinAngle: Double
-        get() = (360.0 / 384.5) * spindexer.currentPosition
+        get() = (360.0 / 4000.0) * spindexer.currentPosition
 
     val spindexer = MotorEx("spindexer").brakeMode()
     lateinit var color0: NormalizedColorSensor
@@ -52,7 +44,6 @@ object Spindexer : Subsystem {
         when (state) {
             State.PID -> {
                 spindexer.power = controlSystem.calculate(spindexer.state).coerceIn(-0.3, 0.6)
-                Gate.gate_spindex()
                 detectColorRGB(color0)
                 detectColorRGB(color1)
                 detectColorRGB(color2)
@@ -65,10 +56,10 @@ object Spindexer : Subsystem {
 
     fun forwardOnlyTarget(angleDeg: Double): Double {
         val targetInRev = angleToTicks(angleDeg)
-        val currentRev = kotlin.math.floor(spindexer.currentPosition / 384.5)
-        var newTarget = currentRev * 384.5 + targetInRev
+        val currentRev = kotlin.math.floor(spindexer.currentPosition / 4000.0)
+        var newTarget = currentRev * 4000.0 + targetInRev
         if (newTarget <= spindexer.currentPosition) {
-            newTarget += 384.5
+            newTarget += 4000.0
         }
         return newTarget
     }
@@ -150,13 +141,18 @@ object Spindexer : Subsystem {
         .then(SetPower(spindexer, -1.0))
         .requires(this)
 
+    val spinIndex = InstantCommand({ state = State.MANUAL })
+        .then(SetPower(spindexer, 1.0))
+        .requires(this)
+
+
     val stopShot = InstantCommand({ state = State.MANUAL })
         .then(SetPower(spindexer, 0.0))
         .requires(this)
 
     fun autoIndex(b3: Int) = InstantCommand({
         state = State.PID
-        when (desiredIndex(b3, motif)) {
+        when (desiredIndex(b3, PoseStorage.motif)) {
             0 -> index0.schedule()
             1 -> index1.schedule()
             2 -> index2.schedule()
@@ -170,12 +166,12 @@ object Spindexer : Subsystem {
     }
 
     fun angleToTicks(angle : Double): Double {
-        val ticks = angle * 384.5/360
+        val ticks = angle * 4000.0/360
         return ticks
     }
 
     fun ticksToAngle(ticks : Double): Double {
-        val angle = ticks * 360/384.5
+        val angle = ticks * 360/4000.0
         return angle
     }
 

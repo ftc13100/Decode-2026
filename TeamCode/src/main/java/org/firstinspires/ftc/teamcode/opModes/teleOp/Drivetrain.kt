@@ -1,65 +1,51 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
-import com.bylazar.telemetry.JoinedTelemetry
-import com.bylazar.telemetry.PanelsTelemetry
-import com.pedropathing.geometry.Pose
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
-import dev.nextftc.core.commands.CommandManager
-import dev.nextftc.core.commands.delays.Delay
-import dev.nextftc.core.commands.delays.WaitUntil
-import dev.nextftc.core.commands.groups.SequentialGroup
-import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.PedroComponent
-import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import dev.nextftc.hardware.driving.MecanumDriverControlled
 import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
-import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intakeRunning
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Lift
-import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
-import kotlin.math.abs
-import kotlin.time.Duration.Companion.milliseconds
+
 
 @TeleOp(name = "Drivetrain")
 class Drivetrain : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                Lift, Intake, Spindexer, PoseStorage
+                Intake, Spindexer, Shooter, ShooterAngle
             ),
             BindingsComponent,
-            BulkReadComponent,
-            PedroComponent(Constants::createFollower)
+            BulkReadComponent
         )
     }
 
     private val frontLeftName = "frontLeft"
     private val frontRightName = "frontRight"
-//    private val backLeftName = "backLeft"
-//    private val backRightName = "backRight"
+    private val backLeftName = "backLeft"
+    private val backRightName = "backRight"
 
 
     private lateinit var frontLeftMotor: MotorEx
     private lateinit var frontRightMotor: MotorEx
-//    private lateinit var backLeftMotor: MotorEx
-//    private lateinit var backRightMotor: MotorEx
+    private lateinit var backLeftMotor: MotorEx
+    private lateinit var backRightMotor: MotorEx
 
     private lateinit var driverControlled: MecanumDriverControlled
 
@@ -70,10 +56,10 @@ class Drivetrain : NextFTCOpMode() {
 
         frontLeftMotor = MotorEx(frontLeftName).reversed()
         frontRightMotor = MotorEx(frontRightName)
-//        backLeftMotor = MotorEx(backLeftName).reversed()
-//        backRightMotor = MotorEx(backRightName)
+        backLeftMotor = MotorEx(backLeftName).reversed()
+        backRightMotor = MotorEx(backRightName)
 
-        listOf(frontLeftMotor, frontRightMotor).forEach {
+        listOf(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor).forEach {
             it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
 
@@ -83,8 +69,8 @@ class Drivetrain : NextFTCOpMode() {
         driverControlled = MecanumDriverControlled(
             frontLeftMotor,
             frontRightMotor,
-            Lift.backLeftMotor,
-            Lift.backRightMotor,
+            backLeftMotor,
+            backRightMotor,
             -Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
             Gamepads.gamepad1.rightStickX,
@@ -97,13 +83,12 @@ class Drivetrain : NextFTCOpMode() {
             .whenFalse { driverControlled.scalar = 0.95 }
 
         // lift
-        button { gamepad1.dpad_up}
-            .whenBecomesTrue { Lift.full_Lift }
+//        button { gamepad1.dpad_up}
+//            .whenBecomesTrue { Lift.full_Lift }
 
         //Intake artifact
         button { gamepad1.left_bumper }
-            .toggleOnBecomesTrue()
-            .whenBecomesTrue {
+            .whenTrue {
                 Intake.spinFast()
             }
             .whenBecomesFalse {
@@ -112,31 +97,55 @@ class Drivetrain : NextFTCOpMode() {
 
         //Outtake artifact
         button { gamepad1.right_bumper }
-            .toggleOnBecomesTrue()
-            .whenBecomesTrue {
+            .whenTrue {
                 Intake.spinReverse()
             }
             .whenBecomesFalse {
                 Intake.spinStop()
             }
 
+        button { gamepad1.b }
+            .whenTrue {
+                Spindexer.spinShot()
+            }
+            .whenBecomesFalse {
+                Spindexer.stopShot()
+            }
+
+        button { gamepad1.a }
+            .whenTrue {
+                Spindexer.spinIndex()
+            }
+            .whenBecomesFalse {
+                Spindexer.stopShot()
+            }
+
+        button { gamepad1.dpad_up }
+            .whenBecomesTrue {
+                Shooter.shootSpeed(0.6)
+            }
+            .whenBecomesFalse {
+                Shooter.shootSpeed(0.0)
+            }
+
     }
 
     override fun onUpdate() {
         BindingManager.update()
-        if (!Lift.isRunning) {
-            driverControlled.update()
-        }
+
+//        if (!Lift.isRunning) {
+//            driverControlled.update()
+//        }
 
         // loop time check
-        val now = System.nanoTime()
-        if (lastLoopTime != 0L) {
-            loopTimeMs = (now - lastLoopTime) / 1_000_000.0
-        }
-        lastLoopTime = now
+//        val now = System.nanoTime()
+//        if (lastLoopTime != 0L) {
+//            loopTimeMs = (now - lastLoopTime) / 1_000_000.0
+//        }
+//        lastLoopTime = now
 
         // telemetery
-        telemetry.addData("Loop Time (ms)", "%.2f", loopTimeMs)
+//        telemetry.addData("Loop Time (ms)", "%.2f", loopTimeMs)
 
 
         telemetry.addData(

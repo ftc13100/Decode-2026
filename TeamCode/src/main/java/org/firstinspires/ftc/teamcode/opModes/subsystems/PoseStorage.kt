@@ -7,6 +7,7 @@ object PoseStorage : Subsystem {
     var poseEnd = Pose()
     var blueAlliance = false
     var redAlliance = false
+    var motif = 0
 
 //    var turretValid = false
 //        private set

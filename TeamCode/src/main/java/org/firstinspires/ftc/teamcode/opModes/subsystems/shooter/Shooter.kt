@@ -13,65 +13,71 @@ import dev.nextftc.hardware.impl.MotorEx
 
 @Configurable
 object Shooter : Subsystem {
-    @JvmField var target = 0.0
-    @JvmField var velPIDCoefficients = PIDCoefficients(0.002, 0.0, 0.0)
-    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.000395, 0.001, 0.095)
+//    @JvmField var target = 0.0
+//    @JvmField var velPIDCoefficients = PIDCoefficients(0.002, 0.0, 0.0)
+//    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.000395, 0.001, 0.095)
 
     val shooter = MotorEx("shooter").brakeMode().reversed()
-    var shooterActive = false
-    var shooterReady = false
-    var shooterReadyMs: Double = 0.00
-    private val runtime = ElapsedTime()
 
-    val controller = controlSystem {
-        velPid(velPIDCoefficients)
-        basicFF(basicFFParameters)
-    }
-
-    override fun periodic() {
-        if (shooterActive) {
-            val motorPower = controller.calculate(
-                shooter.state
-            )
-            shooter.power = motorPower
-
-        } else {
-            shooter.power = 0.0
-        }
-    }
-
-    fun spinAtSpeed(speed: Double) =
+        fun shootSpeed(speed: Double) =
         InstantCommand {
-            target = speed
-            shooterActive = true
-            shooterReady = false
-            shooterReadyMs = 0.00
-            runtime.reset()
-        }.then(
-            RunToVelocity(controller, speed, 21.0),
-            InstantCommand {
-                shooterReady = true
-                shooterReadyMs = runtime.milliseconds()
-            }
-        ).setInterruptible(true).requires(this)
-
-    val stallShooter = spinAtSpeed(1000.0)
-
-    val stopShooter =
-        InstantCommand {
-            shooterActive = false
-            shooterReady = false
-            target = 0.0
+            shooter.power = speed
         }.requires(this)
 
+//    var shooterActive = false
+//    var shooterReady = false
+//    var shooterReadyMs: Double = 0.00
+//    private val runtime = ElapsedTime()
 
-    fun spinning() {
-        shooterActive = true
-        controller.goal = KineticState(velocity = target)
-        val motorPower = controller.calculate(
-            KineticState(velocity = shooter.velocity)
-        )
-        shooter.power = motorPower
-        shooter.power = motorPower
-    }
+//    val controller = controlSystem {
+//        velPid(velPIDCoefficients)
+//        basicFF(basicFFParameters)
+//    }
+
+//    override fun periodic() {
+//        if (shooterActive) {
+//            val motorPower = controller.calculate(
+//                shooter.state
+//            )
+//            shooter.power = motorPower
+//
+//        } else {
+//            shooter.power = 0.0
+//        }
+//    }
+//
+//    fun spinAtSpeed(speed: Double) =
+//        InstantCommand {
+//            target = speed
+//            shooterActive = true
+//            shooterReady = false
+//            shooterReadyMs = 0.00
+//            runtime.reset()
+//        }.then(
+//            RunToVelocity(controller, speed, 21.0),
+//            InstantCommand {
+//                shooterReady = true
+//                shooterReadyMs = runtime.milliseconds()
+//            }
+//        ).setInterruptible(true).requires(this)
+//
+//    val stallShooter = spinAtSpeed(1000.0)
+//
+//    val stopShooter =
+//        InstantCommand {
+//            shooterActive = false
+//            shooterReady = false
+//            target = 0.0
+//        }.requires(this)
+//
+//
+//    fun spinning() {
+//        shooterActive = true
+//        controller.goal = KineticState(velocity = target)
+//        val motorPower = controller.calculate(
+//            KineticState(velocity = shooter.velocity)
+//        )
+//        shooter.power = motorPower
+//        shooter.power = motorPower
+//    }
 }
