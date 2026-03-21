@@ -80,11 +80,7 @@ object Turret : Subsystem {
     }
 
     fun initPos() {
-        startPosition =
-            if (PoseStorage.turretValid)
-                PoseStorage.turretStartPos
-            else
-                turret.currentPosition
+        startPosition = turret.currentPosition
 
         target = startPosition
         rightLimit = startPosition + 3000.0
