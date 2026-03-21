@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.opModes.auto.blue
 import com.pedropathing.ftc.drivetrains.Mecanum
 import com.pedropathing.geometry.BezierCurve
 import com.pedropathing.geometry.BezierLine
+import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
@@ -36,6 +37,7 @@ import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.shoot
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.startShoot
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
+import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.blueLime.limelight
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
@@ -62,25 +64,40 @@ class testauto: NextFTCOpMode() {
             SequentialGroup(
                 Shooter.spinAtSpeed(1500.0),
                 ParallelGroup(
+                    TurretAuto.toLeft,
+                    TurretAuto.toLeft2
+                ),
+                ParallelGroup(
                 TurretAuto.toRight,
                 TurretAuto.toRight2
                 ),
                 FollowPath(startShoot),
-                FollowPath(shootPGP),
+                ParallelGroup(
+                    Intake.spinFastAuto,
+                FollowPath(shootPGP)
+            ),
                 FollowPath(PGPshoot),
                 FollowPath(shootGate),
-                FollowPath(gateEat),
+                ParallelGroup(
+                    Intake.spinFastAuto,
+                FollowPath(gateEat)),
                 Delay(1.seconds),
                 FollowPath(eatShoot),
                 FollowPath(shootGate),
-                FollowPath(gateEat),
+                ParallelGroup(
+                    Intake.spinFastAuto,
+                    FollowPath(gateEat)),
                 Delay(1.seconds),
                 FollowPath(eatShoot),
                 FollowPath(shootGate),
-                FollowPath(gateEat),
+                ParallelGroup(
+                    Intake.spinFastAuto,
+                    FollowPath(gateEat)),
                 Delay(1.seconds),
                 FollowPath(eatShoot),
-                FollowPath(shootPPG),
+                ParallelGroup(
+                    Intake.spinFastAuto,
+                    FollowPath(gateEat)),
                 FollowPath(PPGshoot),
                 FollowPath(goLeave)
             )
@@ -96,6 +113,20 @@ class testauto: NextFTCOpMode() {
         PoseStorage.blueAlliance = true
         PoseStorage.redAlliance = false
         autoRoutine()
+        val result: LLResult? = limelight.latestResult
+        if (result != null && result.isValid) {
+            val fiducials = result.fiducialResults
+            for (fiducial in fiducials) {
+                if (fiducial.fiducialId == 22) {
+                   }
+                else if (fiducial.fiducialId == 23) {
+
+                } else {
+
+                }
+
+            }
+        }
     }
 
     override fun onStop() {

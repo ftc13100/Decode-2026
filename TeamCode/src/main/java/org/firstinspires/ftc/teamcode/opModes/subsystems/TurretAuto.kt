@@ -16,8 +16,6 @@ object TurretAuto : Subsystem {
 
     }
 
-
-
     val toMid = InstantCommand {
         turret1.position = 0.5
     }
