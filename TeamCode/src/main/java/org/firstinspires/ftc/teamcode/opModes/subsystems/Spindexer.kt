@@ -16,7 +16,7 @@ import dev.nextftc.hardware.powerable.SetPower
 object Spindexer : Subsystem {
     @JvmField var target = 0.0
     // Position PID used for indexing
-    @JvmField var posPIDCoefficients = PIDCoefficients(0.006, 0.0, 0.0001)
+    @JvmField var posPIDCoefficients = PIDCoefficients(-0.006, 0.0, 0.0001)
 
     //ID 23: PPG = 2
     //ID 22: PGP = 1
@@ -29,7 +29,7 @@ object Spindexer : Subsystem {
     val tolerance = KineticState(10.0)
 
     val spinAngle: Double
-        get() = (360.0 / 4000.0) * spindexer.currentPosition
+        get() = (360.0 / (4000.0 * 5/2)) * spindexer.currentPosition
 
     val spindexer = MotorEx("spindexer").brakeMode()
     lateinit var color0: NormalizedColorSensor
@@ -43,7 +43,7 @@ object Spindexer : Subsystem {
     override fun periodic() {
         when (state) {
             State.PID -> {
-                spindexer.power = controlSystem.calculate(spindexer.state).coerceIn(-0.3, 0.6)
+                spindexer.power = controlSystem.calculate(spindexer.state).coerceIn(-1.0, 1.0)
                 detectColorRGB(color0)
                 detectColorRGB(color1)
                 detectColorRGB(color2)
@@ -56,10 +56,10 @@ object Spindexer : Subsystem {
 
     fun forwardOnlyTarget(angleDeg: Double): Double {
         val targetInRev = angleToTicks(angleDeg)
-        val currentRev = kotlin.math.floor(spindexer.currentPosition / 4000.0)
-        var newTarget = currentRev * 4000.0 + targetInRev
+        val currentRev = kotlin.math.floor(spindexer.currentPosition / (4000.0 * 5/2))
+        var newTarget = currentRev * (4000.0 * 5/2) + targetInRev
         if (newTarget <= spindexer.currentPosition) {
-            newTarget += 4000.0
+            newTarget += (4000.0 * 5/2)
         }
         return newTarget
     }
@@ -138,11 +138,11 @@ object Spindexer : Subsystem {
 
     // manual: periodic stops PID
     val spinShot = InstantCommand({ state = State.MANUAL })
-        .then(SetPower(spindexer, -1.0))
+        .then(SetPower(spindexer, 1.0))
         .requires(this)
 
     val spinIndex = InstantCommand({ state = State.MANUAL })
-        .then(SetPower(spindexer, 1.0))
+        .then(SetPower(spindexer, -1.0))
         .requires(this)
 
 
@@ -166,12 +166,12 @@ object Spindexer : Subsystem {
     }
 
     fun angleToTicks(angle : Double): Double {
-        val ticks = angle * 4000.0/360
+        val ticks = angle * (4000.0 * 5/2)/360
         return ticks
     }
 
     fun ticksToAngle(ticks : Double): Double {
-        val angle = ticks * 360/4000.0
+        val angle = ticks * 360/(4000.0 * 5/2)
         return angle
     }
 
@@ -237,11 +237,11 @@ object Spindexer : Subsystem {
         }
 
     override fun initialize() {
-        color0 = hardwareMap.get(NormalizedColorSensor::class.java, "color0")
-        color0.gain = 10.0f
-        color1 = hardwareMap.get(NormalizedColorSensor::class.java, "color1")
-        color1.gain = 10.0f
-        color2 = hardwareMap.get(NormalizedColorSensor::class.java, "color2")
-        color2.gain = 10.0f
+        color0 = hardwareMap.get(NormalizedColorSensor::class.java, "cs0")
+        color0.gain = 12.0f
+        color1 = hardwareMap.get(NormalizedColorSensor::class.java, "cs1")
+        color1.gain = 12.0f
+        color2 = hardwareMap.get(NormalizedColorSensor::class.java, "cs2")
+        color2.gain = 12.0f
     }
 }

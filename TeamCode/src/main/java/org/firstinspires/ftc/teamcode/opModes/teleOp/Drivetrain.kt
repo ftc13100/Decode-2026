@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intakeRunning
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Lift
+import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
@@ -29,7 +30,7 @@ class Drivetrain : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                Intake, Spindexer, Shooter, ShooterAngle
+                Intake, Spindexer, Shooter, ShooterAngle, NewTurret
             ),
             BindingsComponent,
             BulkReadComponent
@@ -51,6 +52,8 @@ class Drivetrain : NextFTCOpMode() {
 
     private var lastLoopTime = 0L
     private var loopTimeMs = 0.0
+
+    var speed: Double = 0.0
 
     override fun onInit() {
 
@@ -88,7 +91,8 @@ class Drivetrain : NextFTCOpMode() {
 
         //Intake artifact
         button { gamepad1.left_bumper }
-            .whenTrue {
+            .toggleOnBecomesTrue()
+            .whenBecomesTrue {
                 Intake.spinFast()
             }
             .whenBecomesFalse {
@@ -121,31 +125,40 @@ class Drivetrain : NextFTCOpMode() {
             }
 
         button { gamepad1.dpad_up }
+            .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                Shooter.shootSpeed(0.6)
+                speed += 10
+                Shooter.spinAtSpeed(speed).schedule()
             }
-            .whenBecomesFalse {
-                Shooter.shootSpeed(0.0)
+
+        button { gamepad1.dpad_up }
+            .toggleOnBecomesTrue()
+            .whenBecomesTrue {
+                speed -= 10
+                Shooter.spinAtSpeed(speed).schedule()
             }
 
     }
 
     override fun onUpdate() {
         BindingManager.update()
+        driverControlled.update()
+        NewTurret.toMid()
+        ShooterAngle.angle_mid()
 
 //        if (!Lift.isRunning) {
 //            driverControlled.update()
 //        }
 
         // loop time check
-//        val now = System.nanoTime()
-//        if (lastLoopTime != 0L) {
-//            loopTimeMs = (now - lastLoopTime) / 1_000_000.0
-//        }
-//        lastLoopTime = now
+        val now = System.nanoTime()
+        if (lastLoopTime != 0L) {
+            loopTimeMs = (now - lastLoopTime) / 1_000_000.0
+        }
+        lastLoopTime = now
 
-        // telemetery
-//        telemetry.addData("Loop Time (ms)", "%.2f", loopTimeMs)
+//      telemetry
+        telemetry.addData("Loop Time (ms)", "%.2f", loopTimeMs)
 
 
         telemetry.addData(
@@ -156,6 +169,10 @@ class Drivetrain : NextFTCOpMode() {
                 "Stopped"
             }, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
         )
+
+        telemetry.addData("Shooter", Shooter.shooter.velocity)
+
+        telemetry.addData("spindexer", Spindexer.spindexer.currentPosition)
 
         telemetry.addData("Full?", Spindexer.isFull)
         telemetry.addData("S0 ", Spindexer.detectColorRGB(Spindexer.color0))

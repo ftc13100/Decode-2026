@@ -22,8 +22,6 @@ import dev.nextftc.extensions.pedro.PedroComponent
 import kotlinx.coroutines.delay
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
 import kotlin.math.abs
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
-import org.firstinspires.ftc.teamcode.opModes.subsystems.GoalFinder
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
@@ -93,7 +91,6 @@ class SpindexerTele : NextFTCOpMode() {
 //    }
 
     override fun onUpdate() {
-        Gate.gate_spindex()
         updateSignals()
     }
 
