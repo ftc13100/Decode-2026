@@ -124,17 +124,19 @@ class Drivetrain : NextFTCOpMode() {
                 Spindexer.stopShot()
             }
 
-        button { gamepad1.dpad_up }
+        button { gamepad1.x }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                speed += 10
-                Shooter.spinAtSpeed(speed).schedule()
+                Spindexer.autoIndex(0)
+            }
+            .whenBecomesFalse {
+                Spindexer.stopShot()
             }
 
         button { gamepad1.dpad_up }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                speed -= 10
+                speed += 10
                 Shooter.spinAtSpeed(speed).schedule()
             }
 
@@ -145,6 +147,8 @@ class Drivetrain : NextFTCOpMode() {
         driverControlled.update()
         NewTurret.toMid()
         ShooterAngle.angle_mid()
+        Shooter.spinAtSpeed(-1600.0).schedule()
+
 
 //        if (!Lift.isRunning) {
 //            driverControlled.update()
@@ -169,6 +173,8 @@ class Drivetrain : NextFTCOpMode() {
                 "Stopped"
             }, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
         )
+
+        telemetry.addData("Spindexer", Spindexer.spindexer.motor.getCurrent(CurrentUnit.MILLIAMPS))
 
         telemetry.addData("Shooter", Shooter.shooter.velocity)
 

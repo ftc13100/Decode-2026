@@ -16,7 +16,7 @@ import dev.nextftc.hardware.powerable.SetPower
 object Spindexer : Subsystem {
     @JvmField var target = 0.0
     // Position PID used for indexing
-    @JvmField var posPIDCoefficients = PIDCoefficients(-0.006, 0.0, 0.0001)
+    @JvmField var posPIDCoefficients = PIDCoefficients(-0.0005, 0.0, -0.00002)
 
     //ID 23: PPG = 2
     //ID 22: PGP = 1

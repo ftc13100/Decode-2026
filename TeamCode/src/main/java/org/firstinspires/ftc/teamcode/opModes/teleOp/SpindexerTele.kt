@@ -20,6 +20,7 @@ import dev.nextftc.core.commands.CommandManager
 import dev.nextftc.core.commands.delays.Delay
 import dev.nextftc.extensions.pedro.PedroComponent
 import kotlinx.coroutines.delay
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
 import kotlin.math.abs
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
@@ -56,6 +57,7 @@ class SpindexerTele : NextFTCOpMode() {
 
     override fun onInit() {
         spindexCommand()
+        Intake.spinSlowSpeed()
         timer.reset()
     }
 
@@ -98,6 +100,10 @@ class SpindexerTele : NextFTCOpMode() {
         //telemetry.addData("Dexer Position", Spindexer.spindexer.currentPosition)
         panelsTelemetry.addData("Position", Spindexer.spindexer.currentPosition)
         panelsTelemetry.addData("Target", Spindexer.target)
+
+        telemetry.addData("Spindexer", Spindexer.spindexer.motor.getCurrent(CurrentUnit.MILLIAMPS))
+        telemetry.addData("intake", Intake.intake.motor.getCurrent(CurrentUnit.MILLIAMPS))
+
 
         telemetry.addData("Dexer Pos", Spindexer.spindexer.currentPosition)
         telemetry.addData("S0 ", Spindexer.detectColorRGB(Spindexer.color0))
