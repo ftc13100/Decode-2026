@@ -57,6 +57,8 @@ class Drivetrain : NextFTCOpMode() {
     private var loopTimeMs = 0.0
 
     var speed: Double = 0.0
+    var angleShooter: Double = 0.0
+    var turretAngle: Double = 0.0
 
     private val testingPose = Pose(72.0, 72.0, Math.toRadians(90.0))
 
@@ -64,9 +66,11 @@ class Drivetrain : NextFTCOpMode() {
 
         follower.setStartingPose(testingPose)
 
-        frontLeftMotor = MotorEx(frontLeftName).reversed()
+        ShooterAngle.angle_mid()
+
+        frontLeftMotor = MotorEx(frontLeftName)
         frontRightMotor = MotorEx(frontRightName)
-        backLeftMotor = MotorEx(backLeftName).reversed()
+        backLeftMotor = MotorEx(backLeftName)
         backRightMotor = MotorEx(backRightName)
 
         listOf(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor).forEach {
@@ -98,6 +102,42 @@ class Drivetrain : NextFTCOpMode() {
 //        button { gamepad1.dpad_up}
 //            .whenBecomesTrue { Lift.full_Lift }
 
+        button { gamepad1.dpad_up }
+            .whenBecomesTrue {
+                speed += 10
+                Shooter.spinAtSpeed(speed)()
+            }
+
+        button { gamepad1.dpad_down }
+            .whenBecomesTrue {
+                speed -= 10
+                Shooter.spinAtSpeed(speed)()
+            }
+
+        button { gamepad1.dpad_right }
+            .whenBecomesTrue {
+                angleShooter += 0.05
+                ShooterAngle.toAngle(angleShooter)()
+            }
+
+        button { gamepad1.dpad_left }
+            .whenBecomesTrue {
+                angleShooter -= 0.05
+                ShooterAngle.toAngle(angleShooter)()
+            }
+
+        button { gamepad2.dpad_right }
+            .whenBecomesTrue {
+                turretAngle += 0.02
+                NewTurret.toAngle(turretAngle)()
+            }
+
+        button { gamepad2.dpad_left }
+            .whenBecomesTrue {
+                turretAngle -= 0.02
+                NewTurret.toAngle(turretAngle)()
+            }
+
         //Intake artifact
         button { gamepad1.left_bumper }
             .toggleOnBecomesTrue()
@@ -110,7 +150,8 @@ class Drivetrain : NextFTCOpMode() {
 
         //Outtake artifact
         button { gamepad1.right_bumper }
-            .whenTrue {
+            .toggleOnBecomesTrue()
+            .whenBecomesTrue {
                 Intake.spinReverse()
             }
             .whenBecomesFalse {
@@ -123,6 +164,7 @@ class Drivetrain : NextFTCOpMode() {
             }
             .whenBecomesFalse {
                 Spindexer.stopShot()
+                Intake.spinStop()
             }
 
         button { gamepad1.a }
@@ -131,15 +173,13 @@ class Drivetrain : NextFTCOpMode() {
             }
             .whenBecomesFalse {
                 Spindexer.stopShot()
+                Intake.spinStop()
             }
 
         button { gamepad1.x }
-            .toggleOnBecomesTrue()
-            .whenBecomesTrue {
-                Spindexer.autoIndex(0)
-            }
-            .whenBecomesFalse {
-                Spindexer.stopShot()
+            .whenBecomesTrue{
+                Spindexer.index0()
+//                Spindexer.autoIndex(0)
             }
 
 //        button { gamepad1.dpad_up }
@@ -154,9 +194,9 @@ class Drivetrain : NextFTCOpMode() {
     override fun onUpdate() {
         BindingManager.update()
         driverControlled.update()
-        NewTurret.toMid()
-        ShooterAngle.angle_mid()
-        Shooter.stallShooter()
+//        NewTurret.toMid()
+//        ShooterAngle.angle_mid()
+//        Shooter.stallShooter()
         follower.update()
 
 //        if (!Lift.isRunning) {
@@ -173,6 +213,8 @@ class Drivetrain : NextFTCOpMode() {
 //      telemetry
         telemetry.addData("Loop Time (ms)", "%.2f", loopTimeMs)
 
+        telemetry.addData("X", follower.pose.x)
+        telemetry.addData("Y", follower.pose.y)
 
         telemetry.addData(
             "Intake", "%s (Power: %+1.1f, Current: %3.2f mA)",

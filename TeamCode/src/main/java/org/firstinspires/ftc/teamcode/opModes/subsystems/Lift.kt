@@ -19,7 +19,7 @@ object Lift : Subsystem {
     private lateinit var ptoLeft: Servo
     private lateinit var ptoRight: Servo
 
-    val backLeftMotor = MotorEx("backLeft").brakeMode().reversed()
+    val backLeftMotor = MotorEx("backLeft").brakeMode()
     val backRightMotor = MotorEx("backRight").brakeMode()
 
     val LiftTimer = ElapsedTime()

@@ -32,6 +32,13 @@ object NewTurret : Subsystem {
 
     var targetPosition = 0.5
 
+    fun toAngle(angle: Double) =
+        InstantCommand {
+            turret1.position = angle
+            turret2.position= angle
+
+        }
+
 //    const val MAX_LIMIT_DEG = 210.0
 
 //    var turretPosition = 0.0

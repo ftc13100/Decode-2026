@@ -57,7 +57,7 @@ class SpindexerTele : NextFTCOpMode() {
 
     override fun onInit() {
         spindexCommand()
-        Intake.spinSlowSpeed()
+        Intake.spinSlowSpeed()()
         timer.reset()
     }
 

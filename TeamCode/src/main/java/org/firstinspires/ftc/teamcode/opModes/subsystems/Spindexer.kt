@@ -137,17 +137,24 @@ object Spindexer : Subsystem {
         .requires(this)
 
     // manual: periodic stops PID
-    val spinShot = InstantCommand({ state = State.MANUAL })
-        .then(SetPower(spindexer, 1.0))
+    val spinShot = InstantCommand {
+        Intake.spinSlowSpeed()()
+        state = State.MANUAL
+        spindexer.power = 1.0
+    }
         .requires(this)
 
-    val spinIndex = InstantCommand({ state = State.MANUAL })
-        .then(SetPower(spindexer, -1.0))
+    val spinIndex = InstantCommand {
+        Intake.spinSlowSpeed()()
+        state = State.MANUAL
+        spindexer.power = -1.0
+    }
         .requires(this)
 
-
-    val stopShot = InstantCommand({ state = State.MANUAL })
-        .then(SetPower(spindexer, 0.0))
+    val stopShot = InstantCommand {
+        state = State.MANUAL
+        spindexer.power = 0.0
+    }
         .requires(this)
 
     fun autoIndex(b3: Int) = InstantCommand({
