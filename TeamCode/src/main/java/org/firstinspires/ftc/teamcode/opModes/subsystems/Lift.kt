@@ -25,7 +25,7 @@ object Lift : Subsystem {
     val LiftTimer = ElapsedTime()
 
     var isRunning = false
-    const val CURRENT_THRESHOLD = 8000.0
+    const val CURRENT_THRESHOLD = 12000.0
 
     override fun initialize() {
         ptoLeft = ActiveOpMode.hardwareMap.get(Servo::class.java, "ptoLeft")
@@ -50,7 +50,7 @@ object Lift : Subsystem {
             SetPower(backRightMotor, 1.0),
             SetPower(backLeftMotor,1.0)
             ),
-            WaitUntil { backLeftMotor.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD || LiftTimer.seconds() > 4.0 },
+            WaitUntil { backLeftMotor.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD || LiftTimer.seconds() > 8.0 },
             ParallelGroup(
             SetPower(backRightMotor, 0.0),
             SetPower(backLeftMotor, 0.0)

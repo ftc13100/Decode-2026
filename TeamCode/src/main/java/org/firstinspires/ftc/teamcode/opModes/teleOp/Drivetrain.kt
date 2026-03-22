@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
+import com.pedropathing.geometry.Pose
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
@@ -7,6 +8,7 @@ import dev.nextftc.bindings.button
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.PedroComponent
+import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
@@ -33,7 +35,8 @@ class Drivetrain : NextFTCOpMode() {
                 Intake, Spindexer, Shooter, ShooterAngle, NewTurret
             ),
             BindingsComponent,
-            BulkReadComponent
+            BulkReadComponent,
+            PedroComponent(Constants::createFollower)
         )
     }
 
@@ -55,7 +58,11 @@ class Drivetrain : NextFTCOpMode() {
 
     var speed: Double = 0.0
 
+    private val testingPose = Pose(72.0, 72.0, Math.toRadians(90.0))
+
     override fun onInit() {
+
+        follower.setStartingPose(testingPose)
 
         frontLeftMotor = MotorEx(frontLeftName).reversed()
         frontRightMotor = MotorEx(frontRightName)
@@ -65,6 +72,8 @@ class Drivetrain : NextFTCOpMode() {
         listOf(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor).forEach {
             it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
+
+        follower.update()
 
     }
 
@@ -133,12 +142,12 @@ class Drivetrain : NextFTCOpMode() {
                 Spindexer.stopShot()
             }
 
-        button { gamepad1.dpad_up }
-            .toggleOnBecomesTrue()
-            .whenBecomesTrue {
-                speed += 10
-                Shooter.spinAtSpeed(speed).schedule()
-            }
+//        button { gamepad1.dpad_up }
+//            .toggleOnBecomesTrue()
+//            .whenBecomesTrue {
+//                speed += 10
+//                Shooter.spinAtSpeed(speed).schedule()
+//            }
 
     }
 
@@ -147,8 +156,8 @@ class Drivetrain : NextFTCOpMode() {
         driverControlled.update()
         NewTurret.toMid()
         ShooterAngle.angle_mid()
-        Shooter.spinAtSpeed(-1600.0).schedule()
-
+        Shooter.stallShooter()
+        follower.update()
 
 //        if (!Lift.isRunning) {
 //            driverControlled.update()
@@ -186,6 +195,8 @@ class Drivetrain : NextFTCOpMode() {
         telemetry.addData("S1 ", Spindexer.detectColorRGB(Spindexer.color1))
         telemetry.addData("Alpha", "%.3f", Spindexer.color1.normalizedColors.alpha)
         telemetry.addData("S2 ", Spindexer.detectColorRGB(Spindexer.color2))
+        telemetry.addData("Alpha", "%.3f", Spindexer.color2.normalizedColors.alpha)
+
 
         telemetry.update()
 

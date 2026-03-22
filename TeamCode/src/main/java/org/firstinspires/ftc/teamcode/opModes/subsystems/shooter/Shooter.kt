@@ -66,7 +66,7 @@ object Shooter : Subsystem {
             }
         ).setInterruptible(true).requires(this)
 
-    val stallShooter = spinAtSpeed(1000.0)
+    val stallShooter = spinAtSpeed(1600.0)
 
     val stopShooter =
         InstantCommand {
@@ -82,7 +82,6 @@ object Shooter : Subsystem {
         val motorPower = controller.calculate(
             KineticState(velocity = shooter.velocity)
         )
-        shooter.power = motorPower
         shooter.power = motorPower
     }
 }
