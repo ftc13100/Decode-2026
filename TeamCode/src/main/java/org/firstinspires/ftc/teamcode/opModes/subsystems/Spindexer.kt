@@ -44,9 +44,9 @@ object Spindexer : Subsystem {
         when (state) {
             State.PID -> {
                 spindexer.power = controlSystem.calculate(spindexer.state).coerceIn(-1.0, 1.0)
-                detectColorRGB(color0)
-                detectColorRGB(color1)
-                detectColorRGB(color2)
+//                detectColorRGB(color0)
+//                detectColorRGB(color1)
+//                detectColorRGB(color2)
             }
             State.MANUAL -> {
                 return
@@ -157,14 +157,14 @@ object Spindexer : Subsystem {
     }
         .requires(this)
 
-    fun autoIndex(b3: Int) = InstantCommand({
+    fun autoIndex(b3: Int) = InstantCommand {
         state = State.PID
         when (desiredIndex(b3, PoseStorage.motif)) {
-            0 -> index0.schedule()
-            1 -> index1.schedule()
-            2 -> index2.schedule()
+            0 -> index0()
+            1 -> index1()
+            2 -> index2()
         }
-    }).requires(this)
+    }.requires(this)
 
     // tuning only
     fun spin() {
