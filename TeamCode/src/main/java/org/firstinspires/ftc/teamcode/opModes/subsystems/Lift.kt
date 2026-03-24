@@ -42,6 +42,16 @@ object Lift : Subsystem {
         ptoRight.position = 0.5
     }
 
+    fun toAngleRight(angle: Double) =
+        InstantCommand {
+            ptoRight.position = angle
+        }
+
+    fun toAngleLeft( angle: Double) =
+        InstantCommand {
+            ptoLeft.position = angle
+        }
+
     val lift_Motors =
         SequentialGroup(
             InstantCommand { isRunning = true },
@@ -57,6 +67,17 @@ object Lift : Subsystem {
             ),
             InstantCommand { isRunning = false }
         )
+
+
+    val motorsOn = InstantCommand {
+        backLeftMotor.power = 1.0
+        backRightMotor.power = 1.0
+    }
+
+    val motorsOff = InstantCommand {
+        backLeftMotor.power = 0.0
+        backRightMotor.power = 0.0
+    }
 
     val full_Lift = SequentialGroup(
         pto_lift,
