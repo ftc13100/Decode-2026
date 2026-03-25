@@ -46,6 +46,8 @@ class PTO_TEST : NextFTCOpMode() {
 
 
     override fun onInit() {
+        Lift.toAngleLeft(ptoLeftAngle)()
+        Lift.toAngleRight(ptoRightAngle)()
     }
 
     override fun onStartButtonPressed() {
