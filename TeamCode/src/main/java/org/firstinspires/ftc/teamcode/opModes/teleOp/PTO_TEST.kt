@@ -46,39 +46,23 @@ class PTO_TEST : NextFTCOpMode() {
 
 
     override fun onInit() {
-        Lift.toAngleLeft(ptoLeftAngle)()
-        Lift.toAngleRight(ptoRightAngle)()
+        Lift.pto_drive()
     }
 
     override fun onStartButtonPressed() {
 
         button { gamepad1.dpad_down }
             .whenBecomesTrue {
-                ptoLeftAngle += 0.05
-                Lift.toAngleLeft(ptoLeftAngle)()
+                Lift.pto_drive()
             }
 
         button { gamepad1.dpad_up }
             .whenBecomesTrue {
-                ptoLeftAngle -= 0.05
-                Lift.toAngleLeft(ptoLeftAngle)()
-            }
-
-        button { gamepad1.dpad_right }
-            .whenBecomesTrue {
-                ptoRightAngle += 0.05
-                Lift.toAngleRight(ptoRightAngle)()
-            }
-
-        button { gamepad1.dpad_left }
-            .whenBecomesTrue {
-                ptoRightAngle -= 0.05
-                Lift.toAngleRight(ptoRightAngle)()
+                Lift.pto_drive()
             }
 
         button { gamepad1.a }
-            .toggleOnBecomesTrue()
-            .whenBecomesTrue {
+            .whenTrue {
                 Lift.motorsOn()
             }
             .whenBecomesFalse {

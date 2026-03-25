@@ -33,8 +33,8 @@ object Lift : Subsystem {
     }
 
     val pto_lift = InstantCommand {
-        ptoLeft.position = 0.487
-        ptoRight.position = 0.513
+        ptoLeft.position = 0.45
+        ptoRight.position = 0.55
     }
 
     val pto_drive = InstantCommand {
@@ -70,7 +70,7 @@ object Lift : Subsystem {
 
 
     val motorsOn = InstantCommand {
-        backLeftMotor.power = 1.0
+        backLeftMotor.power = -1.0
         backRightMotor.power = 1.0
     }
 
