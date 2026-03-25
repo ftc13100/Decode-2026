@@ -53,7 +53,7 @@ class PTO_TEST : NextFTCOpMode() {
 
         button { gamepad1.dpad_down }
             .whenBecomesTrue {
-                Lift.pto_drive()
+                Lift.pto_lift()
             }
 
         button { gamepad1.dpad_up }
