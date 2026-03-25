@@ -41,8 +41,8 @@ class PTO_TEST : NextFTCOpMode() {
         )
     }
 
-    var ptoRightAngle: Double = 0.0
-    var ptoLeftAngle: Double = 0.0
+    var ptoRightAngle: Double = 0.5
+    var ptoLeftAngle: Double = 0.5
 
 
     override fun onInit() {
