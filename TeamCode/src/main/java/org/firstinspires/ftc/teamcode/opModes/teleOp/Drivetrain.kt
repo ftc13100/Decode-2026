@@ -18,14 +18,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intakeRunning
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Lift
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
-import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 
+private  const val TELEMETRY_INTERVAL:Int = 250
 
 @TeleOp(name = "Drivetrain")
 class Drivetrain : NextFTCOpMode() {
@@ -53,8 +52,10 @@ class Drivetrain : NextFTCOpMode() {
 
     private lateinit var driverControlled: MecanumDriverControlled
 
-    private var lastLoopTime = 0L
-    private var loopTimeMs = 0.0
+    private var lastLoopTime = 0.0
+    private var maxLoopTime = 0.0
+    private var loopTimeAverage = 0.0
+    private var lastTelemetryTime = 0.0
 
     var speed: Double = 0.0
     var angleShooter: Double = 0.0
@@ -203,45 +204,51 @@ class Drivetrain : NextFTCOpMode() {
 //            driverControlled.update()
 //        }
 
-        // loop time check
-        val now = System.nanoTime()
-        if (lastLoopTime != 0L) {
-            loopTimeMs = (now - lastLoopTime) / 1_000_000.0
+        val now = System.nanoTime() / 1_000_000.0
+        val telemetryTime = (now - lastTelemetryTime)
+        val loopTime = (now - lastLoopTime)
+        if(loopTime > maxLoopTime) maxLoopTime = loopTime
+        if((loopTimeAverage < 0.5 * loopTime) || (loopTimeAverage > 1.5 * loopTime))
+            loopTimeAverage = loopTime
+        else
+            loopTimeAverage = loopTimeAverage * 0.99 + loopTime * 0.01
+
+        if(telemetryTime > TELEMETRY_INTERVAL )
+        {
+            telemetry.addData("LTavg", "%.2f, Max: %.2f", loopTimeAverage, maxLoopTime)
+
+            telemetry.addData("X", follower.pose.x)
+            telemetry.addData("Y", follower.pose.y)
+
+            telemetry.addData(
+                "Intake", "%s (Power: %+1.1f, Current: %3.2f mA)",
+                if (intakeRunning) {
+                    "Running"
+                } else {
+                    "Stopped"
+                }, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
+            )
+
+            telemetry.addData("Spindexer", Spindexer.spindexer.motor.getCurrent(CurrentUnit.MILLIAMPS))
+
+            telemetry.addData("Shooter", Shooter.shooter.velocity)
+
+            telemetry.addData("spindexer", Spindexer.spindexer.currentPosition)
+
+            telemetry.addData("Full?", Spindexer.isFull)
+            telemetry.addData("S0 ", Spindexer.detectColorRGB(Spindexer.color0))
+            telemetry.addData("Alpha", "%.3f", Spindexer.color0.normalizedColors.alpha)
+            telemetry.addData("S1 ", Spindexer.detectColorRGB(Spindexer.color1))
+            telemetry.addData("Alpha", "%.3f", Spindexer.color1.normalizedColors.alpha)
+            telemetry.addData("S2 ", Spindexer.detectColorRGB(Spindexer.color2))
+            telemetry.addData("Alpha", "%.3f", Spindexer.color2.normalizedColors.alpha)
+
+
+            telemetry.update()
+
+            lastTelemetryTime = now
         }
         lastLoopTime = now
-
-//      telemetry
-        telemetry.addData("Loop Time (ms)", "%.2f", loopTimeMs)
-
-        telemetry.addData("X", follower.pose.x)
-        telemetry.addData("Y", follower.pose.y)
-
-        telemetry.addData(
-            "Intake", "%s (Power: %+1.1f, Current: %3.2f mA)",
-            if (intakeRunning) {
-                "Running"
-            } else {
-                "Stopped"
-            }, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
-        )
-
-        telemetry.addData("Spindexer", Spindexer.spindexer.motor.getCurrent(CurrentUnit.MILLIAMPS))
-
-        telemetry.addData("Shooter", Shooter.shooter.velocity)
-
-        telemetry.addData("spindexer", Spindexer.spindexer.currentPosition)
-
-        telemetry.addData("Full?", Spindexer.isFull)
-        telemetry.addData("S0 ", Spindexer.detectColorRGB(Spindexer.color0))
-        telemetry.addData("Alpha", "%.3f", Spindexer.color0.normalizedColors.alpha)
-        telemetry.addData("S1 ", Spindexer.detectColorRGB(Spindexer.color1))
-        telemetry.addData("Alpha", "%.3f", Spindexer.color1.normalizedColors.alpha)
-        telemetry.addData("S2 ", Spindexer.detectColorRGB(Spindexer.color2))
-        telemetry.addData("Alpha", "%.3f", Spindexer.color2.normalizedColors.alpha)
-
-
-        telemetry.update()
-
     }
 
     override fun onStop() {
