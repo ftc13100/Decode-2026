@@ -51,7 +51,7 @@ class testauto: NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                Shooter, ShooterAngle, Intake, Gate, PoseStorage,
+                Shooter, ShooterAngle, Intake, PoseStorage,
                 TurretAuto, blueAutoPaths
             ),
             BulkReadComponent,
