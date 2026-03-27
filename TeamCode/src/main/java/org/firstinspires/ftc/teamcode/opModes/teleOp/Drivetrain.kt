@@ -190,6 +190,15 @@ class Drivetrain : NextFTCOpMode() {
 //                Shooter.spinAtSpeed(speed).schedule()
 //            }
 
+        button {gamepad2.x}
+            .toggleOnBecomesTrue()
+            .whenBecomesTrue {
+                NewTurret.trackTarget()
+            }
+            .whenBecomesFalse {
+                NewTurret.stopTracking()
+            }
+
     }
 
     override fun onUpdate() {
