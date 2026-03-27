@@ -1268,12 +1268,25 @@ class OffsetsTuner extends OpMode {
  * @author Jacob Ophoven - 18535 Frozen Code
  * @version 1.0, 12/26/2025
  */
+
+/**
+ * This is the Predictive Braking Tuner. It runs the robot forward and backward at various power
+ * levels, recording the robot’s velocity and position immediately before braking. The motors are
+ * then set to a reverse power, which represents the fastest theoretical braking the robot
+ * can achieve. Once the robot comes to a complete stop, the tuner measures the stopping distance.
+ * Using the collected data, it generates a velocity-vs-stopping-distance graph and fits a
+ * quadratic curve to model the braking behavior.
+ *
+ * @author Ashay Sarda - 19745 Turtle Walkers
+ * @author Jacob Ophoven - 18535 Frozen Code
+ * @version 1.0, 12/26/2025
+ */
 class PredictiveBrakingTuner extends OpMode {
     private static final double[] TEST_POWERS =
             {1, 1, 1, 0.9, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2};
+    private static final double BRAKING_POWER = -0.2;
 
     private static final int DRIVE_TIME_MS = 1000;
-    private static final int BRAKE_WAIT_MS = 500;
 
     private enum State {
         START_MOVE,
@@ -1320,7 +1333,6 @@ class PredictiveBrakingTuner extends OpMode {
         telemetryM.debug("Press B on game pad 1 to stop.");
         telemetryM.update(telemetry);
         follower.update();
-        drawOnlyCurrent();
     }
 
     @Override
@@ -1341,6 +1353,8 @@ class PredictiveBrakingTuner extends OpMode {
             return;
         }
 
+        double direction = (iteration % 2 == 0) ? 1 : -1;
+
         switch (state) {
             case START_MOVE: {
                 if (iteration >= TEST_POWERS.length) {
@@ -1350,11 +1364,7 @@ class PredictiveBrakingTuner extends OpMode {
 
                 double currentPower = TEST_POWERS[iteration];
                 follower.setMaxPower(currentPower);
-                if (iteration % 2 != 0) {
-                    follower.setTeleOpDrive(-1, 0, 0, true);
-                } else {
-                    follower.setTeleOpDrive(1, 0, 0, true);
-                }
+                follower.setTeleOpDrive(direction, 0, 0, true);
 
                 timer.reset();
                 state = State.WAIT_DRIVE_TIME;
@@ -1362,6 +1372,10 @@ class PredictiveBrakingTuner extends OpMode {
             }
 
             case WAIT_DRIVE_TIME: {
+                follower.setTeleOpDrive(direction, 0,
+                        (0-follower.getHeading()) * 0.5,
+                        true);
+
                 if (timer.milliseconds() >= DRIVE_TIME_MS) {
                     measuredVelocity = follower.getVelocity().getMagnitude();
                     startPosition = follower.getPose().getAsVector();
@@ -1371,7 +1385,7 @@ class PredictiveBrakingTuner extends OpMode {
             }
 
             case APPLY_BRAKE: {
-                stopRobot();
+                follower.setTeleOpDrive(BRAKING_POWER * direction, 0, 0, true);
 
                 timer.reset();
                 state = State.WAIT_BRAKE_TIME;
@@ -1385,7 +1399,8 @@ class PredictiveBrakingTuner extends OpMode {
 
                 brakeData.add(new BrakeRecord(t, currentPose, currentVelocity));
 
-                if (timer.milliseconds() >= BRAKE_WAIT_MS || follower.getVelocity().getMagnitude() <= .05) {
+                if (follower.getVelocity().dot(new Vector(direction,
+                        follower.getHeading())) <= 0) {
                     state = State.RECORD;
                 }
                 break;
@@ -1433,11 +1448,8 @@ class PredictiveBrakingTuner extends OpMode {
                 break;
             }
         }
-
-        telemetry.update();
     }
 }
-
 /**
  * This is the Drawing class. It handles the drawing of stuff on Panels Dashboard, like the robot.
  *
