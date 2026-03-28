@@ -141,6 +141,9 @@ object Spindexer : Subsystem {
     val shootAuto=
         SetPower(spindexer, 1.0)
             .requires(this)
+    val shootStop=
+        SetPower(spindexer, 0.0)
+            .requires(this)
 
 
     fun angleToTicks(angle : Double): Double {

@@ -66,10 +66,9 @@ class testauto: NextFTCOpMode() {
             SequentialGroup(
                 Shooter.shootShooter,
                 FollowPath(startShoot),
-                ParallelRaceGroup(
-                Delay(0.7),
                 Spindexer.shootAuto,
-                ),
+                Delay(1.0),
+                Spindexer.shootStop,
                 Spindexer.index0,
                 ParallelGroup(
                 FollowPath(shootPGP),
@@ -77,49 +76,41 @@ class testauto: NextFTCOpMode() {
                 ),
                 Intake.spinStop,
                 FollowPath(PGPshoot),
-                ParallelRaceGroup(
-                    Delay(0.7),
-                    Spindexer.shootAuto,
-                ),
+                Spindexer.shootAuto,
+                Delay(1.0),
+                Spindexer.shootStop,
                 Spindexer.index0,
                 FollowPath(shootGate),
                 FollowPath(gateEat),
-                ParallelRaceGroup(
-                    Delay(1.seconds),
-                    Intake.spinFastAuto
-                ),
+                Intake.spinFastAuto,
+                Delay(1.seconds),
+                Intake.spinStop,
                 Intake.spinStop,
                 FollowPath(eatShoot),
-                ParallelRaceGroup(
-                    Delay(0.7),
-                    Spindexer.shootAuto,
-                ),
+                Spindexer.shootAuto,
+                Delay(1.0),
+                Spindexer.shootStop,
                 Spindexer.index0,
                 FollowPath(shootGate),
                 FollowPath(gateEat),
-                ParallelRaceGroup(
-                    Delay(1.seconds),
-                    Intake.spinFastAuto
-                ),
+                Intake.spinFastAuto,
+                Delay(1.seconds),
+                Intake.spinStop,
                 Intake.spinStop,
                 FollowPath(eatShoot),
-                ParallelRaceGroup(
-                    Delay(0.7),
-                    Spindexer.shootAuto,
-                ),
+                Spindexer.shootAuto,
+                Delay(1.0),
+                Spindexer.shootStop,
                 Spindexer.index0,
                 FollowPath(shootGate),
                 FollowPath(gateEat),
-                ParallelRaceGroup(
-                    Delay(1.seconds),
-                    Intake.spinFastAuto
-                ),
+                Intake.spinFastAuto,
+                Delay(1.seconds),
                 Intake.spinStop,
                 FollowPath(eatShoot),
-                ParallelRaceGroup(
-                    Delay(0.7),
-                    Spindexer.shootAuto,
-                ),
+                Spindexer.shootAuto,
+                Delay(1.0),
+                Spindexer.shootStop,
                 Spindexer.index0,
                 ParallelGroup(
                 Intake.spinFastAuto,
@@ -127,16 +118,16 @@ class testauto: NextFTCOpMode() {
                 ),
                 Intake.spinStop,
                 FollowPath(PPGshoot),
-                ParallelRaceGroup(
-                    Delay(0.7),
-                    Spindexer.shootAuto,
-                ),
+                Spindexer.shootAuto,
+                Delay(1.0),
+                Spindexer.shootStop,
                 Spindexer.index0,
                 FollowPath(goLeave)
             )
 
     override fun onInit() {
         PedroComponent.Companion.follower.setMaxPower(1.0)
+        Spindexer.index0
     }
 
     override fun onStartButtonPressed() {
