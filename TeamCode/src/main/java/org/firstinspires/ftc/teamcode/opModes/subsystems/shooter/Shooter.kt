@@ -17,7 +17,7 @@ object Shooter : Subsystem {
     var target = 0.0
 
     @JvmField
-    var velPIDCoefficients = PIDCoefficients(0.0035, 0.0, 0.0)
+    var velPIDCoefficients = PIDCoefficients(-0.0035, 0.0, 0.0)
 
     @JvmField
     var basicFFParameters = BasicFeedforwardParameters(0.000365, 0.0001, 0.16)
@@ -59,6 +59,8 @@ object Shooter : Subsystem {
         ).setInterruptible(true).requires(this)
 
     val stallShooter = spinAtSpeed(1100.0)
+    val shootShooter = spinAtSpeed(-1000.0)
+
     val stallerShooterFar = spinAtSpeed(1450.0)
 
     val stopShooter = InstantCommand {

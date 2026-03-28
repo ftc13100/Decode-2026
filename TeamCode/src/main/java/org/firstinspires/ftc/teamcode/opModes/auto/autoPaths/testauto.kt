@@ -64,7 +64,7 @@ class testauto: NextFTCOpMode() {
     val autoRoutine: Command
         get() =
             SequentialGroup(
-                Shooter.spinAtSpeed(1000.0),
+                Shooter.shootShooter,
                 FollowPath(startShoot),
                 ParallelRaceGroup(
                 Delay(0.7),
@@ -166,6 +166,7 @@ class testauto: NextFTCOpMode() {
     }
 
     override fun onUpdate() {
+        telemetry.addData("Velocity", "%.3f", Shooter.shooter.velocity);
 
         telemetry.update()
     }
