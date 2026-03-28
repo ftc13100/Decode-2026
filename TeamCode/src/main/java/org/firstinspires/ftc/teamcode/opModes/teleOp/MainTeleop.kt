@@ -195,27 +195,27 @@ class MainTeleop : NextFTCOpMode() {
 
         // Fine jump turret right
         button { gamepad2.right_bumper }
-            .whenTrue {
+            .whenBecomesTrue {
                 Turret.turn(50.0)
             }
 
 
         // Fine jump turret left
         button { gamepad2.left_bumper }
-            .whenTrue {
+            .whenBecomesTrue {
                 Turret.turn(-50.0)
             }
 
         // Coarse jump turret right
         button { gamepad2.right_trigger > 0.5 }
             .whenBecomesTrue {
-                Turret.turn(500.0)
+                Turret.turn(200.0)
             }
 
         // Coarse jump turret left
         button { gamepad2.left_trigger > 0.5 }
             .whenBecomesTrue {
-                Turret.turn(-500.0)
+                Turret.turn(-200.0)
             }
 
         // Turret Tracking
@@ -237,32 +237,15 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad2.y }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                InstantCommand {
-                    Gate.gate_open()
-                    Intake.spinShoot()
-                    gateOpen = true
-                    intakeRunning = true
-                }
-
-//                val currentShot = shooterController.getShot(GoalFinder.gfGoalDistance)
-//
-//                val commands = SequentialGroup(
-//                    WaitUntil { currentShot != null },
-//                    InstantCommand {
-//                        currentShotVelocity = currentShot!!.velocity
-//                        currentShotAngle = currentShot.angle
-//                        currentShotDistance = currentShot.distance
-//                        shooterController.applyShot(currentShot)
-//                    },
-//                    WaitUntil { Shooter.shooterReady && GoalFinder.gfReady },
-//                    InstantCommand {
-//                        Gate.gate_open()
-//                        Intake.spinShoot()
-//                        gateOpen = true
-//                        intakeRunning = true
-//                    }
-//                )
-//                commands()
+                val commands = SequentialGroup(
+                    InstantCommand {
+                        Gate.gate_open()
+                        Intake.spinShoot()
+                        gateOpen = true
+                        intakeRunning = true
+                    }
+                )
+                commands()
             }
 
             .whenBecomesFalse {
@@ -284,7 +267,7 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad2.dpad_up }
             .whenBecomesTrue {
                 if (currentShotVelocity < 1800) {
-                    currentShotVelocity += 10.0
+                    currentShotVelocity += 50.0
                     Shooter.spinAtSpeed(currentShotVelocity).schedule()
                 }
             }
@@ -293,7 +276,7 @@ class MainTeleop : NextFTCOpMode() {
         button { gamepad2.dpad_down }
             .whenBecomesTrue {
                 if (currentShotVelocity > 800) {
-                    currentShotVelocity -= 10.0
+                    currentShotVelocity -= 50.0
                     Shooter.spinAtSpeed(currentShotVelocity).schedule()
                 }
             }
