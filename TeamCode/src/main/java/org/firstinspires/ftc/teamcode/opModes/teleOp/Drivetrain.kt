@@ -252,6 +252,8 @@ class Drivetrain : NextFTCOpMode() {
             telemetry.addData("S2 ", Spindexer.detectColorRGB(Spindexer.color2))
             telemetry.addData("Alpha", "%.3f", Spindexer.color2.normalizedColors.alpha)
 
+            telemetry.addData("turret",NewTurret.targetPosition)
+
 
             telemetry.update()
 
