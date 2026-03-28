@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.hardware.Servo
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
-import dev.nextftc.ftc.ActiveOpMode
 import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goal
+import kotlin.math.abs
 import kotlin.math.atan2
 
 @Configurable
@@ -15,31 +15,29 @@ object NewTurret : Subsystem {
     private lateinit var turret1: Servo
     private lateinit var turret2: Servo
 
-    var trackingActive = false
+    var targetPosition = 0.5  // 0.5 = straight back
 
     @JvmField
-    var targetPosition = 0.5  // 0.5 = straight backwards
+    var goalTrackingActive = false
 
-    // Fields for manually controlling turret via telemetry panels
-    @JvmField
-    var manualX: Double? = null
+    var leftLimit = 0.0   // Servo min
+    var rightLimit = 1.0  // Servo max
 
-    @JvmField
-    var manualY: Double? = null
+    private const val SERVO_MAX_DEG = 300.0 // Servo full travel in degrees
 
     override fun initialize() {
-        turret1 = ActiveOpMode.hardwareMap.get(Servo::class.java, "turret1")
-        turret2 = ActiveOpMode.hardwareMap.get(Servo::class.java, "turret2")
+        turret1 = dev.nextftc.ftc.ActiveOpMode.hardwareMap.get(Servo::class.java, "turret1")
+        turret2 = dev.nextftc.ftc.ActiveOpMode.hardwareMap.get(Servo::class.java, "turret2")
         turret1.position = targetPosition
         turret2.position = targetPosition
     }
 
     fun trackTarget() {
-        trackingActive = true
+        goalTrackingActive = true
     }
 
     fun stopTracking() {
-        trackingActive = false
+        goalTrackingActive = false
     }
 
     fun toAngle(angle: Double) =
@@ -49,34 +47,27 @@ object NewTurret : Subsystem {
         }
 
     private fun updateTarget() {
-        val x: Double
-        val y: Double
 
-        if (manualX != null && manualY != null) {
-            // Use manually entered coordinates
-            x = manualX!!
-            y = manualY!!
+        if (!goalTrackingActive) return
+
+        val x = abs(follower.pose.x)
+        val y = abs(follower.pose.y)
+
+        // Compute target angle in degrees
+        val targetAngleDeg = if (PoseStorage.blueAlliance) {
+            180.0 - Math.toDegrees(atan2(abs(goal.y - y), abs(goal.x - x)))
         } else {
-            // Use follower pose
-            val followerPose = follower.pose
-            x = followerPose.x
-            y = followerPose.y
+            Math.toDegrees(atan2(abs(goal.y - y), abs(goal.x - (144.0 - x))))
         }
-
-        val targetAngle = if (PoseStorage.blueAlliance) {
-            Math.PI - atan2(goal.y - y, goal.x - x)
-        } else {
-            atan2(goal.y - y, goal.x - (144.0 - x))
-        }
-
-        // Servo position mapping: 0.5 = straight backwards, full range = 300 degrees
-        val servoPos = 0.5 + (targetAngle / (300.0 * Math.PI / 180.0))
-        targetPosition = servoPos.coerceIn(0.0, 1.0)
+//
+//        // Map angle to servo position
+//        val servoPos = (targetAngleDeg / SERVO_MAX_DEG).coerceIn(leftLimit, rightLimit)
+//        targetPosition = servoPos
     }
 
     override fun periodic() {
-        if (!trackingActive) return
-        updateTarget()
-        toAngle(targetPosition)()
+//        updateTarget()
+//        turret1.position = targetPosition
+//        turret2.position = targetPosition
     }
 }

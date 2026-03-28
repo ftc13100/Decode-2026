@@ -45,8 +45,8 @@ class TurretTeleOp : NextFTCOpMode() {
         telemetry.addData("Turret Position", NewTurret.targetPosition)
 
         // Add panel inputs for manual X/Y control
-        panelsTelemetry.addData("Manual X", NewTurret.manualX ?: 0.0)
-        panelsTelemetry.addData("Manual Y", NewTurret.manualY ?: 0.0)
+//        panelsTelemetry.addData("Manual X", NewTurret.manualX ?: 0.0)
+//        panelsTelemetry.addData("Manual Y", NewTurret.manualY ?: 0.0)
         panelsTelemetry.addData("target pos", NewTurret.targetPosition)
 
 

@@ -59,7 +59,7 @@ class Drivetrain : NextFTCOpMode() {
 
     var speed: Double = 0.0
     var angleShooter: Double = 0.0
-    var turretAngle: Double = 0.0
+    var turretAngle: Double = 0.5
 
     private val testingPose = Pose(72.0, 72.0, Math.toRadians(90.0))
 
@@ -168,7 +168,7 @@ class Drivetrain : NextFTCOpMode() {
                 Intake.spinStop()
             }
 
-        button { gamepad1.a }
+        button { gamepad2.a }
             .whenTrue {
                 Spindexer.spinIndex()
             }
@@ -229,6 +229,8 @@ class Drivetrain : NextFTCOpMode() {
             telemetry.addData("X", follower.pose.x)
             telemetry.addData("Y", follower.pose.y)
 
+            telemetry.addData("heading", follower.heading)
+
             telemetry.addData(
                 "Intake", "%s (Power: %+1.1f, Current: %3.2f mA)",
                 if (intakeRunning) {
@@ -252,7 +254,7 @@ class Drivetrain : NextFTCOpMode() {
             telemetry.addData("S2 ", Spindexer.detectColorRGB(Spindexer.color2))
             telemetry.addData("Alpha", "%.3f", Spindexer.color2.normalizedColors.alpha)
 
-            telemetry.addData("turret",NewTurret.targetPosition)
+            telemetry.addData("turret",turretAngle)
 
 
             telemetry.update()
