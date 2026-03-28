@@ -271,7 +271,7 @@
 ////            .whenBecomesTrue {
 ////                if (currentShotAngle > 0.0 && currentShotAngle <= 0.681) {
 ////                    currentShotAngle += 0.02
-////                    ShooterAngle.targetPosition = currentShotAngle
+////                    ShooterAngle.targetServoPosition = currentShotAngle
 ////                    CommandManager.scheduleCommand(
 ////                        ShooterAngle.update()
 ////                    )
@@ -283,7 +283,7 @@
 ////            .whenBecomesTrue {
 ////                if (currentShotAngle > 0.0 && currentShotAngle >= 0.519) {
 ////                    currentShotAngle -= 0.02
-////                    ShooterAngle.targetPosition = currentShotAngle
+////                    ShooterAngle.targetServoPosition = currentShotAngle
 ////                    CommandManager.scheduleCommand(
 ////                        ShooterAngle.update()
 ////                    )

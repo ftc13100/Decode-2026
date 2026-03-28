@@ -42,12 +42,12 @@ class TurretTeleOp : NextFTCOpMode() {
 
     override fun onUpdate() {
         // Show current turret position
-        telemetry.addData("Turret Position", NewTurret.targetPosition)
+        telemetry.addData("Turret Position", NewTurret.targetServoPosition)
 
         // Add panel inputs for manual X/Y control
 //        panelsTelemetry.addData("Manual X", NewTurret.manualX ?: 0.0)
 //        panelsTelemetry.addData("Manual Y", NewTurret.manualY ?: 0.0)
-        panelsTelemetry.addData("target pos", NewTurret.targetPosition)
+        panelsTelemetry.addData("target pos", NewTurret.targetServoPosition)
 
 
         // Update panel and telemetry

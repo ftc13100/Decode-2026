@@ -135,7 +135,7 @@ package org.firstinspires.ftc.teamcode.opModes.teleOp//package org.firstinspires
 //
 //        telemetry.addData("Shooter Target Vel", Shooter.target)
 //        telemetry.addData("Shooter Actual Vel", "%.2f", Shooter.shooter.velocity)
-//        telemetry.addData("Angle Target Pos", ShooterAngle.targetPosition)
+//        telemetry.addData("Angle Target Pos", ShooterAngle.targetServoPosition)
 //
 //        telemetry.update()
 //    }

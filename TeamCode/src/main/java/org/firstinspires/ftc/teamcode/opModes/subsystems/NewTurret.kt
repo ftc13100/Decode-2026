@@ -15,21 +15,25 @@ object NewTurret : Subsystem {
     private lateinit var turret1: Servo
     private lateinit var turret2: Servo
 
-    var targetPosition = 0.5  // 0.5 = straight back
+    var targetServoPosition = 0.5  // 0.5 = straight back
+    var targetAngleRobotRef: Double = 180.0 // 0 is facing forward, CCW increasing
+    var targetAngleField: Double = 270.0 // 0 is right, increases CCW
 
     @JvmField
     var goalTrackingActive = false
 
-    var leftLimit = 0.0   // Servo min
-    var rightLimit = 1.0  // Servo max
+    var servoLeftLimit = 0.0   // Servo min
+    var servoRightLimit = 1.0  // Servo max
+
+    // 60-120 is deadzone
+    var turretLeftLimit = 120
+    var turretRightLimit = 60
 
     private const val SERVO_MAX_DEG = 300.0 // Servo full travel in degrees
 
     override fun initialize() {
         turret1 = dev.nextftc.ftc.ActiveOpMode.hardwareMap.get(Servo::class.java, "turret1")
         turret2 = dev.nextftc.ftc.ActiveOpMode.hardwareMap.get(Servo::class.java, "turret2")
-        turret1.position = targetPosition
-        turret2.position = targetPosition
     }
 
     fun trackTarget() {
@@ -40,34 +44,71 @@ object NewTurret : Subsystem {
         goalTrackingActive = false
     }
 
-    fun toAngle(angle: Double) =
-        InstantCommand {
-            turret1.position = angle
-            turret2.position = angle
+    val toPos = InstantCommand {
+        turret1.position = targetServoPosition
+        turret2.position = targetServoPosition
+    }
+
+    // input angle (degrees) is robot centric, 0 is front
+    // ccw increasing degrees
+    fun toAngle(angle: Double) {
+        targetAngleRobotRef = angle
+        if (targetAngleRobotRef < 0.0) {
+            targetAngleRobotRef += 360.0
+        } else if (targetAngleRobotRef > 360.0) {
+            targetAngleRobotRef -= 360.0
+        }
+        setServoPos()
+    }
+
+    fun incrementAngle(angle: Double) {
+        stopTracking()
+        targetAngleRobotRef += angle
+        setServoPos()
+    }
+
+    fun decrementAngle(angle: Double) {
+        stopTracking()
+        targetAngleRobotRef -= angle
+        setServoPos()
+    }
+
+    fun setServoPos() {
+        if (targetAngleRobotRef < 0) {
+            targetAngleRobotRef += 360.0
+        }
+        if (targetAngleRobotRef > 360.0) {
+            targetAngleRobotRef -= 360.0
         }
 
-    private fun updateTarget() {
+        if (targetAngleRobotRef < 30.0 || targetAngleRobotRef > 330.0 ) return
 
+        targetServoPosition = (targetAngleRobotRef - 30.0) / 300.0
+
+        toPos()
+
+    }
+
+    override fun periodic() {
         if (!goalTrackingActive) return
 
         val x = abs(follower.pose.x)
         val y = abs(follower.pose.y)
 
+        var robotHeading = Math.toDegrees(follower.heading)
+        if (robotHeading < 0.0) {
+            robotHeading += 360.0
+        }
+        val turretRobotAdj = 360.0 - robotHeading
+
         // Compute target angle in degrees
-        val targetAngleDeg = if (PoseStorage.blueAlliance) {
+        targetAngleField = if (PoseStorage.blueAlliance) {
             180.0 - Math.toDegrees(atan2(abs(goal.y - y), abs(goal.x - x)))
         } else {
             Math.toDegrees(atan2(abs(goal.y - y), abs(goal.x - (144.0 - x))))
         }
-//
-//        // Map angle to servo position
-//        val servoPos = (targetAngleDeg / SERVO_MAX_DEG).coerceIn(leftLimit, rightLimit)
-//        targetPosition = servoPos
-    }
 
-    override fun periodic() {
-//        updateTarget()
-//        turret1.position = targetPosition
-//        turret2.position = targetPosition
+        toAngle(targetAngleField + turretRobotAdj)
+
     }
 }

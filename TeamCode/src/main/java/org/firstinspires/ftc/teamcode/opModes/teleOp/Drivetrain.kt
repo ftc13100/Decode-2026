@@ -127,16 +127,24 @@ class Drivetrain : NextFTCOpMode() {
                 ShooterAngle.toAngle(angleShooter)()
             }
 
-        button { gamepad2.dpad_right }
+        button { gamepad2.right_bumper}
             .whenBecomesTrue {
-                turretAngle += 0.02
-                NewTurret.toAngle(turretAngle)()
+                NewTurret.incrementAngle(10.0)
             }
 
-        button { gamepad2.dpad_left }
+        button { gamepad2.left_bumper }
             .whenBecomesTrue {
-                turretAngle -= 0.02
-                NewTurret.toAngle(turretAngle)()
+                NewTurret.decrementAngle(10.0)
+            }
+
+        button { gamepad2.right_trigger > 0.5 }
+            .whenTrue {
+                NewTurret.incrementAngle(0.1)
+            }
+
+        button { gamepad2.left_trigger > 0.5 }
+            .whenTrue {
+                NewTurret.decrementAngle(0.1)
             }
 
         //Intake artifact
@@ -229,7 +237,7 @@ class Drivetrain : NextFTCOpMode() {
             telemetry.addData("X", follower.pose.x)
             telemetry.addData("Y", follower.pose.y)
 
-            telemetry.addData("heading", follower.heading)
+            telemetry.addData("heading", Math.toDegrees(follower.heading))
 
             telemetry.addData(
                 "Intake", "%s (Power: %+1.1f, Current: %3.2f mA)",
@@ -254,9 +262,7 @@ class Drivetrain : NextFTCOpMode() {
             telemetry.addData("S2 ", Spindexer.detectColorRGB(Spindexer.color2))
             telemetry.addData("Alpha", "%.3f", Spindexer.color2.normalizedColors.alpha)
 
-            telemetry.addData("turret",turretAngle)
-
-
+            telemetry.addData("Turret", "F: %.1f, R: %.1f, S: %.3f",NewTurret.targetAngleField, NewTurret.targetAngleRobotRef, NewTurret.targetServoPosition)
             telemetry.update()
 
             lastTelemetryTime = now
