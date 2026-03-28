@@ -7,6 +7,7 @@ import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
 import com.qualcomm.hardware.limelightvision.LLResult
+import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.delays.Delay
@@ -43,23 +44,22 @@ class BawlTrack: NextFTCOpMode() {
             PedroComponent(Constants::createFollower)
         )
     }
+    private var limelight: Limelight3A? = null
 
+    var tx = null
     private val bawlTrack: Pose
-        get() = Pose(9.0, (limelight.latestResult.tx + 24.0), Math.toRadians(-180.0))
+        get() = Pose(9.0, (limelight!!.latestResult.tx + 24.0), Math.toRadians(-180.0))
     private val startPose = Pose(56.0, 24.0, Math.toRadians(-180.0))
 
 
     private lateinit var bawlRight: PathChain
 
     private fun buildPaths() {
-
-
         bawlRight = follower.pathBuilder()
             .addPath(BezierLine(startPose, bawlTrack))
             .setConstantHeadingInterpolation(-180.0)
             .build()
     }
-
 
     val autoRoutine: Command
         get() =
@@ -71,28 +71,27 @@ class BawlTrack: NextFTCOpMode() {
         PedroComponent.Companion.follower.setMaxPower(0.6)
         Gate.gate_close()
     }
+    override fun runOpMode() {
+        limelight = hardwareMap.get<Limelight3A?>(Limelight3A::class.java, "limelight")
 
-    override fun onStartButtonPressed() {
-        follower.setStartingPose(startPose)
-        blueAutoPaths.buildPaths()
-        PoseStorage.blueAlliance = true
-        PoseStorage.redAlliance = false
-        val result: LLResult? = limelight.latestResult
-        buildPaths()
-        if (result != null && result.isValid) {
-            autoRoutine()
-        }
-    }
+        telemetry.setMsTransmissionInterval(11)
 
+        limelight?.pipelineSwitch(0)
 
-    override fun onStop() {
-        PoseStorage.poseEnd = PedroComponent.Companion.follower.pose
-    }
+        /*
+         * Starts polling for data.
+         */
+        limelight!!.start()
 
-    override fun onUpdate() {
-        val result: LLResult? = limelight.latestResult
-        if (result != null && result.isValid) {
-            telemetry.addData("tx", result.tx)
+        while (opModeIsActive()) {
+            val result = limelight!!.getLatestResult()
+            if (result != null) {
+                if (result.isValid()) {
+                     val tx = result.tx
+                    telemetry.addData("tx", result.getTx())
+                    telemetry.addData("ty", result.getTy())
+                }
+            }
         }
     }
 }

@@ -8,6 +8,8 @@ object PoseStorage : Subsystem {
     var blueAlliance = false
     var redAlliance = false
 
+    var tx = null
+
     var turretValid = false
         private set
 

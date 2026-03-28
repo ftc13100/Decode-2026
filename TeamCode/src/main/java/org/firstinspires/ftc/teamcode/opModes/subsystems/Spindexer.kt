@@ -11,6 +11,7 @@ import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode.hardwareMap
 import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.hardware.powerable.SetPower
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 
 @Configurable
 object Spindexer : Subsystem {
@@ -137,118 +138,14 @@ object Spindexer : Subsystem {
         .requires(this)
 
     // manual: periodic stops PID
-    val spinShot = InstantCommand {
-        Intake.spinSlowSpeed()
-        state = State.MANUAL
-        spindexer.power = 1.0
-    }
-        .requires(this)
+    val shootAuto=
+        SetPower(spindexer, 1.0)
+            .requires(this)
 
-    val spinIndex = InstantCommand {
-        Intake.spinSlowSpeed()
-        state = State.MANUAL
-        spindexer.power = -1.0
-    }
-        .requires(this)
-
-    val stopShot = InstantCommand {
-        state = State.MANUAL
-        spindexer.power = 0.0
-    }
-        .requires(this)
-
-    fun autoIndex(b3: Int) = InstantCommand {
-        state = State.PID
-        when (desiredIndex(b3, PoseStorage.motif)) {
-            0 -> index0()
-            1 -> index1()
-            2 -> index2()
-        }
-    }.requires(this)
-
-    // tuning only
-    fun spin() {
-        controlSystem.goal = KineticState(position = target)
-        spindexer.power = controlSystem.calculate(spindexer.state)
-    }
 
     fun angleToTicks(angle : Double): Double {
         val ticks = angle * (4000.0 * 5/2)/360
         return ticks
     }
 
-    fun ticksToAngle(ticks : Double): Double {
-        val angle = ticks * 360/(4000.0 * 5/2)
-        return angle
-    }
-
-    enum class SpindexerColor { PURPLE, GREEN, EMPTY }
-
-    fun detectColorRGB(sensor: NormalizedColorSensor): SpindexerColor {
-        val colors = sensor.normalizedColors
-
-        // Proximity, if Alpha low, slot empty
-        if (colors.alpha < 0.15) return SpindexerColor.EMPTY
-
-        return when {
-            // If Green dominant
-            colors.green > colors.red && colors.green > colors.blue -> {
-                SpindexerColor.GREEN
-            }
-            // If Blue dominant (Purple)
-            colors.blue > colors.red && colors.blue > colors.green -> {
-                SpindexerColor.PURPLE
-            }
-            else -> SpindexerColor.EMPTY
-        }
-    }
-
-    private fun colorToDigit(color: SpindexerColor): Int =
-        when (color) {
-            SpindexerColor.EMPTY -> 0
-            SpindexerColor.GREEN -> 1
-            SpindexerColor.PURPLE -> 2
-        }
-
-    fun computeDexIndex(b3: Int, b4: Int): Int {
-        val b0 = colorToDigit(detectColorRGB(color0))
-        val b1 = colorToDigit(detectColorRGB(color1))
-        val b2 = colorToDigit(detectColorRGB(color2))
-        return b0 * 81 + b1 * 27 + b2 * 9 + b3 * 3 + b4
-    }
-
-    fun desiredIndex(b3: Int, b4: Int): Int =
-        dexing[computeDexIndex(b3, b4)]
-
-    val dexing = intArrayOf(-1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 2, 0, 1,
-        1, 2, 0, 0, 1, 2, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 2, 2, 0, 1, 1, 2, 0, 2, 0, 1, 1, 2, 0, 0,
-        1, 2, 1, 2, 0, 0, 1, 2, 2, 0, 1, 1, 2, 0, 0, 1, 2, 2, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0,
-        0, 0, 1, 0, 0, 0, 1, 1, 2, 0, 0, 1, 2, 2, 0, 1, 2, 0, 1, 1, 2, 0, 0, 1, 2, 2, 0, 1, 1, 2, 0,
-        0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 1, 2, 0, 0, 1, 2, 1, 2, 0, 0, 1, 2, 2, 0, 1, 1,
-        2, 0, 0, 1, 2, 2, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 2, 2, 0, 1, 1, 2, 0, 0, 1, 2, 2, 0,
-        1, 1, 2, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 2, 2, 0, 1, 1, 2, 0, 0, 1, 2, 2, 0, 1, 1, 2, 0,
-        0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0)
-
-    val isFull: Boolean
-        get() {
-            var purples = 0
-            var greens = 0
-            val sensors = listOf(color0, color1, color2)
-            for (sensor in sensors) {
-                val detected = detectColorRGB(sensor)
-                if (detected == SpindexerColor.PURPLE) purples++
-                if (detected == SpindexerColor.GREEN) greens++
-            }
-            return purples == 2 && greens == 1
-        }
-
-    override fun initialize() {
-        color0 = hardwareMap.get(NormalizedColorSensor::class.java, "cs0")
-        color0.gain = 12.0f
-        color1 = hardwareMap.get(NormalizedColorSensor::class.java, "cs1")
-        color1.gain = 12.0f
-        color2 = hardwareMap.get(NormalizedColorSensor::class.java, "cs2")
-        color2.gain = 12.0f
-    }
-}
+   }
