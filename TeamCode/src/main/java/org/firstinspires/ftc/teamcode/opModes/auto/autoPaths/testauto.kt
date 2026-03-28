@@ -62,49 +62,34 @@ class testauto: NextFTCOpMode() {
     val autoRoutine: Command
         get() =
             SequentialGroup(
-                Shooter.spinAtSpeed(1500.0),
-                ParallelGroup(
-                    TurretAuto.toLeft,
-                    TurretAuto.toLeft2
-                ),
-                ParallelGroup(
-                TurretAuto.toRight,
-                TurretAuto.toRight2
-                ),
                 FollowPath(startShoot),
-                ParallelGroup(
-                    Intake.spinFastAuto,
-                FollowPath(shootPGP)
-            ),
+                //shoot
+                FollowPath(shootPGP),
                 FollowPath(PGPshoot),
+                //shoot
                 FollowPath(shootGate),
-                ParallelGroup(
-                    Intake.spinFastAuto,
-                FollowPath(gateEat)),
+                FollowPath(gateEat),
                 Delay(1.seconds),
                 FollowPath(eatShoot),
+                //shoot
                 FollowPath(shootGate),
-                ParallelGroup(
-                    Intake.spinFastAuto,
-                    FollowPath(gateEat)),
+                FollowPath(gateEat),
                 Delay(1.seconds),
                 FollowPath(eatShoot),
+                //shoot
                 FollowPath(shootGate),
-                ParallelGroup(
-                    Intake.spinFastAuto,
-                    FollowPath(gateEat)),
+                FollowPath(gateEat),
                 Delay(1.seconds),
                 FollowPath(eatShoot),
-                ParallelGroup(
-                    Intake.spinFastAuto,
-                    FollowPath(gateEat)),
+                //shoot
+                FollowPath(shootPPG),
                 FollowPath(PPGshoot),
+                //shoot
                 FollowPath(goLeave)
             )
 
     override fun onInit() {
         PedroComponent.Companion.follower.setMaxPower(1.0)
-        Gate.gate_close()
     }
 
     override fun onStartButtonPressed() {
@@ -113,20 +98,20 @@ class testauto: NextFTCOpMode() {
         PoseStorage.blueAlliance = true
         PoseStorage.redAlliance = false
         autoRoutine()
-        val result: LLResult? = limelight.latestResult
-        if (result != null && result.isValid) {
-            val fiducials = result.fiducialResults
-            for (fiducial in fiducials) {
-                if (fiducial.fiducialId == 22) {
-                   }
-                else if (fiducial.fiducialId == 23) {
-
-                } else {
-
-                }
-
-            }
-        }
+//        val result: LLResult? = limelight.latestResult
+//        if (result != null && result.isValid) {
+//            val fiducials = result.fiducialResults
+//            for (fiducial in fiducials) {
+//                if (fiducial.fiducialId == 22) {
+//                   }
+//                else if (fiducial.fiducialId == 23) {
+//
+//                } else {
+//
+//                }
+//
+//            }
+//        }
     }
 
     override fun onStop() {
@@ -134,9 +119,7 @@ class testauto: NextFTCOpMode() {
     }
 
     override fun onUpdate() {
-        val dt = follower.drivetrain as Mecanum
-        val powers = dt.motors.map { it.power }
-        telemetry.addData("Power", powers)
+
         telemetry.update()
     }
 
