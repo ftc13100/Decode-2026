@@ -12,78 +12,134 @@ import dev.nextftc.ftc.ActiveOpMode
 import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.hardware.powerable.SetPower
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
+import kotlin.math.abs
 import kotlin.time.Duration.Companion.seconds
 
 object Lift : Subsystem {
-
     private lateinit var ptoLeft: Servo
     private lateinit var ptoRight: Servo
-
     val backLeftMotor = MotorEx("backLeft").brakeMode()
     val backRightMotor = MotorEx("backRight").brakeMode()
-
     val LiftTimer = ElapsedTime()
-
     var isRunning = false
-    const val CURRENT_THRESHOLD = 12000.0
+
+    //Encoder
+    private var leftStartPos = 0
+    private var rightStartPos = 0
+
+    const val SYNC_THRESHOLD = 400
+    const val SYNC_RESUME = 100
+
+    // Track which motor is paused for sync
+    private var leftPaused  = false
+    private var rightPaused = false
+
+    const val CURRENT_THRESHOLD = 20000.0
 
     override fun initialize() {
-        ptoLeft = ActiveOpMode.hardwareMap.get(Servo::class.java, "ptoLeft")
+        ptoLeft  = ActiveOpMode.hardwareMap.get(Servo::class.java, "ptoLeft")
         ptoRight = ActiveOpMode.hardwareMap.get(Servo::class.java, "ptoRight")
     }
 
+//    fun toAngleRight(angle: Double) = InstantCommand { ptoRight.position = angle }
+//    fun toAngleLeft (angle: Double) = InstantCommand { ptoLeft.position  = angle }
+
     val pto_lift = InstantCommand {
-        ptoLeft.position = 0.45
+        ptoLeft.position  = 0.45
         ptoRight.position = 0.55
     }
 
     val pto_drive = InstantCommand {
-        ptoLeft.position = 0.5
+        ptoLeft.position  = 0.5
         ptoRight.position = 0.5
     }
 
-    fun toAngleRight(angle: Double) =
-        InstantCommand {
-            ptoRight.position = angle
-        }
+    // Call this right before the lift motors start spinning
+    fun recordStartPositions() {
+        leftStartPos  = backLeftMotor.motor.currentPosition
+        rightStartPos = backRightMotor.motor.currentPosition
+    }
 
-    fun toAngleLeft( angle: Double) =
-        InstantCommand {
-            ptoLeft.position = angle
-        }
+    // Absolute ticks travelled since recordStartPositions() was called
+    fun leftTravelTicks():  Int = abs(backLeftMotor.motor.currentPosition - leftStartPos)
+    fun rightTravelTicks(): Int = abs(backRightMotor.motor.currentPosition - rightStartPos)
 
-    val lift_Motors =
-        SequentialGroup(
-            InstantCommand { isRunning = true },
-            InstantCommand { LiftTimer.reset() },
-            ParallelGroup(
-            SetPower(backRightMotor, 1.0),
-            SetPower(backLeftMotor,1.0)
-            ),
-            WaitUntil { backLeftMotor.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD || LiftTimer.seconds() > 8.0 },
-            ParallelGroup(
+    // Call every loop while the lift is running.
+    // If one side is more than SYNC_THRESHOLD ticks ahead of the other,
+    // it is paused until the lagging side catches up within SYNC_RESUME ticks.
+    fun syncLiftMotors() {
+        if (!isRunning) return
+
+        val leftTicks  = leftTravelTicks()
+        val rightTicks = rightTravelTicks()
+        val gap = leftTicks - rightTicks   // positive, left is ahead
+
+        when {
+            // Left is too far ahead, pause left, keep right running
+            gap > SYNC_THRESHOLD && !leftPaused -> {
+                backLeftMotor.power = 0.0
+                backRightMotor.power = 1.0
+                leftPaused  = true
+                rightPaused = false
+            }
+
+            // Right is too far ahead, pause right, keep left running
+            gap < -SYNC_THRESHOLD && !rightPaused -> {
+                backRightMotor.power = 0.0
+                backLeftMotor.power  = -1.0
+                leftPaused  = false
+                rightPaused = true
+            }
+
+            // Gap has closed enough, resume both
+            (leftPaused || rightPaused) && abs(gap) <= SYNC_RESUME -> {
+                backLeftMotor.power  = -1.0
+                backRightMotor.power =  1.0
+                leftPaused  = false
+                rightPaused = false
+            }
+
+        }
+    }
+
+    val lift_Motors = SequentialGroup(
+        InstantCommand { isRunning = true },
+        InstantCommand { LiftTimer.reset() },
+        // record encoder positions right before power is applied
+        InstantCommand { recordStartPositions() },
+        ParallelGroup(
+            SetPower(backRightMotor,  1.0),
+            SetPower(backLeftMotor,  -1.0)
+        ),
+        WaitUntil {
+            backLeftMotor.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD ||
+                    LiftTimer.seconds() > 15.0 ||
+                    backLeftMotor.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD
+        },
+        ParallelGroup(
             SetPower(backRightMotor, 0.0),
-            SetPower(backLeftMotor, 0.0)
-            ),
-            InstantCommand { isRunning = false }
-        )
-
+            SetPower(backLeftMotor,  0.0)
+        ),
+        InstantCommand {
+            isRunning   = false
+            leftPaused  = false
+            rightPaused = false
+        }
+    )
 
     val motorsOn = InstantCommand {
-        backLeftMotor.power = -1.0
-        backRightMotor.power = 1.0
+        backLeftMotor.power  = -1.0
+        backRightMotor.power =  1.0
     }
 
     val motorsOff = InstantCommand {
-        backLeftMotor.power = 0.0
+        backLeftMotor.power  = 0.0
         backRightMotor.power = 0.0
     }
 
     val full_Lift = SequentialGroup(
         pto_lift,
-        Delay(1.seconds),
+        Delay(0.5.seconds),
         lift_Motors
     )
-
 }
-

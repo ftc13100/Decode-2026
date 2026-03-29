@@ -1,31 +1,12 @@
-import com.pedropathing.geometry.Pose
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
-import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
-import dev.nextftc.extensions.pedro.PedroComponent
-import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
-import dev.nextftc.ftc.Gamepads
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import dev.nextftc.hardware.driving.MecanumDriverControlled
-import dev.nextftc.hardware.impl.MotorEx
-import dev.nextftc.hardware.powerable.SetPower
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intakeRunning
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Lift
-import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
-import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants
-
 
 @TeleOp(name = "PTO_TEST")
 class PTO_TEST : NextFTCOpMode() {
@@ -66,19 +47,27 @@ class PTO_TEST : NextFTCOpMode() {
             .whenBecomesFalse {
                 Lift.motorsOff()
             }
+
+        button { gamepad1.y }
+            .whenBecomesTrue {
+                Lift.full_Lift()
+            }
+
     }
 
     override fun onUpdate() {
         BindingManager.update()
+        // Runs every loop while lift is active handles motor sync automatically
+        Lift.syncLiftMotors() //can probably have this in whenTrue and have Lift.full_Lift() in whenBecomesTrue and just hold
 
-        telemetry.addData("current draw left", Lift.backLeftMotor.motor.getCurrent(CurrentUnit.MILLIAMPS))
+        telemetry.addData("current draw left",  Lift.backLeftMotor.motor.getCurrent(CurrentUnit.MILLIAMPS))
         telemetry.addData("current draw right", Lift.backRightMotor.motor.getCurrent(CurrentUnit.MILLIAMPS))
-
+        telemetry.addData("left travel ticks",  Lift.leftTravelTicks())
+        telemetry.addData("right travel ticks", Lift.rightTravelTicks())
+        telemetry.addData("tick gap (L - R)",   Lift.leftTravelTicks() - Lift.rightTravelTicks())
         telemetry.addData("servo left pos", ptoLeftAngle)
         telemetry.addData("servo right pos", ptoRightAngle)
-
         telemetry.update()
-
     }
 
     override fun onStop() {
