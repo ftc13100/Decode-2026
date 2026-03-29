@@ -7,6 +7,8 @@ import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Lift
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Lift.backLeftMotor
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Lift.backRightMotor
 
 @TeleOp(name = "PTO_TEST")
 class PTO_TEST : NextFTCOpMode() {
@@ -38,6 +40,22 @@ class PTO_TEST : NextFTCOpMode() {
         button { gamepad1.dpad_up }
             .whenBecomesTrue {
                 Lift.pto_drive()
+            }
+
+        button { gamepad1.right_bumper }
+            .whenTrue {
+                backRightMotor.power =  1.0
+            }
+            .whenBecomesFalse {
+                backRightMotor.power = 0.0
+            }
+
+        button { gamepad1.left_bumper }
+            .whenTrue {
+                backLeftMotor.power  = -1.0
+            }
+            .whenBecomesFalse {
+                backLeftMotor.power = 0.0
             }
 
         button { gamepad1.a }

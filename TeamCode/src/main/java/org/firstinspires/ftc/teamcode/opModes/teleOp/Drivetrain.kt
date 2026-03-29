@@ -32,7 +32,7 @@ class Drivetrain : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                Intake, Spindexer, Shooter, ShooterAngle, NewTurret, Lift
+                Intake, Spindexer, Shooter, ShooterAngle, NewTurret
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -116,6 +116,18 @@ class Drivetrain : NextFTCOpMode() {
                 Shooter.spinAtSpeed(speed)()
             }
 
+        button { gamepad2.dpad_up }
+            .whenBecomesTrue {
+                speed += 100
+                Shooter.spinAtSpeed(speed)()
+            }
+
+        button { gamepad2.dpad_down }
+            .whenBecomesTrue {
+                speed -= 100
+                Shooter.spinAtSpeed(speed)()
+            }
+
         button { gamepad1.dpad_right }
             .whenBecomesTrue {
                 angleShooter += 0.05
@@ -177,26 +189,31 @@ class Drivetrain : NextFTCOpMode() {
                 Intake.spinStop()
             }
 
-        button { gamepad2.a }
-            .whenTrue {
-                Spindexer.spinIndex()
-            }
-            .whenBecomesFalse {
-                Spindexer.stopShot()
-                Intake.spinStop()
-            }
 
         button { gamepad1.x }
             .whenBecomesTrue{
                 Spindexer.index0()
-//                Spindexer.autoIndex(0)
+//                Spindexer.autoIndex(0)()
             }
 
-//        button { gamepad1.dpad_up }
-//            .toggleOnBecomesTrue()
-//            .whenBecomesTrue {
-//                speed += 10
-//                Shooter.spinAtSpeed(speed).schedule()
+        button { gamepad2.b}
+            .whenBecomesTrue {
+                Spindexer.autoIndex(0)()
+            }
+
+//        button { gamepad2.a }
+//            .whenBecomesFalse {
+//                Spindexer.index2()
+//            }
+//
+//        button { gamepad2.y }
+//            .whenBecomesFalse {
+//                Spindexer.index0()
+//            }
+//
+//        button { gamepad2.x }
+//            .whenBecomesFalse {
+//                Spindexer.index1()
 //            }
 
         button {gamepad2.x}
@@ -238,6 +255,9 @@ class Drivetrain : NextFTCOpMode() {
             telemetry.addData("X", follower.pose.x)
             telemetry.addData("Y", follower.pose.y)
 
+            telemetry.addData("newX", NewTurret.newX)
+            telemetry.addData("newY", NewTurret.newY)
+
             telemetry.addData("heading", Math.toDegrees(follower.heading))
 
             telemetry.addData(
@@ -249,11 +269,9 @@ class Drivetrain : NextFTCOpMode() {
                 }, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
             )
 
-            telemetry.addData("Spindexer", Spindexer.spindexer.motor.getCurrent(CurrentUnit.MILLIAMPS))
-
             telemetry.addData("Shooter", Shooter.shooter.velocity)
 
-            telemetry.addData("spindexer", Spindexer.spindexer.currentPosition)
+            telemetry.addData("spindexer pos", Spindexer.spindexer.currentPosition)
 
             telemetry.addData("Full?", Spindexer.isFull)
             telemetry.addData("S0 ", Spindexer.detectColorRGB(Spindexer.color0))

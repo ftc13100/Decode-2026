@@ -26,7 +26,7 @@ object Spindexer : Subsystem {
         posPid(posPIDCoefficients)
     }
 
-    val tolerance = KineticState(10.0)
+    val tolerance = KineticState(400.0)
 
     val spinAngle: Double
         get() = (360.0 / (4000.0 * 5/2)) * spindexer.currentPosition
@@ -43,10 +43,10 @@ object Spindexer : Subsystem {
     override fun periodic() {
         when (state) {
             State.PID -> {
-                spindexer.power = controlSystem.calculate(spindexer.state).coerceIn(-1.0, 1.0)
-//                detectColorRGB(color0)
-//                detectColorRGB(color1)
-//                detectColorRGB(color2)
+                spindexer.power = controlSystem.calculate(spindexer.state).coerceIn(-8.0, 8.0)
+                detectColorRGB(color0)
+                detectColorRGB(color1)
+                detectColorRGB(color2)
             }
             State.MANUAL -> {
                 return
@@ -68,13 +68,13 @@ object Spindexer : Subsystem {
     val wiggle = LambdaCommand("wiggleUp")
         .setStart {
             state = State.PID
-            controlSystem.goal = KineticState(forwardOnlyTarget(25.0))
+            controlSystem.goal = KineticState(forwardOnlyTarget(1000.0))
         }
         .setIsDone { controlSystem.isWithinTolerance(tolerance) }
         .then(
             LambdaCommand("wiggleBack")
                 .setStart {
-                    controlSystem.goal = KineticState(spindexer.currentPosition-angleToTicks(25.0))
+                    controlSystem.goal = KineticState(spindexer.currentPosition-angleToTicks(1000.0))
                 }
                 .setIsDone { controlSystem.isWithinTolerance(tolerance) }
         )
@@ -94,46 +94,46 @@ object Spindexer : Subsystem {
     val index0 = LambdaCommand("Index0Overshoot")
         .setStart {
             state = State.PID
-            controlSystem.goal = KineticState(forwardOnlyTarget(120.0))
+            controlSystem.goal = KineticState(forwardOnlyTarget(0.0))
         }
         .setIsDone { controlSystem.isWithinTolerance(tolerance) }
-        .then(
-            LambdaCommand("Index0Return")
-                .setStart {
-                    controlSystem.goal = KineticState(spindexer.currentPosition-angleToTicks(120.0))
-                }
-                .setIsDone { controlSystem.isWithinTolerance(tolerance) }
-        )
+//        .then(
+//            LambdaCommand("Index0Return")
+//                .setStart {
+//                    controlSystem.goal = KineticState(spindexer.currentPosition-angleToTicks(120.0))
+//                }
+//                .setIsDone { controlSystem.isWithinTolerance(tolerance) }
+//        )
         .requires(this)
 
     val index1 = LambdaCommand("Index1Overshoot")
         .setStart {
             state = State.PID
-            controlSystem.goal = KineticState(forwardOnlyTarget(240.0))
+            controlSystem.goal = KineticState(forwardOnlyTarget(120.0))
         }
         .setIsDone { controlSystem.isWithinTolerance(tolerance) }
-        .then(
-            LambdaCommand("Index1Return")
-                .setStart {
-                    controlSystem.goal = KineticState(spindexer.currentPosition-angleToTicks(120.0))
-                }
-                .setIsDone { controlSystem.isWithinTolerance(tolerance) }
-        )
+//        .then(
+//            LambdaCommand("Index1Return")
+//                .setStart {
+//                    controlSystem.goal = KineticState(spindexer.currentPosition-angleToTicks(120.0))
+//                }
+//                .setIsDone { controlSystem.isWithinTolerance(tolerance) }
+//        )
         .requires(this)
 
     val index2 = LambdaCommand("Index2Overshoot")
         .setStart {
             state = State.PID
-            controlSystem.goal = KineticState(forwardOnlyTarget(360.0))
+            controlSystem.goal = KineticState(forwardOnlyTarget(240.0))
         }
         .setIsDone { controlSystem.isWithinTolerance(tolerance) }
-        .then(
-            LambdaCommand("Index2Return")
-                .setStart {
-                    controlSystem.goal = KineticState(spindexer.currentPosition-angleToTicks(120.0))
-                }
-                .setIsDone { controlSystem.isWithinTolerance(tolerance) }
-        )
+//        .then(
+//            LambdaCommand("Index2Return")
+//                .setStart {
+//                    controlSystem.goal = KineticState(spindexer.currentPosition-angleToTicks(120.0))
+//                }
+//                .setIsDone { controlSystem.isWithinTolerance(tolerance) }
+//        )
         .requires(this)
 
     // manual: periodic stops PID
@@ -206,8 +206,8 @@ object Spindexer : Subsystem {
     private fun colorToDigit(color: SpindexerColor): Int =
         when (color) {
             SpindexerColor.EMPTY -> 0
-            SpindexerColor.GREEN -> 1
-            SpindexerColor.PURPLE -> 2
+            SpindexerColor.GREEN -> 2
+            SpindexerColor.PURPLE -> 1
         }
 
     fun computeDexIndex(b3: Int, b4: Int): Int {

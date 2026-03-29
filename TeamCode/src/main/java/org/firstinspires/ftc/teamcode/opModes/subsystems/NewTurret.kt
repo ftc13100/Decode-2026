@@ -8,6 +8,8 @@ import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goal
 import kotlin.math.abs
 import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 
 @Configurable
 object NewTurret : Subsystem {
@@ -28,6 +30,11 @@ object NewTurret : Subsystem {
     // 60-120 is deadzone
     var turretLeftLimit = 120
     var turretRightLimit = 60
+
+    var newX = 0.0
+    var newY = 0.0
+
+    const val turretOffset = -2.7
 
     private const val SERVO_MAX_DEG = 300.0 // Servo full travel in degrees
 
@@ -92,10 +99,11 @@ object NewTurret : Subsystem {
     override fun periodic() {
         if (!goalTrackingActive) return
 
-        val x = abs(follower.pose.x)
-        val y = abs(follower.pose.y)
-
         var robotHeading = Math.toDegrees(follower.heading)
+
+        newX = abs(follower.pose.x) +  turretOffset * cos(follower.heading)
+        newY = abs(follower.pose.y) + turretOffset * sin(follower.heading)
+
         if (robotHeading < 0.0) {
             robotHeading += 360.0
         }
@@ -103,9 +111,9 @@ object NewTurret : Subsystem {
 
         // Compute target angle in degrees
         targetAngleField = if (PoseStorage.blueAlliance) {
-            180.0 - Math.toDegrees(atan2(abs(goal.y - y), abs(goal.x - x)))
+            180.0 - Math.toDegrees(atan2(abs(goal.y - newY), abs(goal.x - newX)))
         } else {
-            Math.toDegrees(atan2(abs(goal.y - y), abs(goal.x - (144.0 - x))))
+            Math.toDegrees(atan2(abs(goal.y - newY), abs(goal.x - (144.0 - newX))))
         }
 
         toAngle(targetAngleField + turretRobotAdj)
