@@ -64,22 +64,24 @@ class testauto: NextFTCOpMode() {
     val autoRoutine: Command
         get() =
             SequentialGroup(
+                ParallelGroup(
+                    TurretAuto.toLeft,
+                    TurretAuto.toLeft2
+                ),
                 Shooter.shootShooter,
                 FollowPath(startShoot),
                 Spindexer.shootAuto,
                 Delay(1.0),
                 Spindexer.shootStop,
-                Spindexer.index0,
                 ParallelGroup(
                 FollowPath(shootPGP),
-                    Intake.spinFastAuto
+                Intake.spinFastAuto
                 ),
                 Intake.spinStop,
                 FollowPath(PGPshoot),
                 Spindexer.shootAuto,
                 Delay(1.0),
                 Spindexer.shootStop,
-                Spindexer.index0,
                 FollowPath(shootGate),
                 FollowPath(gateEat),
                 Intake.spinFastAuto,
@@ -90,7 +92,6 @@ class testauto: NextFTCOpMode() {
                 Spindexer.shootAuto,
                 Delay(1.0),
                 Spindexer.shootStop,
-                Spindexer.index0,
                 FollowPath(shootGate),
                 FollowPath(gateEat),
                 Intake.spinFastAuto,
@@ -101,7 +102,6 @@ class testauto: NextFTCOpMode() {
                 Spindexer.shootAuto,
                 Delay(1.0),
                 Spindexer.shootStop,
-                Spindexer.index0,
                 FollowPath(shootGate),
                 FollowPath(gateEat),
                 Intake.spinFastAuto,
@@ -111,7 +111,6 @@ class testauto: NextFTCOpMode() {
                 Spindexer.shootAuto,
                 Delay(1.0),
                 Spindexer.shootStop,
-                Spindexer.index0,
                 ParallelGroup(
                 Intake.spinFastAuto,
                 FollowPath(shootPPG)
@@ -121,7 +120,6 @@ class testauto: NextFTCOpMode() {
                 Spindexer.shootAuto,
                 Delay(1.0),
                 Spindexer.shootStop,
-                Spindexer.index0,
                 FollowPath(goLeave)
             )
 
@@ -136,20 +134,6 @@ class testauto: NextFTCOpMode() {
         PoseStorage.blueAlliance = true
         PoseStorage.redAlliance = false
         autoRoutine()
-//        val result: LLResult? = limelight.latestResult
-//        if (result != null && result.isValid) {
-//            val fiducials = result.fiducialResults
-//            for (fiducial in fiducials) {
-//                if (fiducial.fiducialId == 22) {
-//                   }
-//                else if (fiducial.fiducialId == 23) {
-//
-//                } else {
-//
-//                }
-//
-//            }
-//        }
     }
 
     override fun onStop() {

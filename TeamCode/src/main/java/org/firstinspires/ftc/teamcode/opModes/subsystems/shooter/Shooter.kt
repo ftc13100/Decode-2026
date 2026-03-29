@@ -59,7 +59,7 @@ object Shooter : Subsystem {
         ).setInterruptible(true).requires(this)
 
     val stallShooter = spinAtSpeed(1100.0)
-    val shootShooter = spinAtSpeed(1000.0)
+    val shootShooter = spinAtSpeed(1500.0)
 
     val stallerShooterFar = spinAtSpeed(1450.0)
 
