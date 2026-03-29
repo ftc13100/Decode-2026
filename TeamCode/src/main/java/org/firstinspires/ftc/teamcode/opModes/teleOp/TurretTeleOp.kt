@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
 import dev.nextftc.extensions.pedro.PedroComponent
+import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 
 @TeleOp(name = "Turret Test & Tune")
@@ -25,28 +26,19 @@ class TurretTeleOp : NextFTCOpMode() {
     }
 
     private val panelsTelemetry = PanelsTelemetry.telemetry
-    private val timer = ElapsedTime()
 
-    private val turretCommand = PerpetualCommand(
-        LambdaCommand()
-            .setUpdate {
-                // Nothing needed here; turret periodic handles updates
-            }
-            .requires(NewTurret)
-    )
 
     override fun onInit() {
-        turretCommand()
-        timer.reset()
+        NewTurret.trackTarget()
     }
 
     override fun onUpdate() {
         // Show current turret position
-        telemetry.addData("Turret Position", NewTurret.targetServoPosition)
-
-        // Add panel inputs for manual X/Y control
-//        panelsTelemetry.addData("Manual X", NewTurret.manualX ?: 0.0)
-//        panelsTelemetry.addData("Manual Y", NewTurret.manualY ?: 0.0)
+        telemetry.addData("X", follower.pose.x)
+        telemetry.addData("Y", follower.pose.y)
+        telemetry.addData("newX", NewTurret.newX)
+        telemetry.addData("newY", NewTurret.newY)
+        panelsTelemetry.addData("Angular Vel", follower.angularVelocity)
         panelsTelemetry.addData("target pos", NewTurret.targetServoPosition)
 
 

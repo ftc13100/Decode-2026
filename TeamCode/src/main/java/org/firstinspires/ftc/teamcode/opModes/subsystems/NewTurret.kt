@@ -34,7 +34,9 @@ object NewTurret : Subsystem {
     var newX = 0.0
     var newY = 0.0
 
-    const val turretOffset = -2.7
+    @JvmField var kVF = 0.0
+
+    const val TURRET_OFFSET = -2.7
 
     private const val SERVO_MAX_DEG = 300.0 // Servo full travel in degrees
 
@@ -99,10 +101,12 @@ object NewTurret : Subsystem {
     override fun periodic() {
         if (!goalTrackingActive) return
 
+        var angularVel = follower.angularVelocity // rad/sec
+
         var robotHeading = Math.toDegrees(follower.heading)
 
-        newX = abs(follower.pose.x) +  turretOffset * cos(follower.heading)
-        newY = abs(follower.pose.y) + turretOffset * sin(follower.heading)
+        newX = abs(follower.pose.x) +  TURRET_OFFSET * cos(follower.heading)
+        newY = abs(follower.pose.y) + TURRET_OFFSET * sin(follower.heading)
 
         if (robotHeading < 0.0) {
             robotHeading += 360.0
@@ -116,7 +120,9 @@ object NewTurret : Subsystem {
             Math.toDegrees(atan2(abs(goal.y - newY), abs(goal.x - (144.0 - newX))))
         }
 
-        toAngle(targetAngleField + turretRobotAdj)
+        val compensatedAngle = targetAngleField + turretRobotAdj + (angularVel * kVF)
+
+        toAngle(compensatedAngle)
 
     }
 }
