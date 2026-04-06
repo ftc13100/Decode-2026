@@ -5,10 +5,12 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
+import dev.nextftc.core.commands.Command
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.commands.utility.LambdaCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode.hardwareMap
+import dev.nextftc.hardware.controllable.RunToPosition
 import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.hardware.powerable.SetPower
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
@@ -92,20 +94,7 @@ object Spindexer : Subsystem {
 
     // Indexing
     // PID state: schedules RunToPosition
-    val index0 = LambdaCommand("Index0Overshoot")
-        .setStart {
-            state = State.PID
-            controlSystem.goal = KineticState(forwardOnlyTarget(120.0))
-        }
-        .setIsDone { controlSystem.isWithinTolerance(tolerance) }
-        .then(
-            LambdaCommand("Index0Return")
-                .setStart {
-                    controlSystem.goal = KineticState(spindexer.currentPosition-angleToTicks(120.0))
-                }
-                .setIsDone { controlSystem.isWithinTolerance(tolerance) }
-        )
-        .requires(this)
+    val intakePos: Command = RunToPosition(controlSystem, 0.0).requires(this)
 
     val index1 = LambdaCommand("Index1Overshoot")
         .setStart {

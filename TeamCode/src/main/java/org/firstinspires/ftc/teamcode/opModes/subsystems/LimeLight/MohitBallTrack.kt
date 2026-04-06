@@ -11,7 +11,7 @@ object MohitBallTrack : Subsystem {
     override fun initialize() {
             limelight = ActiveOpMode.hardwareMap.get(Limelight3A::class.java, "limelight")
 
-            limelight.pipelineSwitch(0)
+            limelight.pipelineSwitch(8)
 
             limelight.start()
         }

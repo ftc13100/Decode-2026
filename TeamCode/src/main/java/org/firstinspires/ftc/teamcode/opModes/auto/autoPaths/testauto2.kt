@@ -48,8 +48,8 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.TurretAuto
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
-@Autonomous(name = "testauto")
-class testauto: NextFTCOpMode() {
+@Autonomous(name = "testauto2")
+class testauto2: NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
@@ -64,81 +64,43 @@ class testauto: NextFTCOpMode() {
     val autoRoutine: Command
         get() =
             SequentialGroup(
-                ParallelGroup(
-                    TurretAuto.toLeft,
-                    TurretAuto.toLeft2,
-                    Shooter.shootShooter,
+
                     FollowPath(startShoot),
-                ),
-                Spindexer.shootAuto,
-                Delay(1.0),
-                Spindexer.shootStop,
-                Spindexer.intakePos,
-                ParallelGroup(
+
                 FollowPath(shootPGP),
-                Intake.spinFastAuto
-                ),
-                Intake.spinStop,
+
                 FollowPath(PGPshoot),
-                Spindexer.shootAuto,
-                Delay(1.0),
-                Spindexer.shootStop,
-                Spindexer.intakePos,
+
                 FollowPath(shootGate),
-                ParallelGroup(
+
                 FollowPath(gateEat),
-                Intake.spinFastAuto
-                ),
-                Delay(1.seconds),
-                Intake.spinStop,
-                Intake.spinStop,
+
                 FollowPath(eatShoot),
-                Spindexer.shootAuto,
-                Delay(1.0),
-                Spindexer.shootStop,
-                Spindexer.intakePos,
                 FollowPath(shootGate),
-                ParallelGroup(
+
                     FollowPath(gateEat),
-                    Intake.spinFastAuto),
-                Delay(1.seconds),
-                Intake.spinStop,
                 FollowPath(eatShoot),
-                Spindexer.shootAuto,
-                Delay(1.0),
-                Spindexer.shootStop,
-                Spindexer.intakePos,
+
                 FollowPath(shootGate),
-                ParallelGroup(
+
                     FollowPath(gateEat),
-                    Intake.spinFastAuto),
-                Delay(1.seconds),
-                Intake.spinStop,
+
                 FollowPath(eatShoot),
-                Spindexer.shootAuto,
-                Delay(1.0),
-                Spindexer.shootStop,
-                Spindexer.intakePos,
-                ParallelGroup(
-                Intake.spinFastAuto,
-                FollowPath(shootPPG)
-                ),
-                Intake.spinStop,
+
+                FollowPath(shootPPG),
+
                 FollowPath(PPGshoot),
-                Spindexer.shootAuto,
-                Delay(1.0),
-                Spindexer.shootStop,
-                Spindexer.intakePos,
+
                 FollowPath(goLeave)
             )
 
     override fun onInit() {
-        PedroComponent.Companion.follower.setMaxPower(1.0)
+        follower.setMaxPower(1.0)
         Spindexer.intakePos
     }
 
     override fun onStartButtonPressed() {
-        PedroComponent.Companion.follower.setStartingPose(blueAutoPaths.start)
+        follower.setStartingPose(blueAutoPaths.start)
         blueAutoPaths.buildPaths()
         PoseStorage.blueAlliance = true
         PoseStorage.redAlliance = false
@@ -146,11 +108,10 @@ class testauto: NextFTCOpMode() {
     }
 
     override fun onStop() {
-        PoseStorage.poseEnd = PedroComponent.Companion.follower.pose
+        PoseStorage.poseEnd = follower.pose
     }
 
     override fun onUpdate() {
-        telemetry.addData("Velocity", "%.3f", Shooter.shooter.velocity);
 
         telemetry.update()
     }
