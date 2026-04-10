@@ -49,7 +49,10 @@ class ServoControl : NextFTCOpMode() {
 
         button { gamepad1.dpad_up }
             .whenBecomesTrue {
-                Lift.pto_drive()
+                ptoLeftPos -= 0.05
+                ptoRightPos += 0.05
+                Lift.toPosLeft(ptoLeftPos)
+                Lift.toPosRight(ptoRightPos)
             }
 
         button { gamepad1.dpad_right}
