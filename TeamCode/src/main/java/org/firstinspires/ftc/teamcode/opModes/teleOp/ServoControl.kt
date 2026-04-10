@@ -5,9 +5,9 @@ import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Lift
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 
 @TeleOp(name = "ServoControl")
@@ -71,21 +71,21 @@ class ServoControl : NextFTCOpMode() {
                 ShooterAngle.toPos(shooterPos)
             }
 
-//        button { gamepad1.right_bumper }
-//            .whenTrue {
-//                backRightMotor.power =  1.0
-//            }
-//            .whenBecomesFalse {
-//                backRightMotor.power = 0.0
-//            }
-//
-//        button { gamepad1.left_bumper }
-//            .whenTrue {
-//                backLeftMotor.power  = -1.0
-//            }
-//            .whenBecomesFalse {
-//                backLeftMotor.power = 0.0
-//            }
+        button { gamepad1.right_bumper }
+            .whenTrue {
+                Lift.backRightMotor.power =  1.0
+            }
+            .whenBecomesFalse {
+                Lift.backRightMotor.power = 0.0
+            }
+
+        button { gamepad1.left_bumper }
+            .whenTrue {
+                Lift.backLeftMotor.power  = -1.0
+            }
+            .whenBecomesFalse {
+                Lift.backLeftMotor.power = 0.0
+            }
 
 //        button { gamepad1.a }
 //            .whenTrue {
@@ -107,8 +107,8 @@ class ServoControl : NextFTCOpMode() {
         // Runs every loop while lift is active handles motor sync automatically
 //        Lift.syncLiftMotors() //can probably have this in whenTrue and have Lift.full_Lift() in whenBecomesTrue and just hold
 
-//        telemetry.addData("current draw left",  Lift.backLeftMotor.motor.getCurrent(CurrentUnit.MILLIAMPS))
-//        telemetry.addData("current draw right", Lift.backRightMotor.motor.getCurrent(CurrentUnit.MILLIAMPS))
+        telemetry.addData("current draw left",  Lift.backLeftMotor.motor.getCurrent(CurrentUnit.MILLIAMPS))
+        telemetry.addData("current draw right", Lift.backRightMotor.motor.getCurrent(CurrentUnit.MILLIAMPS))
 //        telemetry.addData("left travel ticks",  Lift.leftTravelTicks())
 //        telemetry.addData("right travel ticks", Lift.rightTravelTicks())
 //        telemetry.addData("tick gap (L - R)",   Lift.leftTravelTicks() - Lift.rightTravelTicks())
