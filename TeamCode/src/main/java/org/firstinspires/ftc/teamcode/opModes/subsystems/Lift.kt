@@ -12,12 +12,15 @@ import dev.nextftc.ftc.ActiveOpMode
 import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.hardware.powerable.SetPower
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
+import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret.setServoPos
+import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret.stopTracking
+import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret.targetAngleRobotRef
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.seconds
 
 object Lift : Subsystem {
-    private lateinit var ptoLeft: Servo
-    private lateinit var ptoRight: Servo
+    lateinit var ptoLeft: Servo
+    lateinit var ptoRight: Servo
     val backLeftMotor = MotorEx("backLeft").brakeMode()
     val backRightMotor = MotorEx("backRight").brakeMode()
     val LiftTimer = ElapsedTime()
@@ -53,6 +56,17 @@ object Lift : Subsystem {
         ptoLeft.position  = 0.5
         ptoRight.position = 0.5
     }
+
+    fun toPosLeft(pos: Double) =
+        InstantCommand {
+            ptoLeft.position = pos
+
+        }
+    fun toPosRight(pos: Double) =
+        InstantCommand {
+            ptoRight.position = pos
+
+        }
 
     // Call this right before the lift motors start spinning
     fun recordStartPositions() {

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes.subsystems
 
+import com.bylazar.configurables.annotations.Configurable
 import dev.nextftc.core.commands.delays.Delay
 import dev.nextftc.core.commands.delays.WaitUntil
 import dev.nextftc.core.commands.groups.SequentialGroup
@@ -12,17 +13,18 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer.spindexer
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer.state
 import kotlin.time.Duration.Companion.seconds
 
+@Configurable
 object Intake : Subsystem {
 
     val intake = MotorEx("intake").brakeMode().reversed()
 
     var intakeRunning = false
-    const val CURRENT_THRESHOLD_FAST = 5000.0
-    const val CURRENT_THRESHOLD_SLOW = 3000.0
+    @JvmField var CURRENT_THRESHOLD_FAST = 8000.0
+    @JvmField var CURRENT_THRESHOLD_SLOW = 4000.0
 
     val spinFast =
         SequentialGroup(
-        SetPower(intake, -0.9),
+        SetPower(intake, -1.0),
             InstantCommand { intakeRunning = true },
             WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD_FAST },
             SetPower(intake, 0.4),
@@ -37,7 +39,6 @@ object Intake : Subsystem {
         intake.power = 0.0
     }
         .requires(this)
-
 
     val spinSlowSpeed = {
         SequentialGroup(

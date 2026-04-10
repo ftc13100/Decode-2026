@@ -16,7 +16,7 @@ import dev.nextftc.hardware.powerable.SetPower
 object Spindexer : Subsystem {
     @JvmField var target = 0.0
     // Position PID used for indexing
-    @JvmField var posPIDCoefficients = PIDCoefficients(-0.0005, 0.0, -0.00002)
+    @JvmField var posPIDCoefficients = PIDCoefficients(-0.00085, 0.0, -0.00001)
 
     //ID 23: PPG = 2
     //ID 22: PGP = 1
@@ -26,10 +26,10 @@ object Spindexer : Subsystem {
         posPid(posPIDCoefficients)
     }
 
-    val tolerance = KineticState(400.0)
+    val tolerance = KineticState(20.0)
 
     val spinAngle: Double
-        get() = (360.0 / (4000.0 * 5/2)) * spindexer.currentPosition
+        get() = (360.0 / (4000.0) * spindexer.currentPosition)
 
     val spindexer = MotorEx("spindexer").brakeMode()
     lateinit var color0: NormalizedColorSensor
@@ -43,10 +43,10 @@ object Spindexer : Subsystem {
     override fun periodic() {
         when (state) {
             State.PID -> {
-                spindexer.power = controlSystem.calculate(spindexer.state).coerceIn(-8.0, 8.0)
-                detectColorRGB(color0)
-                detectColorRGB(color1)
-                detectColorRGB(color2)
+                spindexer.power = controlSystem.calculate(spindexer.state)
+//                detectColorRGB(color0)
+//                detectColorRGB(color1)
+//                detectColorRGB(color2)
             }
             State.MANUAL -> {
                 return
@@ -56,10 +56,10 @@ object Spindexer : Subsystem {
 
     fun forwardOnlyTarget(angleDeg: Double): Double {
         val targetInRev = angleToTicks(angleDeg)
-        val currentRev = kotlin.math.floor(spindexer.currentPosition / (4000.0 * 5/2))
-        var newTarget = currentRev * (4000.0 * 5/2) + targetInRev
+        val currentRev = kotlin.math.floor(spindexer.currentPosition / (4000.0))
+        var newTarget = currentRev * (4000.0) + targetInRev
         if (newTarget <= spindexer.currentPosition) {
-            newTarget += (4000.0 * 5/2)
+            newTarget += (4000.0)
         }
         return newTarget
     }
@@ -68,13 +68,13 @@ object Spindexer : Subsystem {
     val wiggle = LambdaCommand("wiggleUp")
         .setStart {
             state = State.PID
-            controlSystem.goal = KineticState(forwardOnlyTarget(1000.0))
+            controlSystem.goal = KineticState(forwardOnlyTarget(10.0))
         }
         .setIsDone { controlSystem.isWithinTolerance(tolerance) }
         .then(
             LambdaCommand("wiggleBack")
                 .setStart {
-                    controlSystem.goal = KineticState(spindexer.currentPosition-angleToTicks(1000.0))
+                    controlSystem.goal = KineticState(spindexer.currentPosition-angleToTicks(10.0))
                 }
                 .setIsDone { controlSystem.isWithinTolerance(tolerance) }
         )
@@ -173,12 +173,12 @@ object Spindexer : Subsystem {
     }
 
     fun angleToTicks(angle : Double): Double {
-        val ticks = angle * (4000.0 * 5/2)/360
+        val ticks = angle * (4000.0)/360
         return ticks
     }
 
     fun ticksToAngle(ticks : Double): Double {
-        val angle = ticks * 360/(4000.0 * 5/2)
+        val angle = ticks * 360/(4000.0)
         return angle
     }
 
