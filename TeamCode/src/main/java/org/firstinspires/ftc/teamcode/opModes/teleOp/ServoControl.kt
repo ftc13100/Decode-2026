@@ -71,6 +71,12 @@ class ServoControl : NextFTCOpMode() {
                 ShooterAngle.toPos(shooterPos)
             }
 
+        button {gamepad1.b}
+            .whenBecomesTrue {
+                shooterPos -= 0.05
+                ShooterAngle.toPos(shooterPos)
+            }
+
         button { gamepad1.right_bumper }
             .whenTrue {
                 Lift.backRightMotor.power =  1.0
