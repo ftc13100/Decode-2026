@@ -94,7 +94,7 @@ object Spindexer : Subsystem {
 
     // Indexing
     // PID state: schedules RunToPosition
-    val intakePos: Command = RunToPosition(controlSystem, 0.0).requires(this)
+    val intakePos = RunToPosition(controlSystem, 0.0).requires(this)
 
     val index1 = LambdaCommand("Index1Overshoot")
         .setStart {
