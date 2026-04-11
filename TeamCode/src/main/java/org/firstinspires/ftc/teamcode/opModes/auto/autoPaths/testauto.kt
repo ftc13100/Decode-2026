@@ -53,6 +53,7 @@ class testauto: NextFTCOpMode() {
         get() =
             SequentialGroup(
                 ParallelGroup(
+                    Shooter.spinAtSpeed(1000.0),
                     TurretAuto.toLeft,
                     TurretAuto.toLeft2,
                     Spindexer.stopShot,
