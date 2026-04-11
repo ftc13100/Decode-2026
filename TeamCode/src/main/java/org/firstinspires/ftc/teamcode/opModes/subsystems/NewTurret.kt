@@ -36,7 +36,7 @@ object NewTurret : Subsystem {
 
     @JvmField var kVF = 0.0
 
-    const val TURRET_OFFSET = -2.04724
+    const val TURRET_OFFSET = -2.03852
 
     private const val SERVO_MAX_DEG = 300.0 // Servo full travel in degrees
 
