@@ -36,24 +36,23 @@ class ServoControl : NextFTCOpMode() {
         NewTurret.stopTracking()
         NewTurret.toAngle(180.0)
         ShooterAngle.toPos(0.0)
-        Lift.ptoLeft.position = 0.5
-        Lift.ptoRight.position = 0.5
+        Lift.pto_lift()
 
-        button { gamepad1.dpad_down }
-            .whenBecomesTrue {
-                ptoLeftPos += 0.05
-                ptoRightPos -= 0.05
-                Lift.toPosLeft(ptoLeftPos)
-                Lift.toPosRight(ptoRightPos)
-            }
-
-        button { gamepad1.dpad_up }
-            .whenBecomesTrue {
-                ptoLeftPos -= 0.05
-                ptoRightPos += 0.05
-                Lift.toPosLeft(ptoLeftPos)
-                Lift.toPosRight(ptoRightPos)
-            }
+//        button { gamepad1.dpad_down }
+//            .whenBecomesTrue {
+//                ptoLeftPos += 0.05
+//                ptoRightPos -= 0.05
+//                Lift.toPosLeft(ptoLeftPos)()
+//                Lift.toPosRight(ptoRightPos)()
+//            }
+//
+//        button { gamepad1.dpad_up }
+//            .whenBecomesTrue {
+//                ptoLeftPos -= 0.05
+//                ptoRightPos += 0.05
+//                Lift.toPosLeft(ptoLeftPos)()
+//                Lift.toPosRight(ptoRightPos)()
+//            }
 
         button { gamepad1.dpad_right}
             .whenBecomesTrue {
@@ -68,13 +67,13 @@ class ServoControl : NextFTCOpMode() {
         button {gamepad1.a}
             .whenBecomesTrue {
                 shooterPos += 0.05
-                ShooterAngle.toPos(shooterPos)
+                ShooterAngle.toPos(shooterPos)()
             }
 
         button {gamepad1.b}
             .whenBecomesTrue {
                 shooterPos -= 0.05
-                ShooterAngle.toPos(shooterPos)
+                ShooterAngle.toPos(shooterPos)()
             }
 
         button { gamepad1.right_bumper }

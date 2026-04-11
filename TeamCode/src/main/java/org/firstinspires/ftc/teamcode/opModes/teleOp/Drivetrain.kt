@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intakeRunning
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Lift
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
@@ -31,7 +32,7 @@ class Drivetrain : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                Intake, Spindexer, Shooter, ShooterAngle, NewTurret
+                Intake, Spindexer, Shooter, ShooterAngle, NewTurret, Lift
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -47,8 +48,8 @@ class Drivetrain : NextFTCOpMode() {
 
     private lateinit var frontLeftMotor: MotorEx
     private lateinit var frontRightMotor: MotorEx
-    private lateinit var backLeftMotor: MotorEx
-    private lateinit var backRightMotor: MotorEx
+//    private lateinit var backLeftMotor: MotorEx
+//    private lateinit var backRightMotor: MotorEx
 
     private lateinit var driverControlled: MecanumDriverControlled
 
@@ -71,10 +72,10 @@ class Drivetrain : NextFTCOpMode() {
 
         frontLeftMotor = MotorEx(frontLeftName)
         frontRightMotor = MotorEx(frontRightName)
-        backLeftMotor = MotorEx(backLeftName)
-        backRightMotor = MotorEx(backRightName)
+//        backLeftMotor = MotorEx(backLeftName)
+//        backRightMotor = MotorEx(backRightName)
 
-        listOf(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor).forEach {
+        listOf(frontLeftMotor, frontRightMotor, Lift.backLeftMotor, Lift.backRightMotor).forEach {
             it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
 
@@ -86,8 +87,8 @@ class Drivetrain : NextFTCOpMode() {
         driverControlled = MecanumDriverControlled(
             frontLeftMotor,
             frontRightMotor,
-            backLeftMotor,
-            backRightMotor,
+            Lift.backLeftMotor,
+            Lift.backRightMotor,
             -Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
             Gamepads.gamepad1.rightStickX,
@@ -229,6 +230,7 @@ class Drivetrain : NextFTCOpMode() {
     override fun onUpdate() {
         BindingManager.update()
         driverControlled.update()
+        Lift.pto_drive()
 //        NewTurret.toMid()
 //        ShooterAngle.angle_mid()
 //        Shooter.stallShooter()
@@ -269,6 +271,8 @@ class Drivetrain : NextFTCOpMode() {
             )
 
             telemetry.addData("Shooter", Shooter.shooter.velocity)
+
+            telemetry.addData("hood",angleShooter)
 
             telemetry.addData("spindexer pos", Spindexer.spindexer.currentPosition)
 

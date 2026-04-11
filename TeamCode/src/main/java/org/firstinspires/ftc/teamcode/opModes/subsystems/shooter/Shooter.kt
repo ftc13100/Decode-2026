@@ -18,8 +18,8 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intakeRunning
 @Configurable
 object Shooter : Subsystem {
     @JvmField var target = 0.0
-    @JvmField var velPIDCoefficients = PIDCoefficients(0.001, 0.0, 0.0)
-    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.0003485, 0.001, 0.064)
+    @JvmField var velPIDCoefficients = PIDCoefficients(0.0007, 0.0, 0.0)
+    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.0003696, 0.001, 0.0869)
 
     val shooter = MotorEx("shooter").brakeMode().reversed()
 

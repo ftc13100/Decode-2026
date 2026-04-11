@@ -11,7 +11,7 @@ object BiLinearShooter {
 
     data class ShotParameters(val distance: Double, val velocity: Double, val angle: Double)
 
-    private val xKeys = listOf(24.0, 36.0, 48.0, 72.0, 96.0)
+    private val xKeys = listOf(24.0, 36.0, 48.0, 72.0, 96.0, 108.0)
     private val yKeys = listOf(12.0, 24.0, 48.0, 72.0, 96.0, 108.0, 120.0)
 
     private val shotData = listOf(

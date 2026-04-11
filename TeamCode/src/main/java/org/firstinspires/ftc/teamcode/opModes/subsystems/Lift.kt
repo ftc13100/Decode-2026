@@ -48,13 +48,13 @@ object Lift : Subsystem {
 //    fun toAngleLeft (angle: Double) = InstantCommand { ptoLeft.position  = angle }
 
     val pto_lift = InstantCommand {
-        ptoLeft.position  = 0.45
+        ptoLeft.position  = 0.44
         ptoRight.position = 0.55
     }
 
     val pto_drive = InstantCommand {
-        ptoLeft.position  = 0.5
-        ptoRight.position = 0.5
+        ptoLeft.position  = 0.477
+        ptoRight.position = 0.525
     }
 
     fun toPosLeft(pos: Double) =
