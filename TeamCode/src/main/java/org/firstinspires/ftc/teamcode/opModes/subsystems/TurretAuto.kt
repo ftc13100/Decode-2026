@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes.subsystems.shooter
 
 import com.qualcomm.robotcore.hardware.Servo
-import dev.nextftc.core.commands.groups.ParallelGroup
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode

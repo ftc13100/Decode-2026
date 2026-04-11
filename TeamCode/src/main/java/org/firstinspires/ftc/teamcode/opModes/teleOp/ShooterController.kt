@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.opModes.teleOp
 
 import com.pedropathing.geometry.Pose
 import dev.nextftc.core.commands.CommandManager
-import dev.nextftc.ftc.ActiveOpMode
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 

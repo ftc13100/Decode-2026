@@ -1,17 +1,14 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
-import dev.nextftc.core.commands.utility.LambdaCommand
-import dev.nextftc.core.commands.utility.PerpetualCommand
-import dev.nextftc.core.components.BindingsComponent
-import dev.nextftc.core.components.SubsystemComponent
-import dev.nextftc.ftc.NextFTCOpMode
-import dev.nextftc.ftc.components.BulkReadComponent
 import com.bylazar.telemetry.PanelsTelemetry
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import com.qualcomm.robotcore.util.ElapsedTime
-import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
+import dev.nextftc.core.components.BindingsComponent
+import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
+import dev.nextftc.ftc.NextFTCOpMode
+import dev.nextftc.ftc.components.BulkReadComponent
+import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 
 @TeleOp(name = "Turret Test & Tune")

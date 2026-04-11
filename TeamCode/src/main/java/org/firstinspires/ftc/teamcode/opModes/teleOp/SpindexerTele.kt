@@ -1,35 +1,17 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
+import com.bylazar.telemetry.PanelsTelemetry
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import dev.nextftc.core.commands.Command
+import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.core.commands.utility.LambdaCommand
 import dev.nextftc.core.commands.utility.PerpetualCommand
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import dev.nextftc.hardware.impl.MotorEx
-import com.bylazar.telemetry.PanelsTelemetry
-import com.qualcomm.hardware.limelightvision.LLResult
-import com.qualcomm.hardware.limelightvision.Limelight3A
-import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.util.ElapsedTime
-import dev.nextftc.bindings.BindingManager
-import dev.nextftc.bindings.button
-import dev.nextftc.core.commands.CommandManager
-import dev.nextftc.core.commands.delays.Delay
-import dev.nextftc.extensions.pedro.PedroComponent
-import kotlinx.coroutines.delay
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
-import kotlin.math.abs
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
-import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
-import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants.createFollower
-import kotlin.time.Duration.Companion.milliseconds
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
 
 @TeleOp(name = "SpindexerTesting")
 class SpindexerTele : NextFTCOpMode() {

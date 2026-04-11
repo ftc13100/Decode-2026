@@ -18,8 +18,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intakeRunning
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Lift
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
+import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
@@ -32,7 +32,7 @@ class Drivetrain : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                Intake, Spindexer, Shooter, ShooterAngle, NewTurret, Lift
+                Intake, Spindexer, Shooter, ShooterAngle, NewTurret, PoseStorage
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -48,8 +48,8 @@ class Drivetrain : NextFTCOpMode() {
 
     private lateinit var frontLeftMotor: MotorEx
     private lateinit var frontRightMotor: MotorEx
-//    private lateinit var backLeftMotor: MotorEx
-//    private lateinit var backRightMotor: MotorEx
+    private lateinit var backLeftMotor: MotorEx
+    private lateinit var backRightMotor: MotorEx
 
     private lateinit var driverControlled: MecanumDriverControlled
 
@@ -72,10 +72,10 @@ class Drivetrain : NextFTCOpMode() {
 
         frontLeftMotor = MotorEx(frontLeftName)
         frontRightMotor = MotorEx(frontRightName)
-//        backLeftMotor = MotorEx(backLeftName)
-//        backRightMotor = MotorEx(backRightName)
+        backLeftMotor = MotorEx(backLeftName)
+        backRightMotor = MotorEx(backRightName)
 
-        listOf(frontLeftMotor, frontRightMotor, Lift.backLeftMotor, Lift.backRightMotor).forEach {
+        listOf(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor).forEach {
             it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
 
@@ -87,22 +87,29 @@ class Drivetrain : NextFTCOpMode() {
         driverControlled = MecanumDriverControlled(
             frontLeftMotor,
             frontRightMotor,
-            Lift.backLeftMotor,
-            Lift.backRightMotor,
+            backLeftMotor,
+            backRightMotor,
             -Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
             Gamepads.gamepad1.rightStickX,
         )
         driverControlled.scalar = 0.95
 
+        // Reset location and heading
+        Gamepads.gamepad1.leftTrigger.asButton { it > 0.5 } and Gamepads.gamepad1.rightTrigger.asButton { it > 0.5 }
+            .whenBecomesTrue {
+                if (PoseStorage.blueAlliance) {
+                    follower.pose = Pose(135.25, 8.5, Math.toRadians(-90.0))
+                } else {
+                    follower.pose = Pose(8.75, 8.5, Math.toRadians(-90.0))
+                }
+            }
+
         // slow mode
         button { gamepad1.y }
             .whenTrue { driverControlled.scalar = 0.4 }
             .whenFalse { driverControlled.scalar = 0.95 }
 
-        // lift
-//        button { gamepad1.dpad_up}
-//            .whenBecomesTrue { Lift.full_Lift }
 
         button { gamepad1.dpad_up }
             .whenBecomesTrue {
@@ -231,7 +238,6 @@ class Drivetrain : NextFTCOpMode() {
     override fun onUpdate() {
         BindingManager.update()
         driverControlled.update()
-        Lift.pto_drive()
 //        NewTurret.toMid()
 //        ShooterAngle.angle_mid()
 //        Shooter.stallShooter()

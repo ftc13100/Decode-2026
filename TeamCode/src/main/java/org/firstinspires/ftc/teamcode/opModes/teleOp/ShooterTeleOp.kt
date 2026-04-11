@@ -6,11 +6,9 @@ import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.core.commands.utility.LambdaCommand
 import dev.nextftc.core.commands.utility.PerpetualCommand
 import dev.nextftc.core.components.SubsystemComponent
-import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 
 @TeleOp(name = "Shooter Test & Tune")
 class ShooterTeleOp : NextFTCOpMode() {

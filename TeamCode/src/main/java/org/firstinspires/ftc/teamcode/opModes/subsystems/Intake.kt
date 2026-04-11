@@ -9,8 +9,6 @@ import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.hardware.powerable.SetPower
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer.spindexer
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer.state
 import kotlin.time.Duration.Companion.seconds
 
 @Configurable

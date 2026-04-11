@@ -6,14 +6,11 @@ import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
 import dev.nextftc.control.feedforward.BasicFeedforwardParameters
-import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.hardware.controllable.RunToVelocity
 import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.hardware.powerable.SetPower
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intakeRunning
 
 @Configurable
 object Shooter : Subsystem {
