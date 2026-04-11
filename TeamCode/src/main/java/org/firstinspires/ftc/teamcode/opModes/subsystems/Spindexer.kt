@@ -9,6 +9,7 @@ import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.commands.utility.LambdaCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode.hardwareMap
+import dev.nextftc.hardware.controllable.RunToPosition
 import dev.nextftc.hardware.impl.MotorEx
 import dev.nextftc.hardware.powerable.SetPower
 
@@ -151,6 +152,7 @@ object Spindexer : Subsystem {
     }
         .requires(this)
 
+
     val stopShot = InstantCommand {
         state = State.MANUAL
         spindexer.power = 0.0
@@ -202,6 +204,8 @@ object Spindexer : Subsystem {
             else -> SpindexerColor.EMPTY
         }
     }
+
+    val intakePos = RunToPosition(controlSystem, 0.0).requires(this)
 
     private fun colorToDigit(color: SpindexerColor): Int =
         when (color) {

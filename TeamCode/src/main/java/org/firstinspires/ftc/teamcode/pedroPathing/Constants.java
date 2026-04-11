@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.pedropathing.control.PIDFCoefficients;
+import com.pedropathing.control.PredictiveBrakingCoefficients;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
@@ -18,15 +19,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(16)
-            .forwardZeroPowerAcceleration(-42.072)
-            .lateralZeroPowerAcceleration(-67.58)
+            .mass(15)
             .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(1, 0, .01, 0))
             .headingPIDFCoefficients(new PIDFCoefficients(1, 0, 0.01, 0))
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.015,0,0.003,0))
-            .useSecondaryDrivePIDF(true)
+            .predictiveBrakingCoefficients(new PredictiveBrakingCoefficients(0.15, 0.084677871, 0.00157))
             .useSecondaryHeadingPIDF(true)
-            .useSecondaryTranslationalPIDF(true);
+            .centripetalScaling(0);
+
 
     public static MecanumConstants mecanumConstants = new MecanumConstants()
             .maxPower(1)
@@ -42,15 +41,15 @@ public class Constants {
             .yVelocity(71.54);
 
     public static PinpointConstants pinpointConstants = new PinpointConstants()
-            .forwardPodY(4.5)
-            .strafePodX(-7.35)
+            .forwardPodY(3.6)
+            .strafePodX(-7.25)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName("pinpoint")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
-    public static PathConstraints pathConstraints = new PathConstraints(0.90, 100, 1, 1);
+    public static PathConstraints pathConstraints = new PathConstraints(0.97, 100, 1, 1);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)
