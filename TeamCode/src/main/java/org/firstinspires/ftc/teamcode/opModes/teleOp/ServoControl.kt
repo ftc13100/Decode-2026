@@ -14,7 +14,7 @@ class ServoControl : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                NewTurret, Lift, ShooterAngle
+                NewTurret, ShooterAngle
             ),
             BindingsComponent,
             BulkReadComponent
@@ -35,7 +35,6 @@ class ServoControl : NextFTCOpMode() {
         NewTurret.stopTracking()
         NewTurret.toAngle(180.0)
         ShooterAngle.toPos(0.0)
-        Lift.pto_lift()
 
 //        button { gamepad1.dpad_down }
 //            .whenBecomesTrue {
@@ -75,21 +74,6 @@ class ServoControl : NextFTCOpMode() {
                 ShooterAngle.toPos(shooterPos)()
             }
 
-        button { gamepad1.right_bumper }
-            .whenTrue {
-                Lift.backRightMotor.power =  1.0
-            }
-            .whenBecomesFalse {
-                Lift.backRightMotor.power = 0.0
-            }
-
-        button { gamepad1.left_bumper }
-            .whenTrue {
-                Lift.backLeftMotor.power  = -1.0
-            }
-            .whenBecomesFalse {
-                Lift.backLeftMotor.power = 0.0
-            }
 
 //        button { gamepad1.a }
 //            .whenTrue {
@@ -111,13 +95,9 @@ class ServoControl : NextFTCOpMode() {
         // Runs every loop while lift is active handles motor sync automatically
 //        Lift.syncLiftMotors() //can probably have this in whenTrue and have Lift.full_Lift() in whenBecomesTrue and just hold
 
-        telemetry.addData("current draw left",  Lift.backLeftMotor.motor.getCurrent(CurrentUnit.MILLIAMPS))
-        telemetry.addData("current draw right", Lift.backRightMotor.motor.getCurrent(CurrentUnit.MILLIAMPS))
 //        telemetry.addData("left travel ticks",  Lift.leftTravelTicks())
 //        telemetry.addData("right travel ticks", Lift.rightTravelTicks())
 //        telemetry.addData("tick gap (L - R)",   Lift.leftTravelTicks() - Lift.rightTravelTicks())
-        telemetry.addData("servo left pos", Lift.ptoLeft.position)
-        telemetry.addData("servo right pos", Lift.ptoRight.position)
         telemetry.addData("Turret Angle", "%.1f, ServoPos: %.2f", NewTurret.targetAngleRobotRef, NewTurret.targetServoPosition)
         telemetry.addData("Shooter Angle Servo Pos", ShooterAngle.servo.position)
         telemetry.update()
@@ -125,6 +105,5 @@ class ServoControl : NextFTCOpMode() {
 
     override fun onStop() {
         BindingManager.reset()
-        Lift.pto_drive()
     }
 }
