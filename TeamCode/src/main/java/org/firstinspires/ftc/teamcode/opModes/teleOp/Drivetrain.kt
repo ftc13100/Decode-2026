@@ -253,14 +253,7 @@ class Drivetrain : NextFTCOpMode() {
     override fun onUpdate() {
         BindingManager.update()
         driverControlled.update()
-//        NewTurret.toMid()
-//        ShooterAngle.angle_mid()
-//        Shooter.stallShooter()
         follower.update()
-
-//        if (!Lift.isRunning) {
-//            driverControlled.update()
-//        }
 
         val now = System.nanoTime() / 1_000_000.0
         val telemetryTime = (now - lastTelemetryTime)

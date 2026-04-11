@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opModes.subsystems
 
 import com.bylazar.configurables.annotations.Configurable
+import com.pedropathing.geometry.Pose
 import com.qualcomm.robotcore.hardware.Servo
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
@@ -10,6 +11,7 @@ import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
+import com.pedropathing.math.Vector
 
 @Configurable
 object NewTurret : Subsystem {
@@ -98,6 +100,27 @@ object NewTurret : Subsystem {
 
     }
 
+    fun getTurretPose(): Pose {
+        return Pose(
+            follower.pose.x + TURRET_OFFSET * cos(follower.pose.heading),
+            follower.pose.y + TURRET_OFFSET * sin(follower.pose.heading),
+            follower.pose.heading
+        )
+    }
+
+    fun getTurretVelocity(
+        robotVelocity: Vector,
+        angularVelocity: Double,
+        robotHeadingRadians: Double
+    ): Vector {
+        val result = Vector()  // initialize
+        result.setOrthogonalComponents(
+            robotVelocity.xComponent - angularVelocity * TURRET_OFFSET * sin(robotHeadingRadians),
+            robotVelocity.yComponent + angularVelocity * TURRET_OFFSET * cos(robotHeadingRadians)
+        )
+        return result
+    }
+
     override fun periodic() {
         if (!goalTrackingActive) return
 
@@ -105,8 +128,8 @@ object NewTurret : Subsystem {
 
         var robotHeading = Math.toDegrees(follower.heading)
 
-        newX = abs(follower.pose.x) +  TURRET_OFFSET * cos(follower.heading)
-        newY = abs(follower.pose.y) + TURRET_OFFSET * sin(follower.heading)
+        newX = getTurretPose().x
+        newY = getTurretPose().y
 
         if (robotHeading < 0.0) {
             robotHeading += 360.0
