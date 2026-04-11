@@ -17,8 +17,8 @@ object Intake : Subsystem {
     val intake = MotorEx("intake").brakeMode().reversed()
 
     var intakeRunning = false
-    @JvmField var CURRENT_THRESHOLD_FAST = 8000.0
-    @JvmField var CURRENT_THRESHOLD_SLOW = 4000.0
+    @JvmField var CURRENT_THRESHOLD_FAST = 6500.0
+    @JvmField var CURRENT_THRESHOLD_SLOW = 4500.0
 
     val spinFast =
         SequentialGroup(

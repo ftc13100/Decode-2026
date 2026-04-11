@@ -12,6 +12,8 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import com.pedropathing.math.Vector
+import dev.nextftc.control.builder.controlSystem
+import dev.nextftc.control.feedback.PIDCoefficients
 
 @Configurable
 object NewTurret : Subsystem {
@@ -23,8 +25,10 @@ object NewTurret : Subsystem {
     var targetAngleRobotRef: Double = 180.0 // 0 is facing forward, CCW increasing
     var targetAngleField: Double = 270.0 // 0 is right, increases CCW
 
-    @JvmField
-    var goalTrackingActive = false
+    @JvmField var goalTrackingActive = false
+    @JvmField var target = 0.0
+    @JvmField var kVF = 0.0
+    @JvmField var posPIDCoefficients = PIDCoefficients(0.00, 0.0, 0.000)
 
     var servoLeftLimit = 0.0   // Servo min
     var servoRightLimit = 1.0  // Servo max
@@ -36,11 +40,14 @@ object NewTurret : Subsystem {
     var newX = 0.0
     var newY = 0.0
 
-    @JvmField var kVF = 0.0
 
     const val TURRET_OFFSET = -2.03852
 
     private const val SERVO_MAX_DEG = 300.0 // Servo full travel in degrees
+
+    val controlSystem = controlSystem {
+        posPid(posPIDCoefficients)
+    }
 
     override fun initialize() {
         turret1 = dev.nextftc.ftc.ActiveOpMode.hardwareMap.get(Servo::class.java, "turret1")

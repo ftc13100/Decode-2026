@@ -16,7 +16,7 @@ import dev.nextftc.hardware.impl.MotorEx
 object Spindexer : Subsystem {
     @JvmField var target = 0.0
     // Position PID used for indexing
-    @JvmField var posPIDCoefficients = PIDCoefficients(-0.00085, 0.0, -0.00001)
+    @JvmField var posPIDCoefficients = PIDCoefficients(-0.0014, 0.0, -0.000035)
 
     //ID 23: PPG = 2
     //ID 22: PGP = 1
@@ -43,7 +43,7 @@ object Spindexer : Subsystem {
     override fun periodic() {
         when (state) {
             State.PID -> {
-                spindexer.power = controlSystem.calculate(spindexer.state)
+                spindexer.power = controlSystem.calculate(spindexer.state).coerceIn(-0.8,0.8)
 //                detectColorRGB(color0)
 //                detectColorRGB(color1)
 //                detectColorRGB(color2)
