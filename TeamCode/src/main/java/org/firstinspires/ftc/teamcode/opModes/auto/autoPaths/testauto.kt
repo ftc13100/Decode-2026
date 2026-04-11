@@ -61,7 +61,7 @@ class testauto: NextFTCOpMode() {
                 Spindexer.spinShot,
                 Delay(1.0),
                 Spindexer.stopShot,
-                Spindexer.resetIndex0,
+                Spindexer.toIntakePos,
                 ParallelGroup(
                 FollowPath(shootPGP),
                     Intake.spinFast
@@ -71,7 +71,7 @@ class testauto: NextFTCOpMode() {
                 Spindexer.spinShot,
                 Delay(1.0),
                 Spindexer.stopShot,
-                Spindexer.resetIndex0,
+                Spindexer.toIntakePos,
                 FollowPath(shootGate),
                 ParallelGroup(
                 FollowPath(gateEat),
@@ -84,7 +84,7 @@ class testauto: NextFTCOpMode() {
                 Spindexer.spinShot,
                 Delay(1.0),
                 Spindexer.stopShot,
-                Spindexer.resetIndex0,
+                Spindexer.toIntakePos,
                 FollowPath(shootGate),
                 ParallelGroup(
                     FollowPath(gateEat),
@@ -95,7 +95,7 @@ class testauto: NextFTCOpMode() {
                 Spindexer.spinShot,
                 Delay(1.0),
                 Spindexer.stopShot,
-                Spindexer.resetIndex0,
+                Spindexer.toIntakePos,
                 FollowPath(shootGate),
                 ParallelGroup(
                     FollowPath(gateEat),
@@ -106,7 +106,7 @@ class testauto: NextFTCOpMode() {
                 Spindexer.spinShot,
                 Delay(1.0),
                 Spindexer.stopShot,
-                Spindexer.resetIndex0,
+                Spindexer.toIntakePos,
                 ParallelGroup(
                     Intake.spinFast,
                 FollowPath(shootPPG)
@@ -116,7 +116,7 @@ class testauto: NextFTCOpMode() {
                 Spindexer.spinShot,
                 Delay(1.0),
                 Spindexer.stopShot,
-                Spindexer.resetIndex0,
+                Spindexer.toIntakePos,
                 FollowPath(goLeave)
             )
 
