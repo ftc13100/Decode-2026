@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
+import kotlin.math.abs
 
 private  const val TELEMETRY_INTERVAL:Int = 250
 
@@ -62,11 +63,20 @@ class Drivetrain : NextFTCOpMode() {
     var angleShooter: Double = 0.0
     var turretAngle: Double = 0.5
 
+    private var testMode = false
+
+    private val startPose = PoseStorage.poseEnd
     private val testingPose = Pose(72.0, 72.0, Math.toRadians(90.0))
 
     override fun onInit() {
 
-        follower.setStartingPose(testingPose)
+        if (abs(startPose.x) < 0.1 && abs(startPose.y) < 0.1) {
+            follower.setStartingPose(testingPose)
+            PoseStorage.blueAlliance = true
+            testMode = true
+        } else {
+            follower.setStartingPose(startPose)
+        }
 
         ShooterAngle.angle_mid()
 
@@ -188,7 +198,7 @@ class Drivetrain : NextFTCOpMode() {
                 Intake.spinStop()
             }
 
-        button { gamepad1.b }
+        button { gamepad2.a }
             .whenTrue {
                 Spindexer.spinShot()
             }
@@ -197,40 +207,45 @@ class Drivetrain : NextFTCOpMode() {
                 Intake.spinStop()
             }
 
-
-        button { gamepad1.x }
-            .whenBecomesTrue{
-                Spindexer.index0()
-//                Spindexer.autoIndex(0)()
-            }
-
-        button { gamepad2.b}
+        button { gamepad2.x}
             .whenBecomesTrue {
                 Spindexer.autoIndex(0)()
             }
 
-//        button { gamepad2.a }
-//            .whenBecomesFalse {
-//                Spindexer.index2()
-//            }
-//
-//        button { gamepad2.y }
-//            .whenBecomesFalse {
-//                Spindexer.index0()
-//            }
-//
-//        button { gamepad2.x }
-//            .whenBecomesFalse {
-//                Spindexer.index1()
-//            }
+        button { gamepad2.y}
+            .whenBecomesTrue {
+                Spindexer.autoIndex(1)()
+            }
 
-        button {gamepad2.x}
+        button { gamepad2.b}
+            .whenBecomesTrue {
+                Spindexer.autoIndex(2)()
+            }
+
+
+        button {gamepad2.left_stick_button}
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 NewTurret.trackTarget()
             }
             .whenBecomesFalse {
                 NewTurret.stopTracking()
+            }
+
+        // Switch alliance (works only in test mode where Teleop was started without Auto)
+        button { gamepad2.right_stick_button }
+            .toggleOnBecomesTrue()
+            .whenBecomesTrue {
+                if (testMode) {
+                    PoseStorage.blueAlliance = false
+//                    limelight.pipelineSwitch(2)
+                }
+            }
+            .whenBecomesFalse {
+                if (testMode) {
+                    PoseStorage.blueAlliance = true
+//                    limelight.pipelineSwitch(1)
+                }
             }
 
     }
