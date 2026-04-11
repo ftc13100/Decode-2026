@@ -68,7 +68,7 @@ class testauto: NextFTCOpMode() {
                 ),
                 Intake.spinStop,
                 FollowPath(PGPshoot),
-                Spindexer.stopshoot,
+                Spindexer.spinShoot,
                 Delay(1.0),
                 Spindexer.stopshoot,
                 Spindexer.toIntakePos,
