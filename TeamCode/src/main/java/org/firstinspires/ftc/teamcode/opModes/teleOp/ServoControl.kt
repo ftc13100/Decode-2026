@@ -126,5 +126,6 @@ class ServoControl : NextFTCOpMode() {
 
     override fun onStop() {
         BindingManager.reset()
+        Lift.pto_drive()
     }
 }
