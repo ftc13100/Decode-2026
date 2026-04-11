@@ -11,6 +11,7 @@ import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode.hardwareMap
 import dev.nextftc.hardware.controllable.RunToPosition
 import dev.nextftc.hardware.impl.MotorEx
+import dev.nextftc.hardware.powerable.SetPower
 
 @Configurable
 object Spindexer : Subsystem {
@@ -148,6 +149,10 @@ object Spindexer : Subsystem {
         spindexer.power = 1.0
     }
         .requires(this)
+    val spinShoot = SetPower(spindexer, 1.0)
+    val stopshoot = SetPower(spindexer, 0.0)
+
+
 
     val spinIndex = InstantCommand {
         Intake.spinSlowSpeed()()
