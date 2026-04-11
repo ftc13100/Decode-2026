@@ -65,6 +65,20 @@ object Spindexer : Subsystem {
         return newTarget
     }
 
+    fun intakePos(): Double {
+        val step = 1333.0
+        return kotlin.math.round(spindexer.currentPosition / step) * step
+    }
+
+    val toIntakePos = LambdaCommand("toIntakePos")
+        .setStart {
+            state = State.PID
+            controlSystem.goal =
+                KineticState(intakePos())
+        }
+        .setIsDone { controlSystem.isWithinTolerance(tolerance) }
+        .requires(this)
+
     // only if needed
     val wiggle = LambdaCommand("wiggleUp")
         .setStart {
@@ -80,15 +94,6 @@ object Spindexer : Subsystem {
                 .setIsDone { controlSystem.isWithinTolerance(tolerance) }
         )
         .requires(this)
-
-    val resetIndex0 = LambdaCommand("SpindexerPIDCommand")
-            .setStart {
-                state = State.PID
-                controlSystem.goal =
-                    KineticState(forwardOnlyTarget(0.0))
-            }
-            .setIsDone { controlSystem.isWithinTolerance(tolerance) }
-            .requires(this)
 
     // Indexing
     // PID state: schedules RunToPosition

@@ -164,6 +164,7 @@ class Drivetrain : NextFTCOpMode() {
         button { gamepad1.left_bumper }
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
+                Spindexer.toIntakePos()
                 Intake.spinFast()
             }
             .whenBecomesFalse {
