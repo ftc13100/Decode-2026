@@ -42,7 +42,7 @@ class testauto: NextFTCOpMode() {
         addComponents(
             SubsystemComponent(
                 Shooter, ShooterAngle, Intake, PoseStorage,
-                TurretAuto, blueAutoPaths
+                blueAutoPaths
             ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
@@ -54,8 +54,7 @@ class testauto: NextFTCOpMode() {
             SequentialGroup(
                 ParallelGroup(
                     Shooter.spinAtSpeed(1000.0),
-                    TurretAuto.toLeft,
-                    TurretAuto.toLeft2,
+
                     FollowPath(startShoot),
                 ),
                 Spindexer.spinShoot,
