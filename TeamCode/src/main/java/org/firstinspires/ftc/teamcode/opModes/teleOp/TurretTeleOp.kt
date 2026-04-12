@@ -8,7 +8,9 @@ import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurretCR
+import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurretCR.frontRightMotor
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 
 @TeleOp(name = "Turret Test & Tune")
@@ -37,6 +39,8 @@ class TurretTeleOp : NextFTCOpMode() {
         telemetry.addData("newY", NewTurretCR.newY)
         panelsTelemetry.addData("Angular Vel", follower.angularVelocity)
         panelsTelemetry.addData("target pos", NewTurretCR.target)
+        panelsTelemetry.addData("current pos", frontRightMotor.currentPosition)
+        panelsTelemetry.addData("power", NewTurretCR.power)
 
         // Update panel and telemetry
         panelsTelemetry.update(telemetry)

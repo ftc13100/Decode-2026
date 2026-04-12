@@ -2,10 +2,6 @@ package org.firstinspires.ftc.teamcode.opModes.subsystems
 
 import com.bylazar.configurables.annotations.Configurable
 import com.pedropathing.geometry.Pose
-import com.pedropathing.math.Vector
-import com.qualcomm.robotcore.hardware.CRServo
-import com.qualcomm.robotcore.hardware.Servo
-import com.qualcomm.robotcore.util.ElapsedTime
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
@@ -18,31 +14,39 @@ import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
+import dev.nextftc.control2.profiles.TrapezoidProfile
+import dev.nextftc.units.unittypes.AngleUnit
 
 @Configurable
 object NewTurretCR : Subsystem {
-
+    @JvmField var switchPIDmid = 400.0
+    @JvmField var switchPIDsmall = 150.0
     @JvmField var target = 0.0
     @JvmField var turretActive = false
     @JvmField var goalTrackingActive = false
     @JvmField var startPosition = 0.0
 
-    @JvmField var leftLimit = -5000.0
-    @JvmField var rightLimit = 5000.0
+    @JvmField var leftLimit = -5500.0
+    @JvmField var rightLimit = 5500.0
     @JvmField var kVF = 0.0
 
     @JvmField var targetAngleField = 0.0
     @JvmField var turretAngle = 0.0
     @JvmField var turretError = 0.0
 
-    @JvmField var posPIDCoefficients = PIDCoefficients(0.00, 0.0, 0.000)
+    @JvmField var posPIDCoefficientsLarge = PIDCoefficients(-0.00025, 0.0, -0.000)
+    @JvmField var posPIDCoefficientsMid = PIDCoefficients(-0.0008, 0.0, -0.000)
+    @JvmField var posPIDCoefficientsSmall = PIDCoefficients(-0.0015, 0.0, -0.00002)
 
-    // Using CRServo for continuous rotation
-    private lateinit var turret1: CRServoEx
-    private lateinit var turret2: CRServoEx
+    @JvmField var manualMode = false
+
+    var power: Double = 0.0
+
+    val turret1: CRServoEx = CRServoEx("turret1")
+    val turret2: CRServoEx = CRServoEx("turret2")
 
     // MotorEx used ONLY for its encoder port
-    private lateinit var frontRightMotor: MotorEx
+    lateinit var frontRightMotor: MotorEx
 
     // Your specific gear ratio math
     const val TURRET_TICKS_TO_DEGREES = 360.0 / (4000.0 * (141.0 / 47.0))
@@ -52,20 +56,22 @@ object NewTurretCR : Subsystem {
     var newY: Double = 0.0
 
 
-    val controlSystem = controlSystem {
-        posPid(posPIDCoefficients)
+    val controlSystemLarge = controlSystem {
+        posPid(posPIDCoefficientsLarge)
+    }
+
+    val controlSystemMid = controlSystem {
+        posPid(posPIDCoefficientsMid)
+    }
+
+    val controlSystemSmall = controlSystem {
+        posPid(posPIDCoefficientsSmall)
     }
 
     val turretCurrentPos: Double
         get() = frontRightMotor.currentPosition - startPosition
 
     override fun initialize() {
-        val hwMap = dev.nextftc.ftc.ActiveOpMode.hardwareMap
-
-        // Initialize Servos
-        turret1 = hwMap.get(CRServo::class.java, "turret1") as CRServoEx
-        turret2 = hwMap.get(CRServo::class.java, "turret2") as CRServoEx
-
         // Initialize the motor port just to read the encoder
         frontRightMotor = MotorEx("frontRight")
     }
@@ -73,8 +79,8 @@ object NewTurretCR : Subsystem {
     fun initPos() {
         startPosition = frontRightMotor.currentPosition
         target = startPosition
-        rightLimit = startPosition + 5000.0
-        leftLimit = startPosition - 5000.0
+        rightLimit = startPosition + 5500.0
+        leftLimit = startPosition - 5500.0
         trackTarget()
     }
 
@@ -131,13 +137,23 @@ object NewTurretCR : Subsystem {
     }
 
     override fun periodic() {
-        updateTarget()
+        if (!manualMode && goalTrackingActive) {
+            updateTarget()
+        }
 
         if (goalTrackingActive || turretActive) {
-            controlSystem.goal = KineticState(target)
+            controlSystemLarge.goal = KineticState(target.coerceIn(leftLimit, rightLimit))
+            controlSystemMid.goal = KineticState(target.coerceIn(leftLimit, rightLimit))
+            controlSystemSmall.goal = KineticState(target.coerceIn(leftLimit, rightLimit))
 
             // Calculate power based on the encoder state (frontRightMotor)
-            val power = controlSystem.calculate(frontRightMotor.state)
+            power = if (abs(target - frontRightMotor.currentPosition) > switchPIDmid) {
+                controlSystemLarge.calculate(frontRightMotor.state).coerceIn(-0.4,0.4)
+            } else if (abs(target-frontRightMotor.currentPosition) >switchPIDsmall){
+                controlSystemMid.calculate(frontRightMotor.state).coerceIn(-0.2,0.2)
+            } else {
+                controlSystemSmall.calculate(frontRightMotor.state).coerceIn(-0.125,0.125)
+            }
 
             // Apply power to CR Servos
             turret1.power = power

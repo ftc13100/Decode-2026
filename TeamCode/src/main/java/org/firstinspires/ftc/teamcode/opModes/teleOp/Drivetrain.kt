@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intakeRunning
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
+import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurretCR
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
@@ -33,7 +34,7 @@ class Drivetrain : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                Intake, Spindexer, Shooter, ShooterAngle, NewTurret, PoseStorage
+                Intake, Spindexer, Shooter, ShooterAngle, NewTurretCR, PoseStorage
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -159,22 +160,22 @@ class Drivetrain : NextFTCOpMode() {
 
         button { gamepad2.right_bumper}
             .whenBecomesTrue {
-                NewTurret.incrementAngle(10.0)
+                NewTurretCR.incrementAngle(10.0)
             }
 
         button { gamepad2.left_bumper }
             .whenBecomesTrue {
-                NewTurret.decrementAngle(10.0)
+                NewTurretCR.incrementAngle(-10.0)
             }
 
         button { gamepad2.right_trigger > 0.5 }
             .whenTrue {
-                NewTurret.incrementAngle(0.1)
+                NewTurretCR.incrementAngle(0.1)
             }
 
         button { gamepad2.left_trigger > 0.5 }
             .whenTrue {
-                NewTurret.decrementAngle(0.1)
+                NewTurretCR.incrementAngle(-0.1)
             }
 
         //Intake artifact
@@ -226,10 +227,10 @@ class Drivetrain : NextFTCOpMode() {
         button {gamepad2.left_stick_button}
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                NewTurret.trackTarget()
+                NewTurretCR.trackTarget()
             }
             .whenBecomesFalse {
-                NewTurret.stopTracking()
+                NewTurretCR.stopTracking()
             }
 
         // Switch alliance (works only in test mode where Teleop was started without Auto)
@@ -271,8 +272,8 @@ class Drivetrain : NextFTCOpMode() {
             telemetry.addData("X", follower.pose.x)
             telemetry.addData("Y", follower.pose.y)
 
-            telemetry.addData("newX", NewTurret.newX)
-            telemetry.addData("newY", NewTurret.newY)
+            telemetry.addData("newX", NewTurretCR.newX)
+            telemetry.addData("newY", NewTurretCR.newY)
 
             telemetry.addData("heading", Math.toDegrees(follower.heading))
 
@@ -299,7 +300,8 @@ class Drivetrain : NextFTCOpMode() {
             telemetry.addData("S2 ", Spindexer.detectColorRGB(Spindexer.color2))
             telemetry.addData("Alpha", "%.3f", Spindexer.color2.normalizedColors.alpha)
 
-            telemetry.addData("Turret", "F: %.1f, R: %.1f, S: %.3f",NewTurret.targetAngleField, NewTurret.targetAngleRobotRef, NewTurret.targetServoPosition)
+            telemetry.addData("Turret", "C: %.1f, T: %.1f, E: %.3f",NewTurretCR.target, NewTurretCR.turretCurrentPos, abs(NewTurretCR.target- NewTurretCR.turretCurrentPos))
+            //telemetry.addData("Turret", "F: %.1f, R: %.1f, S: %.3f",NewTurret.targetAngleField, NewTurret.targetAngleRobotRef, NewTurret.targetServoPosition)
             telemetry.update()
 
             lastTelemetryTime = now
