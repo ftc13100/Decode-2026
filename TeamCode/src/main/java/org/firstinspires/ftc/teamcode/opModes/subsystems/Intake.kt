@@ -17,19 +17,28 @@ object Intake : Subsystem {
     val intake = MotorEx("intake").brakeMode().reversed()
 
     var intakeRunning = false
+    var intakeSpindexer = false
+
     @JvmField var CURRENT_THRESHOLD_FAST = 6500.0
     @JvmField var CURRENT_THRESHOLD_SLOW = 4500.0
 
     val spinFast =
-        SequentialGroup(
-        SetPower(intake, -1.0),
-            InstantCommand { intakeRunning = true },
-            WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD_FAST },
-            SetPower(intake, 0.4),
-            Delay(0.3.seconds),
-            SetPower(intake, 0.0),
-            InstantCommand { intakeRunning = false }
-        )
+        if (!Spindexer.isFull) {
+            SequentialGroup(
+                SetPower(intake, -1.0),
+                InstantCommand { intakeRunning = true },
+                WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD_FAST },
+                SetPower(intake, 0.4),
+                Delay(0.3.seconds),
+                SetPower(intake, 0.0),
+                InstantCommand { intakeRunning = false }
+            )
+        } else {
+            InstantCommand {
+                intakeRunning = false
+                intake.power = 0.0
+            }
+        }
             .requires(this)
 
     val spinStop = InstantCommand {
@@ -41,12 +50,12 @@ object Intake : Subsystem {
     val spinSlowSpeed = {
         SequentialGroup(
             SetPower(intake, -0.5),
-            InstantCommand { intakeRunning = true },
+            InstantCommand { intakeSpindexer = true },
             WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD_SLOW },
             SetPower(intake, 0.4),
             Delay(0.3.seconds),
             SetPower(intake, 0.0),
-            InstantCommand { intakeRunning = false }
+            InstantCommand { intakeSpindexer = false }
         )
             .requires(this)
     }

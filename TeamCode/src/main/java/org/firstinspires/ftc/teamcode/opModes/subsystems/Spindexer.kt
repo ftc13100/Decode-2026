@@ -41,17 +41,31 @@ object Spindexer : Subsystem {
 
     var state = State.PID
 
+    var cached0 = SpindexerColor.EMPTY
+    var cached1 = SpindexerColor.EMPTY
+    var cached2 = SpindexerColor.EMPTY
+
+    var lastIntakeState = false
+
     override fun periodic() {
+
+        // Detect rising edge (intake just started)
+        val currentlyRunning = Intake.intakeRunning
+
+        if (currentlyRunning) {
+            // Only read while intake is running
+            cached0 = detectColorRGB(color0)
+            cached1 = detectColorRGB(color1)
+            cached2 = detectColorRGB(color2)
+        }
+
+        lastIntakeState = currentlyRunning
+
         when (state) {
             State.PID -> {
-                spindexer.power = controlSystem.calculate(spindexer.state).coerceIn(-0.8,0.8)
-//                detectColorRGB(color0)
-//                detectColorRGB(color1)
-//                detectColorRGB(color2)
+                spindexer.power = controlSystem.calculate(spindexer.state).coerceIn(-0.8, 0.8)
             }
-            State.MANUAL -> {
-                return
-            }
+            State.MANUAL -> return
         }
     }
 
@@ -149,10 +163,10 @@ object Spindexer : Subsystem {
         spindexer.power = 1.0
     }
         .requires(this)
+
+
     val spinShoot = SetPower(spindexer, 1.0)
     val stopshoot = SetPower(spindexer, 0.0)
-
-
 
     val spinIndex = InstantCommand {
         Intake.spinSlowSpeed()()
@@ -165,6 +179,7 @@ object Spindexer : Subsystem {
     val stopShot = InstantCommand {
         state = State.MANUAL
         spindexer.power = 0.0
+        clearColors()
     }
         .requires(this)
 
@@ -195,6 +210,12 @@ object Spindexer : Subsystem {
 
     enum class SpindexerColor { PURPLE, GREEN, EMPTY }
 
+    fun readAllColors() {
+        detectColorRGB(color0)
+        detectColorRGB(color1)
+        detectColorRGB(color2)
+    }
+
     fun detectColorRGB(sensor: NormalizedColorSensor): SpindexerColor {
         val colors = sensor.normalizedColors
 
@@ -224,9 +245,9 @@ object Spindexer : Subsystem {
         }
 
     fun computeDexIndex(b3: Int, b4: Int): Int {
-        val b0 = colorToDigit(detectColorRGB(color0))
-        val b1 = colorToDigit(detectColorRGB(color1))
-        val b2 = colorToDigit(detectColorRGB(color2))
+        val b0 = colorToDigit(cached0)
+        val b1 = colorToDigit(cached1)
+        val b2 = colorToDigit(cached2)
         return b0 * 81 + b1 * 27 + b2 * 9 + b3 * 3 + b4
     }
 
@@ -247,14 +268,22 @@ object Spindexer : Subsystem {
         get() {
             var purples = 0
             var greens = 0
-            val sensors = listOf(color0, color1, color2)
-            for (sensor in sensors) {
-                val detected = detectColorRGB(sensor)
-                if (detected == SpindexerColor.PURPLE) purples++
-                if (detected == SpindexerColor.GREEN) greens++
+
+            val cached = listOf(cached0, cached1, cached2)
+
+            for (c in cached) {
+                if (c == SpindexerColor.PURPLE) purples++
+                if (c == SpindexerColor.GREEN) greens++
             }
+
             return purples == 2 && greens == 1
         }
+
+    fun clearColors() {
+        cached0 = SpindexerColor.EMPTY
+        cached1 = SpindexerColor.EMPTY
+        cached2 = SpindexerColor.EMPTY
+    }
 
     override fun initialize() {
         color0 = hardwareMap.get(NormalizedColorSensor::class.java, "cs0")

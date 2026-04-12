@@ -5,7 +5,6 @@ import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 
