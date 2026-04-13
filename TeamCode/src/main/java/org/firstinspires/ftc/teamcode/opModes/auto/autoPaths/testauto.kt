@@ -1,6 +1,7 @@
 
 package org.firstinspires.ftc.teamcode.opModes.auto.blue
 
+import SpindexerAuto
 import com.pedropathing.ftc.drivetrains.Mecanum
 import com.pedropathing.geometry.BezierCurve
 import com.pedropathing.geometry.BezierLine
@@ -42,7 +43,7 @@ class testauto: NextFTCOpMode() {
         addComponents(
             SubsystemComponent(
                 Shooter, ShooterAngle, Intake, PoseStorage,
-                blueAutoPaths
+                blueAutoPaths, SpindexerAuto
             ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
@@ -54,74 +55,67 @@ class testauto: NextFTCOpMode() {
             SequentialGroup(
                 ParallelGroup(
                     Shooter.spinAtSpeed(1000.0),
-
                     FollowPath(startShoot),
                 ),
-                Spindexer.spinShoot,
-                Delay(1.0),
-                Spindexer.stopshoot,
-                Spindexer.toIntakePos,
+                ParallelRaceGroup(
+                    Intake.spinFastAuto,
+                    SpindexerAuto.toShoot
+                ),
+                SpindexerAuto.toIntake,
                 ParallelGroup(
                 FollowPath(shootPGP),
                     Intake.spinFast
                 ),
-                Intake.spinStop,
+                Intake.spinStopAuto,
                 FollowPath(PGPshoot),
-                Spindexer.spinShoot,
-                Delay(1.0),
-                Spindexer.stopshoot,
-                Spindexer.toIntakePos,
+                Intake.spinFastAuto,
+                SpindexerAuto.toShoot,
+                Intake.spinStopAuto,
+                SpindexerAuto.toIntake,
                 FollowPath(shootGate),
                 ParallelGroup(
                 FollowPath(gateEat),
-                    Intake.spinFast
+                    Intake.spinFastAuto,
                 ),
                 Delay(1.seconds),
-                Intake.spinStop,
-                Intake.spinStop,
+                Intake.spinStopAuto,
                 FollowPath(eatShoot),
-                Spindexer.spinShoot,
-                Delay(1.0),
-                Spindexer.stopshoot,
-                Spindexer.toIntakePos,
+                Intake.spinFastAuto,
+                SpindexerAuto.toShoot,
+                Intake.spinStopAuto,
                 FollowPath(shootGate),
-                ParallelGroup(
-                    FollowPath(gateEat),
-                    Intake.spinFast),
-                Delay(1.seconds),
-                Intake.spinStop,
+                Intake.spinFastAuto,
+                SpindexerAuto.toShoot,
+                Intake.spinStopAuto,
                 FollowPath(eatShoot),
-                Spindexer.spinShoot,
-                Delay(1.0),
-                Spindexer.stopshoot,
-                Spindexer.toIntakePos,
+                Intake.spinFastAuto,
+                SpindexerAuto.toShoot,
+                Intake.spinStopAuto,
+                SpindexerAuto.toIntake,
                 FollowPath(shootGate),
-                ParallelGroup(
-                    FollowPath(gateEat),
-                    Intake.spinFast),
-                Delay(1.seconds),
-                Intake.spinStop,
+                Intake.spinFastAuto,
+                SpindexerAuto.toShoot,
+                Intake.spinStopAuto,
                 FollowPath(eatShoot),
-                Spindexer.spinShoot,
-                Delay(1.0),
-                Spindexer.stopshoot,
-                Spindexer.toIntakePos,
+                Intake.spinFastAuto,
+                SpindexerAuto.toShoot,
+                Intake.spinStopAuto,
+                SpindexerAuto.toIntake,
                 ParallelGroup(
-                    Intake.spinFast,
+                    Intake.spinFastAuto,
                 FollowPath(shootPPG)
                 ),
-                Intake.spinStop,
-                FollowPath(PPGshoot),
-                Spindexer.spinShoot,
-                Delay(1.0),
-                Spindexer.stopshoot,
-                Spindexer.toIntakePos,
+                Intake.spinStopAuto,
+               FollowPath(PPGshoot),
+                Intake.spinFastAuto,
+                SpindexerAuto.toShoot,
+                Intake.spinStopAuto,
+                SpindexerAuto.toIntake,
                 FollowPath(goLeave)
             )
 
     override fun onInit() {
         PedroComponent.Companion.follower.setMaxPower(1.0)
-        Spindexer.intakePos
     }
 
     override fun onStartButtonPressed() {

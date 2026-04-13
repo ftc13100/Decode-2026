@@ -92,6 +92,18 @@ object Spindexer : Subsystem {
         }
         .setIsDone { controlSystem.isWithinTolerance(tolerance) }
         .requires(this)
+    val theintakepos = InstantCommand {
+        state = State.PID
+
+        RunToPosition(controlSystem, 0.0).requires(this)
+    }
+    val theshootpos = InstantCommand {
+        state = State.PID
+
+        RunToPosition(controlSystem, 1200.0).requires(this)
+    }
+
+
 
     // only if needed
     val wiggle = LambdaCommand("wiggleUp")
@@ -165,8 +177,7 @@ object Spindexer : Subsystem {
         .requires(this)
 
 
-    val spinShoot = SetPower(spindexer, 1.0)
-    val stopshoot = SetPower(spindexer, 0.0)
+
 
     val spinIndex = InstantCommand {
         Intake.spinSlowSpeed()()
