@@ -9,15 +9,13 @@ import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
-import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurretCR
-import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurretCR.frontRightMotor
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 
 @TeleOp(name = "Turret Test & Tune")
 class TurretTeleOp : NextFTCOpMode() {
     init {
         addComponents(
-            SubsystemComponent(NewTurretCR),
+            SubsystemComponent(NewTurret),
             BindingsComponent,
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
@@ -28,19 +26,19 @@ class TurretTeleOp : NextFTCOpMode() {
 
 
     override fun onInit() {
-        NewTurretCR.trackTarget()
+        NewTurret.trackTarget()
     }
 
     override fun onUpdate() {
         // Show current turret position
         telemetry.addData("X", follower.pose.x)
         telemetry.addData("Y", follower.pose.y)
-        telemetry.addData("newX", NewTurretCR.newX)
-        telemetry.addData("newY", NewTurretCR.newY)
+        telemetry.addData("newX", NewTurret.newX)
+        telemetry.addData("newY", NewTurret.newY)
         panelsTelemetry.addData("Angular Vel", follower.angularVelocity)
-        panelsTelemetry.addData("target pos", NewTurretCR.target)
-        panelsTelemetry.addData("current pos", frontRightMotor.currentPosition)
-        panelsTelemetry.addData("power", NewTurretCR.power)
+        panelsTelemetry.addData("target pos", NewTurret.target)
+//        panelsTelemetry.addData("current pos", frontRightMotor.currentPosition)
+//        panelsTelemetry.addData("power", NewTurret.power)
 
         // Update panel and telemetry
         panelsTelemetry.update(telemetry)

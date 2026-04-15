@@ -7,12 +7,12 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 
 object BiLinearShooter {
-    val goal = Pose(6.0, 138.0)
+    val goal = Pose(4.0, 136.0)
 
     data class ShotParameters(val distance: Double, val velocity: Double, val angle: Double)
 
     private val xKeys = listOf(24.0, 36.0, 48.0, 72.0, 96.0, 108.0)
-    private val yKeys = listOf(12.0, 24.0, 48.0, 72.0, 96.0, 108.0, 120.0)
+    private val yKeys = listOf(12.0, 24.0, 48.0, 69.97, 96.0, 108.0, 120.0)
 
     private val shotData = listOf(
         // X, Y, Velocity, Angle, ToF
@@ -25,7 +25,7 @@ object BiLinearShooter {
         listOf(72.0, 108.0, 1150.0, 0.207),
         listOf(72.0, 96.0, 1180.0, 0.207),
         listOf(96.0, 120.0, 1200.0, 0.225),
-        listOf(72.0, 72.0, 1200.0, 0.218),
+        listOf(72.0, 69.97, 1740.0, 0.700),
         listOf(96.0, 96.0, 1290.0, 0.225),
         listOf(72.0, 24.0, 1460.0, 0.225),
         listOf(48.0, 12.0, 1460.0, 0.225),

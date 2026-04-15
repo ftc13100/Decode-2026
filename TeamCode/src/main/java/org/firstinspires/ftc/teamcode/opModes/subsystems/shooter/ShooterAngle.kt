@@ -16,7 +16,7 @@ object ShooterAngle : Subsystem {
     fun update() = InstantCommand { servo.position = targetPosition }
 
     val angle_up = InstantCommand {
-        servo.position = 0.95
+        servo.position = 0.8
         //was 0.5
     }
 
@@ -29,7 +29,7 @@ object ShooterAngle : Subsystem {
 //    }
 
     val angle_down = InstantCommand {
-        servo.position = 0.15
+        servo.position = 0.0
         // was 0.7
     }
 
@@ -40,7 +40,7 @@ object ShooterAngle : Subsystem {
 
     fun toPos(pos: Double) =
         InstantCommand {
-            servo.position = pos
+            servo.position = pos.coerceIn(0.0,0.8)
 
         }
 }

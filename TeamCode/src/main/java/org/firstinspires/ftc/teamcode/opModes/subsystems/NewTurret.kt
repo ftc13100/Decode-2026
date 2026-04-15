@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
-import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goal
+import org.firstinspires.ftc.teamcode.opModes.teleOp.BiLinearShooter.goal
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
