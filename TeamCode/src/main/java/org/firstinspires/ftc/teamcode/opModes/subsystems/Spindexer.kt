@@ -287,7 +287,7 @@ object Spindexer : Subsystem {
                 if (c == SpindexerColor.GREEN) greens++
             }
 
-            return purples == 2 && greens == 1
+            return purples + greens == 3
         }
 
     fun clearColors() {

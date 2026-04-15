@@ -72,13 +72,13 @@ class Drivetrain : NextFTCOpMode() {
 
         if (abs(startPose.x) < 0.1 && abs(startPose.y) < 0.1) {
             follower.setStartingPose(testingPose)
-            PoseStorage.blueAlliance = true
+            PoseStorage.blueAlliance = false
             testMode = true
         } else {
             follower.setStartingPose(startPose)
         }
 
-        ShooterAngle.angle_mid()
+        ShooterAngle.angle_down()
 
         frontLeftMotor = MotorEx(frontLeftName)
         frontRightMotor = MotorEx(frontRightName)
@@ -254,6 +254,8 @@ class Drivetrain : NextFTCOpMode() {
         BindingManager.update()
         driverControlled.update()
         follower.update()
+        val shot = BiLinearShooter.getShot(follower.pose.x, follower.pose.y)
+        BiLinearShooter.applyShot(shot)
 
         val now = System.nanoTime() / 1_000_000.0
         val telemetryTime = (now - lastTelemetryTime)
@@ -285,7 +287,7 @@ class Drivetrain : NextFTCOpMode() {
                 }, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
             )
 
-            telemetry.addData("Shooter", Shooter.shooter.velocity)
+            telemetry.addData("Shooter Vel", "Vel: %.1f, Targ: %.1f",Shooter.shooter.velocity, Shooter.target)
 
             telemetry.addData("hood",angleShooter)
 

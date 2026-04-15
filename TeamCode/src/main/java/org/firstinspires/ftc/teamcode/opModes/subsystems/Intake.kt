@@ -19,7 +19,7 @@ object Intake : Subsystem {
     var intakeRunning = false
     var intakeSpindexer = false
 
-    @JvmField var CURRENT_THRESHOLD_FAST = 6200.0
+    @JvmField var CURRENT_THRESHOLD_FAST = 6500.0
     @JvmField var CURRENT_THRESHOLD_SLOW = 4500.0
 
     val spinFast =
@@ -27,7 +27,7 @@ object Intake : Subsystem {
             SequentialGroup(
                 SetPower(intake, -1.0),
                 InstantCommand { intakeRunning = true },
-                WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD_FAST },
+                WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD_FAST},
                 SetPower(intake, 0.4),
                 Delay(0.3.seconds),
                 SetPower(intake, 0.0),
@@ -59,6 +59,12 @@ object Intake : Subsystem {
         )
             .requires(this)
     }
+
+val spinSlowSimple = InstantCommand {
+    intakeRunning = true
+    intake.power = -0.5
+}
+    .requires(this)
 
 val spinFastAuto = SetPower(intake, 1.0)
 val spinStopAuto = SetPower(intake, 0.0)
