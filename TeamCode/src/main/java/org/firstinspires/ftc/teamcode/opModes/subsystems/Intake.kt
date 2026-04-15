@@ -60,7 +60,7 @@ object Intake : Subsystem {
             .requires(this)
     }
 
-val spinFastAuto = SetPower(intake, -1.0)
+val spinFastAuto = SetPower(intake, 1.0)
 val spinStopAuto = SetPower(intake, 0.0)
 
 

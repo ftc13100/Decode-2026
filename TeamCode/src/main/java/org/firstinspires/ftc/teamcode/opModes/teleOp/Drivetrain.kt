@@ -19,7 +19,6 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intakeRunning
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
-import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurretCR
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
@@ -34,7 +33,7 @@ class Drivetrain : NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
-                Intake, Spindexer, Shooter, ShooterAngle, NewTurretCR, PoseStorage
+                Intake, Spindexer, Shooter, ShooterAngle, NewTurret, PoseStorage
             ),
             BindingsComponent,
             BulkReadComponent,
@@ -61,7 +60,7 @@ class Drivetrain : NextFTCOpMode() {
     private var lastTelemetryTime = 0.0
 
     var speed: Double = 0.0
-    var angleShooter: Double = 0.0
+    var angleShooter: Double = 0.0.coerceIn(0.0,0.8)
     var turretAngle: Double = 0.5
 
     private var testMode = false
@@ -73,13 +72,13 @@ class Drivetrain : NextFTCOpMode() {
 
         if (abs(startPose.x) < 0.1 && abs(startPose.y) < 0.1) {
             follower.setStartingPose(testingPose)
-            PoseStorage.blueAlliance = true
+            PoseStorage.blueAlliance = false
             testMode = true
         } else {
             follower.setStartingPose(startPose)
         }
 
-        ShooterAngle.angle_mid()
+        ShooterAngle.angle_down()
 
         frontLeftMotor = MotorEx(frontLeftName)
         frontRightMotor = MotorEx(frontRightName)
@@ -104,7 +103,7 @@ class Drivetrain : NextFTCOpMode() {
             Gamepads.gamepad1.leftStickX,
             Gamepads.gamepad1.rightStickX,
         )
-        driverControlled.scalar = 0.95
+        driverControlled.scalar = 1.0
 
         // Reset location and heading
         Gamepads.gamepad1.leftTrigger.asButton { it > 0.5 } and Gamepads.gamepad1.rightTrigger.asButton { it > 0.5 }
@@ -119,18 +118,18 @@ class Drivetrain : NextFTCOpMode() {
         // slow mode
         button { gamepad1.y }
             .whenTrue { driverControlled.scalar = 0.4 }
-            .whenFalse { driverControlled.scalar = 0.95 }
+            .whenFalse { driverControlled.scalar = 1.0 }
 
 
         button { gamepad1.dpad_up }
             .whenBecomesTrue {
-                speed += 10
+                speed += 20
                 Shooter.spinAtSpeed(speed)()
             }
 
         button { gamepad1.dpad_down }
             .whenBecomesTrue {
-                speed -= 10
+                speed -= 20
                 Shooter.spinAtSpeed(speed)()
             }
 
@@ -160,22 +159,22 @@ class Drivetrain : NextFTCOpMode() {
 
         button { gamepad2.right_bumper}
             .whenBecomesTrue {
-                NewTurretCR.incrementAngle(10.0)
+                NewTurret.incrementAngle(10.0)
             }
 
         button { gamepad2.left_bumper }
             .whenBecomesTrue {
-                NewTurretCR.incrementAngle(-10.0)
+                NewTurret.incrementAngle(-10.0)
             }
 
         button { gamepad2.right_trigger > 0.5 }
             .whenTrue {
-                NewTurretCR.incrementAngle(0.1)
+                NewTurret.incrementAngle(0.1)
             }
 
         button { gamepad2.left_trigger > 0.5 }
             .whenTrue {
-                NewTurretCR.incrementAngle(-0.1)
+                NewTurret.decrementAngle(0.1)
             }
 
         //Intake artifact
@@ -227,10 +226,10 @@ class Drivetrain : NextFTCOpMode() {
         button {gamepad2.left_stick_button}
             .toggleOnBecomesTrue()
             .whenBecomesTrue {
-                NewTurretCR.trackTarget()
+                NewTurret.trackTarget()
             }
             .whenBecomesFalse {
-                NewTurretCR.stopTracking()
+                NewTurret.stopTracking()
             }
 
         // Switch alliance (works only in test mode where Teleop was started without Auto)
@@ -255,6 +254,8 @@ class Drivetrain : NextFTCOpMode() {
         BindingManager.update()
         driverControlled.update()
         follower.update()
+        val shot = BiLinearShooter.getShot(follower.pose.x, follower.pose.y)
+        BiLinearShooter.applyShot(shot)
 
         val now = System.nanoTime() / 1_000_000.0
         val telemetryTime = (now - lastTelemetryTime)
@@ -272,8 +273,8 @@ class Drivetrain : NextFTCOpMode() {
             telemetry.addData("X", follower.pose.x)
             telemetry.addData("Y", follower.pose.y)
 
-            telemetry.addData("newX", NewTurretCR.newX)
-            telemetry.addData("newY", NewTurretCR.newY)
+            telemetry.addData("newX", NewTurret.newX)
+            telemetry.addData("newY", NewTurret.newY)
 
             telemetry.addData("heading", Math.toDegrees(follower.heading))
 
@@ -286,7 +287,7 @@ class Drivetrain : NextFTCOpMode() {
                 }, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
             )
 
-            telemetry.addData("Shooter", Shooter.shooter.velocity)
+            telemetry.addData("Shooter Vel", "Vel: %.1f, Targ: %.1f",Shooter.shooter.velocity, Shooter.target)
 
             telemetry.addData("hood",angleShooter)
 
@@ -300,8 +301,8 @@ class Drivetrain : NextFTCOpMode() {
             telemetry.addData("S2 ", Spindexer.detectColorRGB(Spindexer.color2))
             telemetry.addData("Alpha", "%.3f", Spindexer.color2.normalizedColors.alpha)
 
-            telemetry.addData("Turret", "C: %.1f, T: %.1f, E: %.3f",NewTurretCR.target, NewTurretCR.turretCurrentPos, abs(NewTurretCR.target- NewTurretCR.turretCurrentPos))
-            //telemetry.addData("Turret", "F: %.1f, R: %.1f, S: %.3f",NewTurret.targetAngleField, NewTurret.targetAngleRobotRef, NewTurret.targetServoPosition)
+            //telemetry.addData("Turret", "C: %.1f, T: %.1f, E: %.3f",NewTurretCR.target, NewTurretCR.turretCurrentPos, abs(NewTurretCR.target- NewTurretCR.turretCurrentPos))
+            telemetry.addData("Turret", "F: %.1f, R: %.1f, S: %.3f",NewTurret.targetAngleField, NewTurret.targetAngleRobotRef, NewTurret.targetServoPosition)
             telemetry.update()
 
             lastTelemetryTime = now

@@ -10,21 +10,14 @@ import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.hardware.controllable.RunToVelocity
 import dev.nextftc.hardware.impl.MotorEx
-import dev.nextftc.hardware.powerable.SetPower
 
 @Configurable
 object Shooter : Subsystem {
     @JvmField var target = 0.0
     @JvmField var velPIDCoefficients = PIDCoefficients(0.0007, 0.0, 0.0)
-    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.0003696, 0.001, 0.0869)
+    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.00036825, 0.0, 0.041)
 
     val shooter = MotorEx("shooter").brakeMode().reversed()
-
-    val shootSpeed =
-            SetPower(shooter, -0.7).requires(this)
-
-    val stall =
-        SetPower(shooter, 0.0).requires(this)
 
     var shooterActive = false
     var shooterReady = false
