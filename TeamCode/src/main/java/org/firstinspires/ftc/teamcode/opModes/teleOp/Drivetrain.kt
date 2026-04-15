@@ -94,6 +94,8 @@ class Drivetrain : NextFTCOpMode() {
     }
 
     override fun onStartButtonPressed() {
+        NewTurret.trackTarget()
+
         driverControlled = MecanumDriverControlled(
             frontLeftMotor,
             frontRightMotor,
@@ -254,8 +256,8 @@ class Drivetrain : NextFTCOpMode() {
         BindingManager.update()
         driverControlled.update()
         follower.update()
-        val shot = BiLinearShooter.getShot(follower.pose.x, follower.pose.y)
-        BiLinearShooter.applyShot(shot)
+        val shot = BiLinearShooter.getShot(follower.pose.x, follower.pose.y) // have this and line under in a button and onStart
+        BiLinearShooter.applyShot(shot) // rather than in onUpdate
 
         val now = System.nanoTime() / 1_000_000.0
         val telemetryTime = (now - lastTelemetryTime)

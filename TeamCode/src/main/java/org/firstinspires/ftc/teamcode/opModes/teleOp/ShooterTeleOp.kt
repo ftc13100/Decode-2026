@@ -44,6 +44,7 @@ class ShooterTeleOp : NextFTCOpMode() {
     private fun updateSignals() {
         panelsTelemetry.addData("velocity", Shooter.shooter.velocity)
         panelsTelemetry.addData("target", Shooter.target)
+        panelsTelemetry.addData("power", Shooter.shooter.power)
         panelsTelemetry.update(telemetry)
     }
 }
