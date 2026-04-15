@@ -60,17 +60,9 @@ object Intake : Subsystem {
             .requires(this)
     }
 
-//    val spinReverse =
-//        SequentialGroup(
-//            SetPower(intake, 0.7),
-//            InstantCommand { intakeRunning = true },
-//            WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD_FAST },
-//            SetPower(intake, 0.4),
-//            Delay(0.3.seconds),
-//            SetPower(intake, 0.0),
-//            InstantCommand { intakeRunning = false }
-//        )
-//            .requires(this)
+val spinFastAuto = SetPower(intake, 1.0)
+val spinStopAuto = SetPower(intake, 0.0)
+
 
     val spinReverse = InstantCommand {
         intakeRunning = true
