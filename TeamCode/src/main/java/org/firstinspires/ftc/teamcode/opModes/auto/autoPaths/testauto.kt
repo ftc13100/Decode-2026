@@ -31,6 +31,7 @@ import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.start
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.TurretAuto
@@ -43,7 +44,7 @@ class testauto: NextFTCOpMode() {
         addComponents(
             SubsystemComponent(
                 Shooter, ShooterAngle, Intake, PoseStorage,
-                blueAutoPaths, SpindexerAuto
+                blueAutoPaths, SpindexerAuto, TurretAuto
             ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
@@ -54,68 +55,25 @@ class testauto: NextFTCOpMode() {
         get() =
             SequentialGroup(
                 ParallelGroup(
-                    Shooter.spinAtSpeed(1000.0),
+                    TurretAuto.toLeft,
+                    TurretAuto.toLeft2,
+                    Shooter.spinAtSpeed(1500.0),
                     FollowPath(startShoot),
                 ),
-                ParallelRaceGroup(
                     Intake.spinFastAuto,
-                    SpindexerAuto.toShoot
-                ),
-                SpindexerAuto.toIntake,
+                    SpindexerAuto.toShoot,
                 ParallelGroup(
-                FollowPath(shootPGP),
-                    Intake.spinFast
+                    SpindexerAuto.toIntake,
+                    FollowPath(shootPGP),
                 ),
-                Intake.spinStopAuto,
-                FollowPath(PGPshoot),
-                Intake.spinFastAuto,
-                SpindexerAuto.toShoot,
-                Intake.spinStopAuto,
-                SpindexerAuto.toIntake,
-                FollowPath(shootGate),
-                ParallelGroup(
-                FollowPath(gateEat),
-                    Intake.spinFastAuto,
-                ),
-                Delay(1.seconds),
-                Intake.spinStopAuto,
-                FollowPath(eatShoot),
-                Intake.spinFastAuto,
-                SpindexerAuto.toShoot,
-                Intake.spinStopAuto,
-                FollowPath(shootGate),
-                Intake.spinFastAuto,
-                SpindexerAuto.toShoot,
-                Intake.spinStopAuto,
-                FollowPath(eatShoot),
-                Intake.spinFastAuto,
-                SpindexerAuto.toShoot,
-                Intake.spinStopAuto,
-                SpindexerAuto.toIntake,
-                FollowPath(shootGate),
-                Intake.spinFastAuto,
-                SpindexerAuto.toShoot,
-                Intake.spinStopAuto,
-                FollowPath(eatShoot),
-                Intake.spinFastAuto,
-                SpindexerAuto.toShoot,
-                Intake.spinStopAuto,
-                SpindexerAuto.toIntake,
-                ParallelGroup(
-                    Intake.spinFastAuto,
-                FollowPath(shootPPG)
-                ),
-                Intake.spinStopAuto,
-               FollowPath(PPGshoot),
-                Intake.spinFastAuto,
-                SpindexerAuto.toShoot,
-                Intake.spinStopAuto,
-                SpindexerAuto.toIntake,
-                FollowPath(goLeave)
+
+
             )
 
     override fun onInit() {
         PedroComponent.Companion.follower.setMaxPower(1.0)
+        SpindexerAuto.toIntake
+
     }
 
     override fun onStartButtonPressed() {
@@ -131,7 +89,7 @@ class testauto: NextFTCOpMode() {
     }
 
     override fun onUpdate() {
-        telemetry.addData("Velocity", "%.3f", Shooter.shooter.velocity);
+        telemetry.addData("pos", "%.3f", SpindexerAuto.spindexer.currentPosition);
 
         telemetry.update()
     }
