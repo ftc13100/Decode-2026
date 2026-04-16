@@ -80,7 +80,7 @@ object Spindexer : Subsystem {
     }
 
     fun intakePos(): Double {
-        val step = 1333.0
+        val step = 1333.33
         return kotlin.math.round(spindexer.currentPosition / step) * step
     }
 
@@ -92,6 +92,7 @@ object Spindexer : Subsystem {
         }
         .setIsDone { controlSystem.isWithinTolerance(tolerance) }
         .requires(this)
+
     val theintakepos = InstantCommand {
         state = State.PID
 
@@ -102,8 +103,6 @@ object Spindexer : Subsystem {
 
         RunToPosition(controlSystem, 1200.0).requires(this)
     }
-
-
 
     // only if needed
     val wiggle = LambdaCommand("wiggleUp")
@@ -170,7 +169,7 @@ object Spindexer : Subsystem {
 
     // manual: periodic stops PID
     val spinShot = InstantCommand {
-        Intake.spinSlowSpeed()()
+    //    Intake.spinSlowSpeed()() // shouldn't be necessary, also is bad for battery usage when shooting
         state = State.MANUAL
         spindexer.power = 1.0
     }
@@ -295,6 +294,9 @@ object Spindexer : Subsystem {
         cached1 = SpindexerColor.EMPTY
         cached2 = SpindexerColor.EMPTY
     }
+
+    val isBusy: Boolean
+        get() = state == State.PID || (state == State.MANUAL && spindexer.power > 0.1)
 
     override fun initialize() {
         color0 = hardwareMap.get(NormalizedColorSensor::class.java, "cs0")
