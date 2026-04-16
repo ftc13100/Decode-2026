@@ -47,6 +47,10 @@ object Spindexer : Subsystem {
 
     var lastIntakeState = false
 
+    private var startTime = 0L
+    private var startPos = 0.0
+    private var hasStopped = false
+
     override fun periodic() {
 
         // Detect rising edge (intake just started)
@@ -176,15 +180,27 @@ object Spindexer : Subsystem {
         .requires(this)
 
 
-
-
-    val spinIndex = InstantCommand {
-        Intake.spinSlowSpeed()()
-        state = State.MANUAL
-        spindexer.power = -1.0
-    }
+    val shootTimedOrPosition = LambdaCommand("shootTimedOrPosition")
+        .setStart {
+            state = State.MANUAL
+            startTime = System.currentTimeMillis()
+            startPos = spindexer.currentPosition
+            hasStopped = false
+            spindexer.power = 1.0
+        }
+        .setIsDone {
+            val now = System.currentTimeMillis()
+            val timeDone = (now - startTime) >= 500
+            val positionDone =
+                (spindexer.currentPosition - startPos) <= -4000.0
+            val done = timeDone || positionDone
+            if (done && !hasStopped) {
+                spindexer.power = 0.0
+                hasStopped = true
+            }
+            done
+        }
         .requires(this)
-
 
     val stopShot = InstantCommand {
         state = State.MANUAL
