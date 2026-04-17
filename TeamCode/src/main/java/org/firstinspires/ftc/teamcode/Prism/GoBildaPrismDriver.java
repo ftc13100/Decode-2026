@@ -49,6 +49,8 @@ public class GoBildaPrismDriver extends I2cDeviceSynchDevice<I2cDeviceSynchSimpl
     private final int MAXIMUM_NUMBER_OF_ANIMATIONS = 10;
     private final int MAXIMUM_NUMBER_OF_ANIMATION_GROUPS = 8;
     private PrismAnimations.AnimationBase[] animations = new PrismAnimations.AnimationBase[MAXIMUM_NUMBER_OF_ANIMATIONS];
+    private int configuredStripLength = 36;
+    private final Color[] manualFrame = new Color[256];
 
     //#region Public Types
     public enum LayerHeight
@@ -173,6 +175,10 @@ public class GoBildaPrismDriver extends I2cDeviceSynchDevice<I2cDeviceSynchSimpl
 
         this.deviceClient.setI2cAddress(I2cAddr.create7bit(DEFAULT_ADDRESS));
         super.registerArmingStateCallback(false);
+
+        for (int i = 0; i < manualFrame.length; i++) {
+            manualFrame[i] = Color.TRANSPARENT;
+        }
     }
 
     @Override
@@ -378,10 +384,94 @@ public class GoBildaPrismDriver extends I2cDeviceSynchDevice<I2cDeviceSynchSimpl
     public void setStripLength(int stripLength)
     {
         final int boundedStripLength = Math.max(0, Math.min(stripLength, 0xFF));
+        configuredStripLength = boundedStripLength;
         final int ChangeStripLengthBit = 1 << 24;
         final int ChangeStripLengthCommand = ChangeStripLengthBit | (boundedStripLength << 16);
         byte[] packet = TypeConversion.intToByteArray(ChangeStripLengthCommand, ByteOrder.LITTLE_ENDIAN);
         deviceClient.write(Register.CONTROL.address, packet);
+    }
+
+    public void setSolidColor(int startIndex, int endIndex, Color color)
+    {
+        int start = Math.max(0, Math.min(startIndex, manualFrame.length - 1));
+        int end = Math.max(0, Math.min(endIndex, manualFrame.length - 1));
+        if (end < start) {
+            int tmp = start;
+            start = end;
+            end = tmp;
+        }
+
+        Color target = color == null ? Color.TRANSPARENT : color;
+        for (int i = start; i <= end; i++) {
+            manualFrame[i] = target;
+        }
+    }
+
+    public void show()
+    {
+        clearAllAnimations();
+
+        int layerIndex = 0;
+        int limit = Math.max(0, Math.min(configuredStripLength, manualFrame.length));
+        int i = 0;
+
+        while (i < limit && layerIndex < MAXIMUM_NUMBER_OF_ANIMATIONS) {
+            Color color = manualFrame[i];
+            if (isBlack(color)) {
+                i++;
+                continue;
+            }
+
+            int start = i;
+            int end = i;
+            while (end + 1 < limit && sameColor(manualFrame[end + 1], color)) {
+                end++;
+            }
+
+            insertAnimation(getLayerFromIndex(layerIndex), new PrismAnimations.Solid(color, start, end));
+            layerIndex++;
+            i = end + 1;
+        }
+
+        updateAllAnimations();
+    }
+
+    private LayerHeight getLayerFromIndex(int index)
+    {
+        switch (index) {
+            case 0:
+                return LayerHeight.LAYER_0;
+            case 1:
+                return LayerHeight.LAYER_1;
+            case 2:
+                return LayerHeight.LAYER_2;
+            case 3:
+                return LayerHeight.LAYER_3;
+            case 4:
+                return LayerHeight.LAYER_4;
+            case 5:
+                return LayerHeight.LAYER_5;
+            case 6:
+                return LayerHeight.LAYER_6;
+            case 7:
+                return LayerHeight.LAYER_7;
+            case 8:
+                return LayerHeight.LAYER_8;
+            default:
+                return LayerHeight.LAYER_9;
+        }
+    }
+
+    private boolean sameColor(Color a, Color b)
+    {
+        if (a == null || b == null) return false;
+        return a.red == b.red && a.green == b.green && a.blue == b.blue;
+    }
+
+    private boolean isBlack(Color color)
+    {
+        if (color == null) return true;
+        return color.red == 0 && color.green == 0 && color.blue == 0;
     }
 
     public void saveCurrentAnimationsToArtboard(Artboard artboard)
