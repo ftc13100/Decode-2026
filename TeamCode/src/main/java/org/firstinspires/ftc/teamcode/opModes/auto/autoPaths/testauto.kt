@@ -70,41 +70,27 @@ class testauto: NextFTCOpMode() {
                 FollowPath(PGPshoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
-                SpindexerAuto.toIntake,
-                    FollowPath(shootGate),
-                ),
-                Delay(0.5.seconds),
-
-                ParallelGroup(
-                        Intake.spinFastAuto,
-                FollowPath(gateEat),
-                    ),
-
-                FollowPath(eatShoot),
-                SpindexerAuto.toShoot,
-                ParallelGroup(
+                    Intake.spinFastAuto,
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate),
                 ),
                 Delay(0.5.seconds),
-
-                ParallelGroup(
-                    Intake.spinFastAuto,
-                    FollowPath(gateEat),
-                ),
                 FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
+                    Intake.spinFastAuto,
+
+                    SpindexerAuto.toIntake,
+                    FollowPath(shootGate)),
+                Delay(0.5.seconds),
+                FollowPath(eatShoot),
+                SpindexerAuto.toShoot,
+                ParallelGroup(
+                    Intake.spinFastAuto,
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate),
                 ),
                 Delay(0.5.seconds),
-
-                ParallelGroup(
-                    Intake.spinFastAuto,
-                    FollowPath(gateEat),
-                ),
-
                 FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
@@ -120,12 +106,12 @@ class testauto: NextFTCOpMode() {
                 ),
 
 
+                    )
 
-            )
 
     override fun onInit() {
         PedroComponent.Companion.follower.setMaxPower(1.0)
-        SpindexerAuto.toIntake
+        Spindexer.runToStartPos
 
     }
 
