@@ -6,7 +6,10 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
 import dev.nextftc.core.components.BindingsComponent
+import dev.nextftc.hardware.driving.FieldCentric
 import dev.nextftc.core.components.SubsystemComponent
+import dev.nextftc.core.units.Angle
+import dev.nextftc.core.units.rad
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.Gamepads
@@ -70,6 +73,8 @@ class Drivetrain : NextFTCOpMode() {
 
     override fun onInit() {
 
+        Spindexer.runToStartPos()
+
         if (abs(startPose.x) < 0.1 && abs(startPose.y) < 0.1) {
             follower.setStartingPose(testingPose)
             PoseStorage.blueAlliance = false
@@ -77,8 +82,6 @@ class Drivetrain : NextFTCOpMode() {
         } else {
             follower.setStartingPose(startPose)
         }
-
-        ShooterAngle.angle_down()
 
         frontLeftMotor = MotorEx(frontLeftName)
         frontRightMotor = MotorEx(frontRightName)
@@ -88,9 +91,7 @@ class Drivetrain : NextFTCOpMode() {
         listOf(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor).forEach {
             it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
-
         follower.update()
-
     }
 
     override fun onStartButtonPressed() {
@@ -104,6 +105,7 @@ class Drivetrain : NextFTCOpMode() {
             -Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
             Gamepads.gamepad1.rightStickX,
+            mode = FieldCentric { follower.pose.heading.rad }
         )
         driverControlled.scalar = 1.0
 
@@ -256,8 +258,8 @@ class Drivetrain : NextFTCOpMode() {
         BindingManager.update()
         driverControlled.update()
         follower.update()
-        val shot = BiLinearShooter.getShot(follower.pose.x, follower.pose.y) // have this and line under in a button and onStart
-        BiLinearShooter.applyShot(shot) // rather than in onUpdate
+//        val shot = BiLinearShooter.getShot(NewTurret.newX, NewTurret.newY) // have this and line under in a button and onStart
+//        BiLinearShooter.applyShot(shot) // rather than in onUpdate
 
         val now = System.nanoTime() / 1_000_000.0
         val telemetryTime = (now - lastTelemetryTime)
@@ -272,13 +274,18 @@ class Drivetrain : NextFTCOpMode() {
         {
             telemetry.addData("LTavg", "%.2f, Max: %.2f", loopTimeAverage, maxLoopTime)
 
-            telemetry.addData("X", follower.pose.x)
-            telemetry.addData("Y", follower.pose.y)
+            telemetry.addData("Pos", "X: %.1f, Y: %.1f, H: %.1f", follower.pose.x, follower.pose.y, Math.toDegrees(follower.heading))
 
-            telemetry.addData("newX", NewTurret.newX)
-            telemetry.addData("newY", NewTurret.newY)
+            telemetry.addData("TurPos", "X: %.1f, Y: %.1f",NewTurret.newX, NewTurret.newY)
 
-            telemetry.addData("heading", Math.toDegrees(follower.heading))
+            telemetry.addData("Turret", "F: %.1f, R: %.1f, S: %.3f",NewTurret.targetAngleField, NewTurret.targetAngleRobotRef, NewTurret.targetServoPosition)
+
+
+            telemetry.addData("Shooter Vel", "Vel: %.1f, Targ: %.1f",Shooter.shooter.velocity, Shooter.target)
+
+            telemetry.addData("hood",angleShooter)
+
+            telemetry.addData("spindexer pos", Spindexer.spindexer.currentPosition)
 
             telemetry.addData(
                 "Intake", "%s (Power: %+1.1f, Current: %3.2f mA)",
@@ -289,22 +296,15 @@ class Drivetrain : NextFTCOpMode() {
                 }, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
             )
 
-            telemetry.addData("Shooter Vel", "Vel: %.1f, Targ: %.1f",Shooter.shooter.velocity, Shooter.target)
-
-            telemetry.addData("hood",angleShooter)
-
-            telemetry.addData("spindexer pos", Spindexer.spindexer.currentPosition)
-
+//            telemetry.addData("analog", "%.0f", (Spindexer.analogS.voltage/3.225 * 4000.0))
             telemetry.addData("Full?", Spindexer.isFull)
-            telemetry.addData("S0 ", Spindexer.detectColorRGB(Spindexer.color0))
-            telemetry.addData("Alpha", "%.3f", Spindexer.color0.normalizedColors.alpha)
-            telemetry.addData("S1 ", Spindexer.detectColorRGB(Spindexer.color1))
-            telemetry.addData("Alpha", "%.3f", Spindexer.color1.normalizedColors.alpha)
-            telemetry.addData("S2 ", Spindexer.detectColorRGB(Spindexer.color2))
-            telemetry.addData("Alpha", "%.3f", Spindexer.color2.normalizedColors.alpha)
+//            telemetry.addData("S0 ", Spindexer.detectColorRGB(Spindexer.color0))
+//            telemetry.addData("Alpha", "%.3f", Spindexer.color0.normalizedColors.alpha)
+//            telemetry.addData("S1 ", Spindexer.detectColorRGB(Spindexer.color1))
+//            telemetry.addData("Alpha", "%.3f", Spindexer.color1.normalizedColors.alpha)
+//            telemetry.addData("S2 ", Spindexer.detectColorRGB(Spindexer.color2))
+//            telemetry.addData("Alpha", "%.3f", Spindexer.color2.normalizedColors.alpha)
 
-            //telemetry.addData("Turret", "C: %.1f, T: %.1f, E: %.3f",NewTurretCR.target, NewTurretCR.turretCurrentPos, abs(NewTurretCR.target- NewTurretCR.turretCurrentPos))
-            telemetry.addData("Turret", "F: %.1f, R: %.1f, S: %.3f",NewTurret.targetAngleField, NewTurret.targetAngleRobotRef, NewTurret.targetServoPosition)
             telemetry.update()
 
             lastTelemetryTime = now

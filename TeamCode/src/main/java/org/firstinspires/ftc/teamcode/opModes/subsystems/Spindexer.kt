@@ -1,17 +1,18 @@
 package org.firstinspires.ftc.teamcode.opModes.subsystems
 
 import com.bylazar.configurables.annotations.Configurable
+import com.qualcomm.robotcore.hardware.AnalogInput
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
+import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.commands.utility.LambdaCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode.hardwareMap
 import dev.nextftc.hardware.controllable.RunToPosition
 import dev.nextftc.hardware.impl.MotorEx
-import dev.nextftc.hardware.powerable.SetPower
 
 @Configurable
 object Spindexer : Subsystem {
@@ -36,6 +37,7 @@ object Spindexer : Subsystem {
     lateinit var color0: NormalizedColorSensor
     lateinit var color1: NormalizedColorSensor
     lateinit var color2: NormalizedColorSensor
+    lateinit var analogS: AnalogInput
 
     enum class State { PID, MANUAL }
 
@@ -209,6 +211,16 @@ object Spindexer : Subsystem {
     }
         .requires(this)
 
+
+    val runToStartPos = {
+        SequentialGroup(
+            InstantCommand { spindexer.atPosition(analogS.voltage/3.225 * 4000.0) },
+            RunToPosition(controlSystem, 339.0),
+            InstantCommand { spindexer.atPosition(0.0) }
+        )
+            .requires(this)
+    }
+
     fun autoIndex(b3: Int) = InstantCommand {
         state = State.PID
         when (desiredIndex(b3, PoseStorage.motif)) {
@@ -315,6 +327,7 @@ object Spindexer : Subsystem {
         get() = state == State.PID || (state == State.MANUAL && spindexer.power > 0.1)
 
     override fun initialize() {
+        analogS = hardwareMap.get(AnalogInput::class.java, "analogS")
         color0 = hardwareMap.get(NormalizedColorSensor::class.java, "cs0")
         color0.gain = 12.0f
         color1 = hardwareMap.get(NormalizedColorSensor::class.java, "cs1")

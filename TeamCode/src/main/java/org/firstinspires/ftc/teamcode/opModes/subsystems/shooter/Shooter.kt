@@ -10,6 +10,7 @@ import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.hardware.controllable.RunToVelocity
 import dev.nextftc.hardware.impl.MotorEx
+import dev.nextftc.hardware.impl.VoltageCompensatingMotor
 
 @Configurable
 object Shooter : Subsystem {
@@ -17,7 +18,11 @@ object Shooter : Subsystem {
     @JvmField var velPIDCoefficients = PIDCoefficients(0.0007, 0.0, 0.0)
     @JvmField var basicFFParameters = BasicFeedforwardParameters(0.00036825, 0.0, 0.041)
 
-    val shooter = MotorEx("shooter").brakeMode().reversed()
+    val shooter = VoltageCompensatingMotor(
+        MotorEx("shooter").brakeMode().reversed(),
+        voltageCacheTimeSeconds = 0.25,
+        nominalVoltage = 12.9
+    )
 
     var shooterActive = false
     var shooterReady = false

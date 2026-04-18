@@ -37,13 +37,13 @@ object BiLinearShooter {
 
     private val velocityGrid = List(yKeys.size) { yIndex ->
         List(xKeys.size) { xIndex ->
-            shotData.find { it[0] == xKeys[xIndex] && it[1] == yKeys[yIndex] }?.get(2) ?: 1600.0
+            shotData.find { it[0] == xKeys[xIndex] && it[1] == yKeys[yIndex] }?.get(2) ?: 0.0
         }
     }
 
     private val angleGrid = List(yKeys.size) { yIndex ->
         List(xKeys.size) { xIndex ->
-            shotData.find { it[0] == xKeys[xIndex] && it[1] == yKeys[yIndex] }?.get(3) ?: 0.5
+            shotData.find { it[0] == xKeys[xIndex] && it[1] == yKeys[yIndex] }?.get(3) ?: 0.0
         }
     }
 
