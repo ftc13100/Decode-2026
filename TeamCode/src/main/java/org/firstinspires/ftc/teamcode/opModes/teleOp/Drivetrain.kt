@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intakeRunning
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer.analogS
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
@@ -66,6 +67,8 @@ class Drivetrain : NextFTCOpMode() {
     var angleShooter: Double = 0.0.coerceIn(0.0,0.8)
     var turretAngle: Double = 0.5
 
+    var spindexerReset: Boolean = false
+
     private var testMode = false
 
     private val startPose = PoseStorage.poseEnd
@@ -73,7 +76,6 @@ class Drivetrain : NextFTCOpMode() {
 
     override fun onInit() {
 
-        Spindexer.runToStartPos()
 
         if (abs(startPose.x) < 0.1 && abs(startPose.y) < 0.1) {
             follower.setStartingPose(testingPose)
@@ -163,22 +165,22 @@ class Drivetrain : NextFTCOpMode() {
 
         button { gamepad2.right_bumper}
             .whenBecomesTrue {
-                NewTurret.incrementAngle(10.0)
+                NewTurret.incrementAngle(-10.0)
             }
 
         button { gamepad2.left_bumper }
             .whenBecomesTrue {
-                NewTurret.incrementAngle(-10.0)
+                NewTurret.incrementAngle(10.0)
             }
 
         button { gamepad2.right_trigger > 0.5 }
             .whenTrue {
-                NewTurret.incrementAngle(0.1)
+                NewTurret.decrementAngle(0.1)
             }
 
         button { gamepad2.left_trigger > 0.5 }
             .whenTrue {
-                NewTurret.decrementAngle(0.1)
+                NewTurret.incrementAngle(0.1)
             }
 
         //Intake artifact
@@ -261,6 +263,11 @@ class Drivetrain : NextFTCOpMode() {
 //        val shot = BiLinearShooter.getShot(NewTurret.newX, NewTurret.newY) // have this and line under in a button and onStart
 //        BiLinearShooter.applyShot(shot) // rather than in onUpdate
 
+//        if (!spindexerReset) {
+//            Spindexer.runToStartPos()
+//            spindexerReset = true
+//        }
+
         val now = System.nanoTime() / 1_000_000.0
         val telemetryTime = (now - lastTelemetryTime)
         val loopTime = (now - lastLoopTime)
@@ -286,6 +293,7 @@ class Drivetrain : NextFTCOpMode() {
             telemetry.addData("hood",angleShooter)
 
             telemetry.addData("spindexer pos", Spindexer.spindexer.currentPosition)
+            telemetry.addData("analogS", Spindexer.analogS.voltage/3.225 * 4000.0)
 
             telemetry.addData(
                 "Intake", "%s (Power: %+1.1f, Current: %3.2f mA)",
