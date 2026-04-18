@@ -31,7 +31,6 @@ import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.start
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Turret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.TurretAuto
@@ -57,15 +56,69 @@ class testauto: NextFTCOpMode() {
                 ParallelGroup(
                     TurretAuto.toLeft,
                     TurretAuto.toLeft2,
-                    Shooter.spinAtSpeed(1500.0),
+                    Shooter.spinAtSpeed(1600.0),
                     FollowPath(startShoot),
                 ),
                     Intake.spinFastAuto,
                     SpindexerAuto.toShoot,
                 ParallelGroup(
+                    TurretAuto.toLeftMore,
+                    TurretAuto.toLeftMore2,
                     SpindexerAuto.toIntake,
                     FollowPath(shootPGP),
                 ),
+                FollowPath(PGPshoot),
+                SpindexerAuto.toShoot,
+                ParallelGroup(
+                SpindexerAuto.toIntake,
+                    FollowPath(shootGate),
+                ),
+                Delay(0.5.seconds),
+
+                ParallelGroup(
+                        Intake.spinFastAuto,
+                FollowPath(gateEat),
+                    ),
+
+                FollowPath(eatShoot),
+                SpindexerAuto.toShoot,
+                ParallelGroup(
+                    SpindexerAuto.toIntake,
+                    FollowPath(shootGate),
+                ),
+                Delay(0.5.seconds),
+
+                ParallelGroup(
+                    Intake.spinFastAuto,
+                    FollowPath(gateEat),
+                ),
+                FollowPath(eatShoot),
+                SpindexerAuto.toShoot,
+                ParallelGroup(
+                    SpindexerAuto.toIntake,
+                    FollowPath(shootGate),
+                ),
+                Delay(0.5.seconds),
+
+                ParallelGroup(
+                    Intake.spinFastAuto,
+                    FollowPath(gateEat),
+                ),
+
+                FollowPath(eatShoot),
+                SpindexerAuto.toShoot,
+                ParallelGroup(
+                    SpindexerAuto.toIntake,
+                    FollowPath(shootPPG),
+                ),
+                FollowPath(PPGshoot),
+                SpindexerAuto.toShoot,
+                ParallelGroup(
+                    Intake.spinStopAuto,
+                    SpindexerAuto.toIntake,
+                    FollowPath(goLeave),
+                ),
+
 
 
             )
