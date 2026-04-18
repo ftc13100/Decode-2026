@@ -111,7 +111,7 @@ class testauto: NextFTCOpMode() {
 
     override fun onInit() {
         PedroComponent.Companion.follower.setMaxPower(1.0)
-        Spindexer.runToStartPos
+        //Spindexer.runToStartPos
 
     }
 

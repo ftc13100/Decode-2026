@@ -24,7 +24,6 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intakeRunning
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer.analogS
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
@@ -75,7 +74,6 @@ class Drivetrain : NextFTCOpMode() {
     private val testingPose = Pose(72.0, 72.0, Math.toRadians(90.0))
 
     override fun onInit() {
-
 
         if (abs(startPose.x) < 0.1 && abs(startPose.y) < 0.1) {
             follower.setStartingPose(testingPose)
@@ -253,15 +251,16 @@ class Drivetrain : NextFTCOpMode() {
 //                    limelight.pipelineSwitch(1)
                 }
             }
-
     }
 
     override fun onUpdate() {
         BindingManager.update()
         driverControlled.update()
         follower.update()
-//        val shot = BiLinearShooter.getShot(NewTurret.newX, NewTurret.newY) // have this and line under in a button and onStart
-//        BiLinearShooter.applyShot(shot) // rather than in onUpdate
+        val shot = if (!PoseStorage.blueAlliance) BiLinearShooter.getShot(NewTurret.newX, NewTurret.newY)
+        else BiLinearShooter.getShot(144.0 - NewTurret.newX, NewTurret.newY)
+        //BiLinearShooter.getShot(NewTurret.newX, NewTurret.newY) // have this and line under in a button and onStart
+        BiLinearShooter.applyShot(shot) // rather than in onUpdate
 
 //        if (!spindexerReset) {
 //            Spindexer.runToStartPos()
@@ -293,7 +292,7 @@ class Drivetrain : NextFTCOpMode() {
             telemetry.addData("hood",angleShooter)
 
             telemetry.addData("spindexer pos", Spindexer.spindexer.currentPosition)
-            telemetry.addData("analogS", Spindexer.analogS.voltage/3.225 * 4000.0)
+            //telemetry.addData("analogS", "%.0f", analogS.voltage/3.225 * 4000.0)
 
             telemetry.addData(
                 "Intake", "%s (Power: %+1.1f, Current: %3.2f mA)",
