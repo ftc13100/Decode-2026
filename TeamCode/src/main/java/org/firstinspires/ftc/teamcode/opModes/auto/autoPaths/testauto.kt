@@ -75,7 +75,7 @@ class testauto: NextFTCOpMode() {
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate),
                 ),
-                Delay(1.5.seconds),
+                Delay(1.3.seconds),
                 FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
@@ -83,7 +83,7 @@ class testauto: NextFTCOpMode() {
 
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate)),
-                Delay(1.5.seconds),
+                Delay(1.3.seconds),
                 FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
@@ -91,7 +91,7 @@ class testauto: NextFTCOpMode() {
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate),
                 ),
-                Delay(1.5.seconds),
+                Delay(1.3.seconds),
                 FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
@@ -112,7 +112,7 @@ class testauto: NextFTCOpMode() {
 
     override fun onInit() {
         PedroComponent.Companion.follower.setMaxPower(1.0)
-        //Spindexer.runToStartPos
+        Spindexer.runToStartPos
 
     }
 
