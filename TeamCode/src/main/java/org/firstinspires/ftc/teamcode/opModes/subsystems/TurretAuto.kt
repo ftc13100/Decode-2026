@@ -22,6 +22,12 @@ object TurretAuto : Subsystem {
     val toLeft2 = InstantCommand {
         turret2.position = 0.77
     }
+    val toLeftEvenMore = InstantCommand {
+        turret1.position = 0.83
+    }
+    val toLeft2EvenMore = InstantCommand {
+        turret2.position = 0.83
+    }
 
 
     val toLeftMore = InstantCommand {

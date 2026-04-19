@@ -2,13 +2,14 @@ package org.firstinspires.ftc.teamcode.opModes.teleOp
 
 import com.pedropathing.geometry.Pose
 import dev.nextftc.core.commands.CommandManager
+import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 object BiLinearShooter {
-    val goal = Pose(4.0, 132.0)
+    val goal = Pose(4.0, 138.0)
 
     data class ShotParameters(val velocity: Double, val angle: Double)
 

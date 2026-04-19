@@ -49,7 +49,7 @@ object Intake : Subsystem {
 
     val spinSlowSpeed = {
         SequentialGroup(
-            SetPower(intake, -0.5),
+            SetPower(intake, -0.65),
             InstantCommand { intakeSpindexer = true },
             WaitUntil { intake.motor.getCurrent(CurrentUnit.MILLIAMPS) > CURRENT_THRESHOLD_SLOW },
             SetPower(intake, 0.4),

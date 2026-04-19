@@ -105,7 +105,7 @@ class Drivetrain : NextFTCOpMode() {
             -Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
             Gamepads.gamepad1.rightStickX,
-            mode = FieldCentric { follower.pose.heading.rad }
+//            mode = FieldCentric { follower.pose.heading.rad }
         )
         driverControlled.scalar = 1.0
 
@@ -113,9 +113,9 @@ class Drivetrain : NextFTCOpMode() {
         Gamepads.gamepad1.leftTrigger.asButton { it > 0.5 } and Gamepads.gamepad1.rightTrigger.asButton { it > 0.5 }
             .whenBecomesTrue {
                 if (PoseStorage.blueAlliance) {
-                    follower.pose = Pose(135.25, 8.5, Math.toRadians(-90.0))
+                    follower.pose = Pose(19.25, 121.5, Math.toRadians(140.0))
                 } else {
-                    follower.pose = Pose(8.75, 8.5, Math.toRadians(-90.0))
+                    follower.pose = Pose(19.25, 121.5, Math.toRadians(140.0)).mirror()
                 }
             }
 

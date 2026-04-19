@@ -15,7 +15,7 @@ object blueAutoPaths : Subsystem {
     val PGPcontrol = Pose(41.17, 65.82)
     val PGPback = Pose(60.0, 84.0, Math.toRadians(-155.0))
 
-    val gate = Pose(11.3, 59.5, Math.toRadians(148.0))
+    val gate = Pose(10.1, 59.5, Math.toRadians(148.0))
     val eat = Pose(12.0, 59.5,  Math.toRadians(148.0))
     val gateBack = Pose(60.0, 84.0, Math.toRadians(-147.0))
 

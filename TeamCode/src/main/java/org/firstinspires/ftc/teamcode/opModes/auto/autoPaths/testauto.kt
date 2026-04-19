@@ -71,11 +71,13 @@ class testauto: NextFTCOpMode() {
                 FollowPath(PGPshoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
+                    TurretAuto.toLeftEvenMore,
+                    TurretAuto.toLeft2EvenMore,
                     Intake.spinFastAuto,
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate),
                 ),
-                Delay(1.3.seconds),
+                Delay(1.1.seconds),
                 FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
@@ -83,18 +85,21 @@ class testauto: NextFTCOpMode() {
 
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate)),
-                Delay(1.3.seconds),
+                Delay(1.1.seconds),
                 FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
+
                     Intake.spinFastAuto,
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate),
                 ),
-                Delay(1.3.seconds),
+                Delay(1.1.seconds),
                 FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
+                    TurretAuto.toLeft,
+                    TurretAuto.toLeft2,
                     SpindexerAuto.toIntake,
                     FollowPath(shootPPG),
                 ),
