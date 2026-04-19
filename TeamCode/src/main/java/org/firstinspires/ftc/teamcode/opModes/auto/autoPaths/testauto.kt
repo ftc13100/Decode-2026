@@ -29,6 +29,7 @@ import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.shoot
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.shootPPG
 import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.startShoot
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
+import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Spindexer
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
@@ -43,7 +44,7 @@ class testauto: NextFTCOpMode() {
         addComponents(
             SubsystemComponent(
                 Shooter, ShooterAngle, Intake, PoseStorage,
-                blueAutoPaths, SpindexerAuto, TurretAuto
+                blueAutoPaths, SpindexerAuto, TurretAuto, NewTurret
             ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
@@ -55,24 +56,20 @@ class testauto: NextFTCOpMode() {
             SequentialGroup(
                 ParallelGroup(
                     ShooterAngle.angle_mid,
-                    TurretAuto.toLeft,
-                    TurretAuto.toLeft2,
                     Shooter.spinAtSpeed(1700.0),
                     FollowPath(startShoot),
                 ),
                     Intake.spinFastAuto,
                     SpindexerAuto.toShoot,
                 ParallelGroup(
-                    TurretAuto.toLeftMore,
-                    TurretAuto.toLeftMore2,
+
                     SpindexerAuto.toIntake,
                     FollowPath(shootPGP),
                 ),
                 FollowPath(PGPshoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
-                    TurretAuto.toLeftEvenMore,
-                    TurretAuto.toLeft2EvenMore,
+
                     Intake.spinFastAuto,
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate),
@@ -98,8 +95,7 @@ class testauto: NextFTCOpMode() {
                 FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
-                    TurretAuto.toLeft,
-                    TurretAuto.toLeft2,
+
                     SpindexerAuto.toIntake,
                     FollowPath(shootPPG),
                 ),
@@ -126,6 +122,7 @@ class testauto: NextFTCOpMode() {
         blueAutoPaths.buildPaths()
         PoseStorage.blueAlliance = true
         PoseStorage.redAlliance = false
+        NewTurret.goalTrackingActive = true
         autoRoutine()
     }
 

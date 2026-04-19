@@ -8,14 +8,14 @@ import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.extensions.pedro.PedroComponent
 
 object blueAutoPaths : Subsystem {
-    val start = Pose(18.0, 122.0, Math.toRadians(51.0))
+    val start = Pose(19.3, 121.6, Math.toRadians(140.0))
     val shoot = Pose(60.0, 84.0, Math.toRadians(-131.0))
 
     val PGP = Pose(8.5, 58.0, Math.toRadians(-174.0))
     val PGPcontrol = Pose(41.17, 65.82)
     val PGPback = Pose(60.0, 84.0, Math.toRadians(-155.0))
 
-    val gate = Pose(10.1, 59.5, Math.toRadians(148.0))
+    val gate = Pose(6.1, 59.5, Math.toRadians(148.0))
     val eat = Pose(12.0, 59.5,  Math.toRadians(148.0))
     val gateBack = Pose(60.0, 84.0, Math.toRadians(-147.0))
 
