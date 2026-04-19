@@ -54,9 +54,10 @@ class testauto: NextFTCOpMode() {
         get() =
             SequentialGroup(
                 ParallelGroup(
+                    ShooterAngle.angle_mid,
                     TurretAuto.toLeft,
                     TurretAuto.toLeft2,
-                    Shooter.spinAtSpeed(1600.0),
+                    Shooter.spinAtSpeed(1700.0),
                     FollowPath(startShoot),
                 ),
                     Intake.spinFastAuto,
@@ -74,7 +75,7 @@ class testauto: NextFTCOpMode() {
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate),
                 ),
-                Delay(0.5.seconds),
+                Delay(1.5.seconds),
                 FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
@@ -82,7 +83,7 @@ class testauto: NextFTCOpMode() {
 
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate)),
-                Delay(0.5.seconds),
+                Delay(1.5.seconds),
                 FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
@@ -90,7 +91,7 @@ class testauto: NextFTCOpMode() {
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate),
                 ),
-                Delay(0.5.seconds),
+                Delay(1.5.seconds),
                 FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
