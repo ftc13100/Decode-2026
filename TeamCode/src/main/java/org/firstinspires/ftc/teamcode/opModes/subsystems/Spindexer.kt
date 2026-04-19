@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
+import dev.nextftc.core.commands.delays.WaitUntil
 import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.commands.utility.LambdaCommand
@@ -215,7 +216,9 @@ object Spindexer : Subsystem {
     val runToStartPos = {
         SequentialGroup(
             InstantCommand { spindexer.atPosition(analogS.voltage/3.225 * 4000.0) },
+            InstantCommand { state = State.PID },
             RunToPosition(controlSystem, 339.0),
+            WaitUntil { controlSystem.isWithinTolerance(tolerance) },
             InstantCommand { spindexer.atPosition(0.0) }
         )
             .requires(this)
