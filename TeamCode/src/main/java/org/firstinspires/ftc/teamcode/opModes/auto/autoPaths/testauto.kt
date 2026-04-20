@@ -99,12 +99,11 @@ class testauto: NextFTCOpMode() {
                     SpindexerAuto.toIntake,
                     FollowPath(shootPPG),
                 ),
-                FollowPath(PPGshoot),
+                FollowPath(goLeave),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
                     Intake.spinStopAuto,
                     SpindexerAuto.toIntake,
-                    FollowPath(goLeave),
                 ),
 
 
