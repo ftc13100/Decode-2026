@@ -2,12 +2,15 @@ package org.firstinspires.ftc.teamcode.opModes.teleOp
 
 import com.bylazar.telemetry.PanelsTelemetry
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.core.components.BindingsComponent
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
+import dev.nextftc.hardware.driving.MecanumDriverControlled
+import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 
@@ -25,8 +28,32 @@ class TurretTeleOp : NextFTCOpMode() {
     private val panelsTelemetry = PanelsTelemetry.telemetry
 
 
+
+    private val frontLeftName = "frontLeft"
+    private val frontRightName = "frontRight"
+    private val backLeftName = "backLeft"
+    private val backRightName = "backRight"
+
+
+    private lateinit var frontLeftMotor: MotorEx
+    private lateinit var frontRightMotor: MotorEx
+    private lateinit var backLeftMotor: MotorEx
+    private lateinit var backRightMotor: MotorEx
+
+    private lateinit var driverControlled: MecanumDriverControlled
+
     override fun onInit() {
         NewTurret.trackTarget()
+        frontLeftMotor = MotorEx(frontLeftName)
+        frontRightMotor = MotorEx(frontRightName)
+        backLeftMotor = MotorEx(backLeftName)
+        backRightMotor = MotorEx(backRightName)
+
+        listOf(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor).forEach {
+            it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        }
+        follower.update()
+
     }
 
     override fun onUpdate() {

@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.opModes.teleOp
 
 import com.pedropathing.geometry.Pose
 import dev.nextftc.core.commands.CommandManager
-import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import kotlin.math.pow
@@ -77,8 +76,8 @@ object BiLinearShooter {
      * Apply a shot by setting the hood angle and flywheel speed.
      */
     fun applyShot(params: ShotParameters) {
-        ShooterAngle.targetPosition = params.angle
+        ShooterAngle.targetPosition = params.angle + ShooterAngle.manualOffset
         CommandManager.scheduleCommand(ShooterAngle.update())
-        CommandManager.scheduleCommand(Shooter.spinAtSpeed(params.velocity))
+        CommandManager.scheduleCommand(Shooter.spinAtSpeed(params.velocity + Shooter.manualOffset))
     }
 }

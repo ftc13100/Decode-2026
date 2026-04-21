@@ -178,7 +178,7 @@ object Spindexer : Subsystem {
     val spinShot = InstantCommand {
     //    Intake.spinSlowSpeed()() // shouldn't be necessary, also is bad for battery usage when shooting
         state = State.MANUAL
-        spindexer.power = 1.0
+        spindexer.power = 0.9
     }
         .requires(this)
 
@@ -327,7 +327,7 @@ object Spindexer : Subsystem {
     }
 
     val isBusy: Boolean
-        get() = state == State.PID || (state == State.MANUAL && spindexer.power > 0.1)
+        get() = state == State.PID || (state == State.MANUAL && spindexer.power > 0.2)
 
     override fun initialize() {
         analogS = hardwareMap.get(AnalogInput::class.java, "analogS")

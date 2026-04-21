@@ -44,6 +44,8 @@ object NewTurret : Subsystem {
 
     private const val SERVO_MAX_DEG = 300.0 // Servo full travel in degrees
 
+    var manualOffsetAngle: Double = 0.0
+
     val controlSystem = controlSystem {
         posPid(posPIDCoefficients)
     }
@@ -146,12 +148,12 @@ object NewTurret : Subsystem {
         targetAngleField = if (PoseStorage.blueAlliance) {
             180.0 - Math.toDegrees(atan2(abs(goal.y - newY), abs(goal.x - newX)))
         } else {
-            Math.toDegrees(atan2(abs(goal.y - newY), abs(goal.x - (144.0 - newX))))
+            Math.toDegrees(atan2(abs(goal.y - newY), abs(goal.x - (141.5 - newX))))
         }
 
         val compensatedAngle = targetAngleField + turretRobotAdj + (angularVel * kVF)
 
-        toAngle(compensatedAngle)
+        toAngle(compensatedAngle + manualOffsetAngle)
 
     }
 }

@@ -11,6 +11,9 @@ object ShooterAngle : Subsystem {
         servo = ActiveOpMode.hardwareMap.get(Servo::class.java, "angle")
     }
 
+    var manualOffset: Double = 0.0
+
+
     var targetPosition = 0.0
 
     fun update() = InstantCommand { servo.position = targetPosition }

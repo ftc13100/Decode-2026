@@ -6,10 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import dev.nextftc.bindings.BindingManager
 import dev.nextftc.bindings.button
 import dev.nextftc.core.components.BindingsComponent
-import dev.nextftc.hardware.driving.FieldCentric
 import dev.nextftc.core.components.SubsystemComponent
-import dev.nextftc.core.units.Angle
-import dev.nextftc.core.units.rad
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.ftc.Gamepads
@@ -127,58 +124,69 @@ class Drivetrain : NextFTCOpMode() {
 
         button { gamepad1.dpad_up }
             .whenBecomesTrue {
-                speed += 20
-                Shooter.spinAtSpeed(speed)()
+                Shooter.manualOffset += 20
+//                speed += 20
+//                Shooter.spinAtSpeed(speed)()
             }
 
         button { gamepad1.dpad_down }
             .whenBecomesTrue {
-                speed -= 20
-                Shooter.spinAtSpeed(speed)()
+                Shooter.manualOffset -= 20
+//                speed -= 20
+//                Shooter.spinAtSpeed(speed)()
             }
 
         button { gamepad2.dpad_up }
             .whenBecomesTrue {
-                speed += 100
-                Shooter.spinAtSpeed(speed)()
+                Shooter.manualOffset += 100
+//                speed += 100
+//                Shooter.spinAtSpeed(speed)()
             }
 
         button { gamepad2.dpad_down }
             .whenBecomesTrue {
-                speed -= 100
-                Shooter.spinAtSpeed(speed)()
+                Shooter.manualOffset -= 100
+//                speed -= 100
+//                Shooter.spinAtSpeed(speed)()
             }
 
         button { gamepad1.dpad_right }
             .whenBecomesTrue {
-                angleShooter += 0.05
-                ShooterAngle.toPos(angleShooter)()
+                ShooterAngle.manualOffset += 0.05
+//                angleShooter += 0.05
+//                ShooterAngle.toPos(angleShooter)()
             }
 
         button { gamepad1.dpad_left }
             .whenBecomesTrue {
-                angleShooter -= 0.05
-                ShooterAngle.toPos(angleShooter)()
+                ShooterAngle.manualOffset -= 0.05
+//                angleShooter -= 0.05
+//                ShooterAngle.toPos(angleShooter)()
             }
 
         button { gamepad2.right_bumper}
             .whenBecomesTrue {
-                NewTurret.incrementAngle(-10.0)
+                NewTurret.manualOffsetAngle += -10.0
+//                NewTurret.incrementAngle(-10.0)
             }
 
         button { gamepad2.left_bumper }
             .whenBecomesTrue {
-                NewTurret.incrementAngle(10.0)
+                NewTurret.manualOffsetAngle += 10.0
+
+//                NewTurret.incrementAngle(10.0)
             }
 
         button { gamepad2.right_trigger > 0.5 }
             .whenTrue {
-                NewTurret.decrementAngle(0.1)
+                NewTurret.manualOffsetAngle -= 0.1
+            //                NewTurret.decrementAngle(0.1)
             }
 
         button { gamepad2.left_trigger > 0.5 }
             .whenTrue {
-                NewTurret.incrementAngle(0.1)
+                NewTurret.manualOffsetAngle += 0.1
+            //                NewTurret.incrementAngle(0.1)
             }
 
         //Intake artifact
@@ -258,7 +266,7 @@ class Drivetrain : NextFTCOpMode() {
         driverControlled.update()
         follower.update()
         val shot = if (!PoseStorage.blueAlliance) BiLinearShooter.getShot(NewTurret.newX, NewTurret.newY)
-        else BiLinearShooter.getShot(144.0 - NewTurret.newX, NewTurret.newY)
+        else BiLinearShooter.getShot(141.5 - NewTurret.newX, NewTurret.newY)
         //BiLinearShooter.getShot(NewTurret.newX, NewTurret.newY) // have this and line under in a button and onStart
         BiLinearShooter.applyShot(shot) // rather than in onUpdate
 
