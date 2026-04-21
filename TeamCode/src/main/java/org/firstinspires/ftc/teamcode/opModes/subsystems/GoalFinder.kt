@@ -5,7 +5,7 @@
 //import com.qualcomm.robotcore.util.ElapsedTime
 //import dev.nextftc.core.subsystems.Subsystem
 //import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.SHOOTER_TO_GOAL_Z_SQRD
-//import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goal
+//import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goalClose
 //import kotlin.math.abs
 //import kotlin.math.acos
 //import kotlin.math.atan2
@@ -88,14 +88,14 @@
 //
 //        gfGoalDistance =
 //            sqrt(
-//                (adjX - goal.x).pow(2.0) + (pose.y - goal.y).pow(2.0) +
+//                (adjX - goalClose.x).pow(2.0) + (pose.y - goalClose.y).pow(2.0) +
 //                        SHOOTER_TO_GOAL_Z_SQRD
 //            )
 //
 //        gfTargetAngle = if (blueAlliance) {
-//            Math.PI - atan2(abs(goal.y - pose.y), abs(goal.x - adjX))
+//            Math.PI - atan2(abs(goalClose.y - pose.y), abs(goalClose.x - adjX))
 //        } else {
-//            atan2(abs(goal.y - pose.y), abs(goal.x - adjX))
+//            atan2(abs(goalClose.y - pose.y), abs(goalClose.x - adjX))
 //        }
 //
 //        gfHeadingError =
@@ -115,11 +115,11 @@
 //        gfLLTa = llResult.ta
 //        gfLLValid = true
 //
-////        // Calculate adjustment angle to account for position difference of April tag and desired goal
+////        // Calculate adjustment angle to account for position difference of April tag and desired goalClose
 ////        val aprilTagVecorX = aprilTag.x - adjX
 ////        val aprilTagVecorY = aprilTag.y - pose.y
-////        val goalVectorX = goal.x - adjX
-////        val goalVectorY = goal.y - pose.y
+////        val goalVectorX = goalClose.x - adjX
+////        val goalVectorY = goalClose.y - pose.y
 ////
 ////        gfGoalAprilTagAdj = acos(
 ////            (aprilTagVecorX * goalVectorX + aprilTagVecorY * goalVectorY) / (sqrt(aprilTagVecorX * aprilTagVecorX + aprilTagVecorY * aprilTagVecorY) * sqrt(

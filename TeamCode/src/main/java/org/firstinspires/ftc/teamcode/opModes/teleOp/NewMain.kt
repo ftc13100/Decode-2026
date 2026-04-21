@@ -374,7 +374,7 @@
 ////        } else {
 ////            // Manual Control
 ////            driverControlled.update()
-////        } // end tracking goal
+////        } // end tracking goalClose
 //
 //        if (PoseStorage.blueAlliance) {
 //            telemetry.addData("Alliance", "BLUE")

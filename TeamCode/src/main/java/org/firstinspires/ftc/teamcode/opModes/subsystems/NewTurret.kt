@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
-import org.firstinspires.ftc.teamcode.opModes.teleOp.BiLinearShooter.goal
+import org.firstinspires.ftc.teamcode.opModes.teleOp.BiLinearShooter.goalClose
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -14,6 +14,8 @@ import kotlin.math.sin
 import com.pedropathing.math.Vector
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
+import org.firstinspires.ftc.teamcode.opModes.teleOp.BiLinearShooter
+import org.firstinspires.ftc.teamcode.opModes.teleOp.BiLinearShooter.goalFar
 
 @Configurable
 object NewTurret : Subsystem {
@@ -143,6 +145,8 @@ object NewTurret : Subsystem {
             robotHeading += 360.0
         }
         val turretRobotAdj = 360.0 - robotHeading
+
+        val goal = if (newY > 50.0) goalClose else goalFar
 
         // Compute target angle in degrees
         targetAngleField = if (PoseStorage.blueAlliance) {

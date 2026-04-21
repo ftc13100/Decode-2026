@@ -8,7 +8,9 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 object BiLinearShooter {
-    val goal = Pose(1.0, 144.0)
+    val goalClose = Pose(1.0, 144.0)
+    val goalFar = Pose(3.0, 139.0)
+
 
     data class ShotParameters(val velocity: Double, val angle: Double)
 

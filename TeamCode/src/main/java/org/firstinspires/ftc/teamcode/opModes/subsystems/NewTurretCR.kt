@@ -9,7 +9,7 @@
 //import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 //import dev.nextftc.hardware.impl.CRServoEx
 //import dev.nextftc.hardware.impl.MotorEx
-//import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goal
+//import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goalClose
 //import kotlin.math.abs
 //import kotlin.math.atan2
 //import kotlin.math.cos
@@ -117,9 +117,9 @@
 //        val angularVelDegrees = Math.toDegrees(follower.angularVelocity)
 //
 //        val targetAngleFieldRads = if (PoseStorage.blueAlliance) {
-//            Math.PI - atan2(abs(goal.y - newY), abs(goal.x - newX))
+//            Math.PI - atan2(abs(goalClose.y - newY), abs(goalClose.x - newX))
 //        } else {
-//            atan2(abs(goal.y - newY), abs(goal.x - (144.0 - newX)))
+//            atan2(abs(goalClose.y - newY), abs(goalClose.x - (144.0 - newX)))
 //        }
 //        targetAngleField = Math.toDegrees(targetAngleFieldRads)
 //
@@ -142,9 +142,9 @@
 //        }
 //
 //        if (goalTrackingActive || turretActive) {
-//            controlSystemLarge.goal = KineticState(target.coerceIn(leftLimit, rightLimit))
-//            controlSystemMid.goal = KineticState(target.coerceIn(leftLimit, rightLimit))
-//            controlSystemSmall.goal = KineticState(target.coerceIn(leftLimit, rightLimit))
+//            controlSystemLarge.goalClose = KineticState(target.coerceIn(leftLimit, rightLimit))
+//            controlSystemMid.goalClose = KineticState(target.coerceIn(leftLimit, rightLimit))
+//            controlSystemSmall.goalClose = KineticState(target.coerceIn(leftLimit, rightLimit))
 //
 //            // Calculate power based on the encoder state (frontRightMotor)
 //            power = if (abs(target - frontRightMotor.currentPosition) > switchPIDmid) {

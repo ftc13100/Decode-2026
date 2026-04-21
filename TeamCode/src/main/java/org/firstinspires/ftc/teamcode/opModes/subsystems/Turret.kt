@@ -10,7 +10,7 @@
 //import dev.nextftc.core.subsystems.Subsystem
 //import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 //import dev.nextftc.hardware.impl.MotorEx
-//import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goal
+//import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goalClose
 //import kotlin.math.abs
 //import kotlin.math.atan2
 //
@@ -124,9 +124,9 @@
 //        heading = follower.heading
 //
 //        targetAngle = if (PoseStorage.blueAlliance) {
-//            Math.PI - atan2(abs(goal.y - y), abs(goal.x - x))
+//            Math.PI - atan2(abs(goalClose.y - y), abs(goalClose.x - x))
 //        } else {
-//            atan2(abs(goal.y - y), abs(goal.x - (144.0 - x)))
+//            atan2(abs(goalClose.y - y), abs(goalClose.x - (144.0 - x)))
 //        }
 //
 //        turretAngle =
@@ -163,14 +163,14 @@
 //
 //        // 1. TARGET TRACKING MODE
 //        if (goalTrackingActive) {
-//            controlSystem.goal = KineticState(target)
+//            controlSystem.goalClose = KineticState(target)
 //            turret.power = controlSystem.calculate(turret.state)
 //            return
 //        }
 //
 //        // 2. PID HOLD MODE
 //        if (turretActive) {
-//            controlSystem.goal = KineticState(position = target)
+//            controlSystem.goalClose = KineticState(position = target)
 //            turret.power = controlSystem.calculate(turret.state)
 //
 //            // Determine when turret is "ready"

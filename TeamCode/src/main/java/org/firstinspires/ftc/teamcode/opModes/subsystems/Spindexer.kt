@@ -138,7 +138,7 @@ object Spindexer : Subsystem {
 //        .then(
 //            LambdaCommand("Index0Return")
 //                .setStart {
-//                    controlSystemLarge.goal = KineticState(spindexer.currentPosition-angleToTicks(120.0))
+//                    controlSystemLarge.goalClose = KineticState(spindexer.currentPosition-angleToTicks(120.0))
 //                }
 //                .setIsDone { controlSystemLarge.isWithinTolerance(tolerance) }
 //        )
@@ -153,7 +153,7 @@ object Spindexer : Subsystem {
 //        .then(
 //            LambdaCommand("Index1Return")
 //                .setStart {
-//                    controlSystemLarge.goal = KineticState(spindexer.currentPosition-angleToTicks(120.0))
+//                    controlSystemLarge.goalClose = KineticState(spindexer.currentPosition-angleToTicks(120.0))
 //                }
 //                .setIsDone { controlSystemLarge.isWithinTolerance(tolerance) }
 //        )
@@ -168,7 +168,7 @@ object Spindexer : Subsystem {
 //        .then(
 //            LambdaCommand("Index2Return")
 //                .setStart {
-//                    controlSystemLarge.goal = KineticState(spindexer.currentPosition-angleToTicks(120.0))
+//                    controlSystemLarge.goalClose = KineticState(spindexer.currentPosition-angleToTicks(120.0))
 //                }
 //                .setIsDone { controlSystemLarge.isWithinTolerance(tolerance) }
 //        )
