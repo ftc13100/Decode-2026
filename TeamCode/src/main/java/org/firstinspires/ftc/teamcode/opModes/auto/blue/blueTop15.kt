@@ -1,0 +1,152 @@
+package org.firstinspires.ftc.teamcode.opModes.auto.blue
+
+import com.pedropathing.ftc.drivetrains.Mecanum
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import dev.nextftc.core.commands.Command
+import dev.nextftc.core.commands.delays.Delay
+import dev.nextftc.core.commands.groups.ParallelDeadlineGroup
+import dev.nextftc.core.commands.groups.ParallelGroup
+import dev.nextftc.core.commands.groups.SequentialGroup
+import dev.nextftc.core.components.SubsystemComponent
+import dev.nextftc.extensions.pedro.FollowPath
+import dev.nextftc.extensions.pedro.PedroComponent
+import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
+import dev.nextftc.ftc.NextFTCOpMode
+import dev.nextftc.ftc.components.BulkReadComponent
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.DeadhuzzLeave
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.GPPfirst
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.GPPsecond
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.GPPtoShotMove
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.GoToShot
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.PGPfirst
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.PGPsecond
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.PGPtoShotMove
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.PPGsecond
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.PPGtoShotMove
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.TheGate
+import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.blueAutoPaths.eatup
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Gate
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
+import org.firstinspires.ftc.teamcode.opModes.subsystems.LimeLight.MohitPatil
+import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
+import org.firstinspires.ftc.teamcode.opModes.subsystems.TurretAuto
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants
+import kotlin.time.Duration.Companion.seconds
+
+@Autonomous(name = "blueTop15")
+class blueTop15 : NextFTCOpMode() {
+    init {
+        addComponents(
+            SubsystemComponent(
+                MohitPatil, Shooter, ShooterAngle, Intake, Gate, PoseStorage,
+                TurretAuto, blueAutoPaths
+            ),
+            BulkReadComponent,
+            PedroComponent(Constants::createFollower)
+        )
+    }
+   val autoRoutine: Command
+        get() =
+            SequentialGroup(
+                ParallelGroup(
+                    ShooterAngle.angle_kindaUP,
+                    Shooter.spinAtSpeed(1180.0),
+                    FollowPath(GoToShot),
+                    Gate.gate_open,
+                    TurretAuto.toRight,
+                ),
+                Intake.spinFastAuto,
+                Delay(1.8.seconds),
+                ParallelGroup(
+                    FollowPath(PGPfirst),
+                    Gate.gate_close
+                ),
+                FollowPath(PGPsecond, holdEnd = true, maxPower = 1.0),
+                Intake.spinStop,
+                ParallelGroup(
+                    FollowPath(PGPtoShotMove),
+                    ShooterAngle.angle_kindaUP,
+                    Gate.gate_open,
+                ),
+                Intake.spinFastAuto,
+                Delay(1.8.seconds),
+                ParallelGroup(
+                    FollowPath(TheGate),
+                    Gate.gate_close,
+                ),
+                FollowPath(eatup),
+                Delay(1.8),
+                ParallelGroup(
+                    Intake.spinStop,
+                    FollowPath(PGPtoShotMove),
+                    ShooterAngle.angle_kindaUP,
+                    Gate.gate_open,
+                ),
+                Intake.spinFastAuto,
+                Delay(1.8.seconds),
+                ParallelDeadlineGroup(
+                    FollowPath(PPGsecond, holdEnd = true, maxPower = 1.0),
+                    Gate.gate_close,
+                    Intake.spinFastAuto
+                ),
+                ParallelGroup(
+                    Intake.spinStop,
+                    FollowPath(PPGtoShotMove),
+                    ShooterAngle.angle_kindaUP,
+                    Gate.gate_open,
+                ),
+                Intake.spinFastAuto,
+                Delay(1.8.seconds),
+                ParallelDeadlineGroup(
+                    FollowPath(GPPfirst),
+                    Gate.gate_close,
+                    Intake.spinFastAuto
+                ),
+                FollowPath(GPPsecond, holdEnd = true, maxPower = 1.0),
+                Intake.spinStop,
+                ParallelGroup(
+                    Shooter.spinAtSpeed(1100.0),
+                    FollowPath(GPPtoShotMove),
+                    ShooterAngle.angle_kindaUP,
+                    Gate.gate_open,
+                    TurretAuto.toMid
+
+                ),
+                Intake.spinFastAuto,
+                Delay(1.8.seconds),
+                ParallelGroup(
+                    Shooter.stopShooter,
+                    Gate.gate_close,
+                    Intake.spinStop,
+                )
+            )
+
+    override fun onInit() {
+        follower.setMaxPower(1.0)
+        Gate.gate_close()
+    }
+
+    override fun onStartButtonPressed() {
+        follower.setStartingPose(blueAutoPaths.startPose)
+        blueAutoPaths.buildPaths()
+        PoseStorage.blueAlliance = true
+        PoseStorage.redAlliance = false
+        autoRoutine()
+    }
+
+    override fun onStop() {
+        PoseStorage.poseEnd = follower.pose
+
+    }
+
+    override fun onUpdate() {
+        val dt = follower.drivetrain as Mecanum
+        val powers = dt.motors.map { it.power }
+        telemetry.addData("Power", powers)
+        telemetry.update()
+    }
+
+}

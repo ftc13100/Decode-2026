@@ -2,34 +2,38 @@ package org.firstinspires.ftc.teamcode.opModes.teleOp
 
 import com.pedropathing.geometry.Pose
 import dev.nextftc.core.commands.CommandManager
-import dev.nextftc.ftc.ActiveOpMode
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 
 
 object ShooterController {
-    val goal = Pose(6.0, 138.0)
-    const val SHOOTER_TO_GOAL_Z_SQRD = 1139.0 // (46.0 - 12.25).pow(2.0)
+    val goalBlue = Pose(6.0, 138.0)
+    val goalRed = Pose(138.0, 138.0)
+    const val SHOOTER_TO_GOAL_Z_SQRD = 1056.25 // (46.0 - 13.5).pow(2.0)
 
     data class ShotParameters(val distance: Double, val velocity: Double, val angle: Double)
-
+// note: all of these points and distances were created considered robot facing the goal with minimal turret angle
+// basically if goal was 24,24 and robot was at 24,20, distance of shooter was actually 24,18 if shooter offset was 2 in behind
+// does this mean you can just subtract 2 from distance? i don"t think so i can't fully think abt it rn gn
     private val shooterLookupTable = mapOf(
    //Distance to ShotParameters(Dist,            Velocity,        Angle)            // Origin (X, Y)
-        42.27  to ShotParameters(42.27,  985.0, 0.104),     // Pair(24, 120)
-        48.61  to ShotParameters(48.61, 1020.0, 0.145),     // Pair(36, 120)
-        56.81  to ShotParameters(56.81, 1000.0, 0.186),     // Pair(48, 120)
-        61.67  to ShotParameters(61.67, 1020.0, 0.193),     // Pair(48, 108)
-        68.32  to ShotParameters(68.32, 1065.0, 0.173),     // Pair(48, 96)
-        76.29  to ShotParameters(76.29, 1080.0, 0.200),     // Pair(72, 120)
-        79.98  to ShotParameters(79.98, 1150.0, 0.207),     // Pair(72, 108)
-        85.20  to ShotParameters(85.20, 1180.0, 0.207),     // Pair(72, 96)
-        97.80  to ShotParameters(97.80, 1200.0, 0.225),     // Pair(96, 120)
-        99.25  to ShotParameters(99.25, 1200.0, 0.218),     // Pair(72, 72)
-        104.90 to ShotParameters(104.90,1290.0, 0.225),     // Pair(96, 96)
-        135.99 to ShotParameters(135.99,1460.0, 0.225),     // Pair(72, 24)
-        137.03 to ShotParameters(137.03,1460.0, 0.225),     // Pair(48, 12)
-        146.18 to ShotParameters(146.18,1510.0, 0.212),     // Pair(72, 12)
-        158.48 to ShotParameters(158.48,1560.0, 0.212)      // Pair(96, 12)
+    44.68 to ShotParameters(44.68, 985.0, 0.680),      // Pair(24, 120)
+    51.15 to ShotParameters(51.15, 1020.0, 0.620),     // Pair(36, 120)
+    59.47 to ShotParameters(59.47, 1000.0, 0.560),     // Pair(48, 120)
+    64.39 to ShotParameters(64.39, 1020.0, 0.550),     // Pair(48, 108)
+    71.11 to ShotParameters(71.11, 1065.0, 0.580),     // Pair(48, 96)
+    79.14 to ShotParameters(79.14, 1080.0, 0.540),     // Pair(72, 120)
+    82.85 to ShotParameters(82.85, 1150.0, 0.530),     // Pair(72, 108)
+    88.11 to ShotParameters(88.11, 1180.0, 0.530),     // Pair(72, 96)
+    93.07 to ShotParameters(93.07, 1230.0, 0.520),     // Pair(84,108)
+    100.77 to ShotParameters(100.77, 1230.0, 0.510),   // Pair(96, 120)
+    102.23 to ShotParameters(102.23, 1200.0, 0.510),   // Pair(72, 72)
+    107.90 to ShotParameters(107.90, 1290.0, 0.500),   // Pair(96, 96)
+    139.08 to ShotParameters(139.08, 1440.0, 0.500),   // Pair(72, 24)
+    140.13 to ShotParameters(140.13, 1460.0, 0.500),   // Pair(48, 12)
+    149.30 to ShotParameters(149.30, 1500.0, 0.520),   // Pair(72, 12)
+    155.11 to ShotParameters(155.11, 1530.0, 0.500),   // Pair(84, 12)
+    161.62 to ShotParameters(161.62, 1560.0, 0.520),   // Pair(96, 12)
     ).toSortedMap()
 
     private fun lerp(x: Double, x0: Double, x1: Double, y0: Double, y1: Double): Double {

@@ -10,9 +10,11 @@ import dev.nextftc.control.feedback.PIDCoefficients
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.extensions.pedro.PedroComponent.Companion.follower
 import dev.nextftc.hardware.impl.MotorEx
-import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goal
+import org.firstinspires.ftc.teamcode.opModes.teleOp.ShooterController.goalBlue
 import kotlin.math.abs
 import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 
 @Configurable
 object Turret : Subsystem {
@@ -35,10 +37,10 @@ object Turret : Subsystem {
     var startPosition = 0.0
 
     @JvmField
-    var leftLimit = -3000.0
+    var leftLimit = -1080.0
 
     @JvmField
-    var rightLimit = 3000.0
+    var rightLimit = 1080.0
 
     @JvmField
     var targetAngle = 0.0
@@ -62,16 +64,23 @@ object Turret : Subsystem {
         get() = turretError / TURRET_TICKS_TO_RADS
 
     @JvmField
-    var posPIDCoefficients = PIDCoefficients(0.0097, 0.0, 0.00015)
+    var posPIDCoefficients = PIDCoefficients(0.01, 0.0, 0.00013)
 
     val turret = MotorEx("turret").brakeMode()
     private val runtime = ElapsedTime()
 
-    const val TURRET_TICKS_TO_RADS = (Math.PI * 2) / (1425.1 * (138 / 16))
+    const val TURRET_TICKS_TO_RADS = (Math.PI * 2) / (751.8 * (138 / 24))
 
     val controlSystem = controlSystem {
         posPid(posPIDCoefficients)
     }
+
+    var targetCenterTicks = 0.0
+    var targetOffsetTicks = 0.0
+
+    var txOff = 0.0
+
+    var tyOff = 0.0
 
     override fun initialize() {
 //        turret.zero()
@@ -83,8 +92,8 @@ object Turret : Subsystem {
         startPosition = turret.currentPosition
 
         target = startPosition
-        rightLimit = startPosition + 3000.0
-        leftLimit = startPosition - 3000.0
+        rightLimit = startPosition + 1080.0
+        leftLimit = startPosition - 1080.0
         trackTarget()
     }
 
@@ -119,33 +128,48 @@ object Turret : Subsystem {
      * Compute a new turret angle target during auto-tracking.
      */
     fun updateTarget() {
-        val x = abs(follower.pose.x)
-        val y = abs(follower.pose.y)
-        heading = follower.heading
+        val turretOffset = -3.392
+        val x = follower.pose.x
+        val y = follower.pose.y
+        val heading = follower.heading
 
-        targetAngle = if (PoseStorage.blueAlliance) {
-            Math.PI - atan2(abs(goal.y - y), abs(goal.x - x))
+        // center calculation
+        val targetAngleCenter = if (PoseStorage.blueAlliance) {
+            Math.PI - atan2(abs(goalBlue.y - y), abs(goalBlue.x - x))
         } else {
-            atan2(abs(goal.y - y), abs(goal.x - (144.0 - x)))
+            atan2(abs(goalBlue.y - y), abs(goalBlue.x - (144.0 - x)))
         }
 
-        turretAngle =
-            heading - turretCurrentPos * TURRET_TICKS_TO_RADS
+        val turretAngleCenter = heading - turretCurrentPos * TURRET_TICKS_TO_RADS
+        var errorCenter = targetAngleCenter - turretAngleCenter
+        if (errorCenter > Math.PI) errorCenter -= 2 * Math.PI
+        if (errorCenter < -Math.PI) errorCenter += 2 * Math.PI
 
+        targetCenterTicks = turret.currentPosition - errorCenter / TURRET_TICKS_TO_RADS
+
+        // offset calculation
+        txOff = follower.pose.x + turretOffset * cos(heading)
+        tyOff = follower.pose.y + turretOffset * sin(heading)
+
+        targetAngle = if (PoseStorage.blueAlliance) {
+            Math.PI - atan2(abs(goalBlue.y - tyOff), abs(goalBlue.x - txOff))
+        } else {
+            atan2(abs(goalBlue.y - tyOff), abs(goalBlue.x - (144.0 - txOff)))
+        }
+
+        turretAngle = heading - turretCurrentPos * TURRET_TICKS_TO_RADS
         turretError = targetAngle - turretAngle
         if (turretError > Math.PI) turretError -= 2 * Math.PI
 
         if (goalTrackingActive) {
-            target =
-                (turret.currentPosition - turretError / TURRET_TICKS_TO_RADS).coerceIn(
-                    leftLimit,
-                    rightLimit
-                )
+            // target to the offset version
+            target = (turret.currentPosition - turretError / TURRET_TICKS_TO_RADS).coerceIn(leftLimit, rightLimit)
+            targetOffsetTicks = target
         }
     }
 
     fun turretHeadingWithMargin(heading: Double): Double {
-        val curPos = turret.currentPosition.coerceIn(leftLimit + 500, rightLimit - 500)
+        val curPos = turret.currentPosition.coerceIn(leftLimit + 175, rightLimit - 175)
         return (heading - (curPos - startPosition) * TURRET_TICKS_TO_RADS)
     }
 
@@ -174,7 +198,7 @@ object Turret : Subsystem {
             turret.power = controlSystem.calculate(turret.state)
 
             // Determine when turret is "ready"
-            if (!turretReady && abs(current - target) < 4.0 && ++turretTolearanceCount >= 3) {
+            if (!turretReady && abs(current - target) < 5.0 && ++turretTolearanceCount >= 4) {
                 turretReady = true
                 turretReadyMs = runtime.milliseconds()
             }
