@@ -20,7 +20,7 @@ object Shooter : Subsystem {
 
     val shooter = VoltageCompensatingMotor(
         MotorEx("shooter").brakeMode().reversed(),
-        voltageCacheTimeSeconds = 0.25,
+        voltageCacheTimeSeconds = 0.5,
         nominalVoltage = 12.8
     )
 

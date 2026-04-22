@@ -14,43 +14,38 @@ import kotlin.math.sin
 import com.pedropathing.math.Vector
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
+import dev.nextftc.hardware.impl.MotorEx
 import org.firstinspires.ftc.teamcode.opModes.teleOp.BiLinearShooter
 import org.firstinspires.ftc.teamcode.opModes.teleOp.BiLinearShooter.goalFar
 
 @Configurable
 object NewTurret : Subsystem {
 
-    private lateinit var turret1: Servo
-    private lateinit var turret2: Servo
+    val backRightMotor = MotorEx("backRight").brakeMode()
+
+    lateinit var turret1: Servo
+    lateinit var turret2: Servo
 
     var targetServoPosition = 0.5  // 0.5 = straight back
     var targetAngleRobotRef: Double = 180.0 // 0 is facing forward, CCW increasing
     var targetAngleField: Double = 270.0 // 0 is right, increases CCW
 
+    var staticPos: Double = 0.0
+
     @JvmField var goalTrackingActive = false
-    @JvmField var target = 0.0
     @JvmField var kVF = 0.0
-    @JvmField var posPIDCoefficients = PIDCoefficients(0.00, 0.0, 0.000)
 
-    var servoLeftLimit = 0.0   // Servo min
-    var servoRightLimit = 1.0  // Servo max
-
-    // 60-120 is deadzone
-    var turretLeftLimit = 120
-    var turretRightLimit = 60
 
     var newX = 0.0
     var newY = 0.0
 
     @JvmField var TURRET_OFFSET = -2.03852
 
-    private const val SERVO_MAX_DEG = 300.0 // Servo full travel in degrees
-
     var manualOffsetAngle: Double = 0.0
 
-    val controlSystem = controlSystem {
-        posPid(posPIDCoefficients)
-    }
+//    val controlSystem = controlSystem {
+//        posPid(posPIDCoefficients)
+//    }
 
     override fun initialize() {
         turret1 = dev.nextftc.ftc.ActiveOpMode.hardwareMap.get(Servo::class.java, "turret1")
@@ -102,9 +97,11 @@ object NewTurret : Subsystem {
             targetAngleRobotRef -= 360.0
         }
 
-        if (targetAngleRobotRef < 30.0 || targetAngleRobotRef > 330.0 ) return
+        staticPos = targetAngleRobotRef
 
-        targetServoPosition = (targetAngleRobotRef - 30.0) / 300.0
+        if (targetAngleRobotRef < 15.0 || targetAngleRobotRef > 345.0 ) return
+
+        targetServoPosition = (targetAngleRobotRef - 15.0) / 330.0
 
         toPos()
 
