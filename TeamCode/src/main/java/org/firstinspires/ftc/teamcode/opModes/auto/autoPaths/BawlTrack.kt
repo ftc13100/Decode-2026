@@ -1,8 +1,10 @@
 
 package org.firstinspires.ftc.teamcode.opModes.auto.blue
 
+import com.qualcomm.hardware.limelightvision.LLResult
 import com.qualcomm.hardware.limelightvision.Limelight3A
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import dev.nextftc.core.components.SubsystemComponent
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.ftc.NextFTCOpMode
@@ -27,17 +29,31 @@ class BawlTrack: NextFTCOpMode() {
             PedroComponent(Constants::createFollower)
         )
     }
-    private val limelight: Limelight3A by lazy { hardwareMap.get(Limelight3A::class.java, "limelight") }
+
+    private val limelight: Limelight3A by lazy {
+        hardwareMap.get(
+            Limelight3A::class.java,
+            "limelight"
+        )
+    }
+
     override fun onInit() {
         telemetry.setMsTransmissionInterval(11)
-        limelight.pipelineSwitch(0)
+        limelight.pipelineSwitch(8)
         limelight.start()
     }
-    override fun onStartButtonPressed() {
-        val result = limelight!!.getLatestResult()
-        if (result != null) {
-            if (result.isValid()) {
-                telemetry.addData("tx", result.tx)
-                telemetry.addData("ty", result.ty)
-            }}}}
 
+    override fun onStartButtonPressed() {
+        val result: LLResult? = limelight.latestResult
+        if (result != null && result.isValid) {
+            telemetry.addData("tx", result.tx)
+            telemetry.addData("ty", result.ty)
+        }
+    }
+
+    override fun onUpdate() {
+
+        telemetry.update()
+    }
+
+}
