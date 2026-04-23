@@ -89,9 +89,11 @@ class Drivetrain : NextFTCOpMode() {
             it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
         follower.update()
+        NewTurret.toAngle(180.0)
     }
 
     override fun onStartButtonPressed() {
+        NewTurret.backRightMotor.atPosition(6000.0)
         NewTurret.trackTarget()
 
         driverControlled = MecanumDriverControlled(
@@ -166,27 +168,26 @@ class Drivetrain : NextFTCOpMode() {
 
         button { gamepad2.right_bumper}
             .whenBecomesTrue {
-                NewTurret.manualOffsetAngle += -10.0
-//                NewTurret.incrementAngle(-10.0)
+//                NewTurret.manualOffsetAngle += -10.0
+                NewTurret.incrementAngle(-10.0)
             }
 
         button { gamepad2.left_bumper }
             .whenBecomesTrue {
-                NewTurret.manualOffsetAngle += 10.0
-
-//                NewTurret.incrementAngle(10.0)
+                //NewTurret.manualOffsetAngle += 10.0
+                NewTurret.incrementAngle(10.0)
             }
 
         button { gamepad2.right_trigger > 0.5 }
             .whenTrue {
-                NewTurret.manualOffsetAngle -= 0.1
-            //                NewTurret.decrementAngle(0.1)
+                //NewTurret.manualOffsetAngle -= 0.1
+                NewTurret.decrementAngle(0.1)
             }
 
         button { gamepad2.left_trigger > 0.5 }
             .whenTrue {
-                NewTurret.manualOffsetAngle += 0.1
-            //                NewTurret.incrementAngle(0.1)
+            //    NewTurret.manualOffsetAngle += 0.1
+                NewTurret.incrementAngle(0.1)
             }
 
         //Intake artifact
@@ -265,8 +266,8 @@ class Drivetrain : NextFTCOpMode() {
         BindingManager.update()
         driverControlled.update()
         follower.update()
-        val shot = if (!PoseStorage.blueAlliance) BiLinearShooter.getShot(NewTurret.newX, NewTurret.newY)
-        else BiLinearShooter.getShot(141.5 - NewTurret.newX, NewTurret.newY)
+        val shot = if (!PoseStorage.blueAlliance) BiLinearShooter.getShot(NewTurret.turretX, NewTurret.turretY)
+        else BiLinearShooter.getShot(141.5 - NewTurret.turretX, NewTurret.turretY)
         //BiLinearShooter.getShot(NewTurret.newX, NewTurret.newY) // have this and line under in a button and onStart
         BiLinearShooter.applyShot(shot) // rather than in onUpdate
 
@@ -290,10 +291,11 @@ class Drivetrain : NextFTCOpMode() {
 
             telemetry.addData("Pos", "X: %.1f, Y: %.1f, H: %.1f", follower.pose.x, follower.pose.y, Math.toDegrees(follower.heading))
 
-            telemetry.addData("TurPos", "X: %.1f, Y: %.1f",NewTurret.newX, NewTurret.newY)
+            telemetry.addData("TurPos", "X: %.1f, Y: %.1f",NewTurret.turretX, NewTurret.turretY)
 
             telemetry.addData("Turret", "F: %.1f, R: %.1f, S: %.3f",NewTurret.targetAngleField, NewTurret.targetAngleRobotRef, NewTurret.targetServoPosition)
-
+            telemetry.addData("TurretEnc", "E: %.0f, A: %.1f",NewTurret.encoderDPosition(), NewTurret.encoderDAngle(), NewTurret.targetServoPosition)
+            telemetry.addData("TurretAng", "Static: %.1f, AngV: %.1f", NewTurret.targetAngleStatic, NewTurret.targetAngleAV)
 
             telemetry.addData("Shooter Vel", "Vel: %.1f, Targ: %.1f",Shooter.shooter.velocity, Shooter.target)
 

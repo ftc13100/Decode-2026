@@ -26,18 +26,22 @@ object NewTurret : Subsystem {
     lateinit var turret1: Servo
     lateinit var turret2: Servo
 
+    val TURRET_LIMIT_LOW = 22.2
+    val TURRET_LIMIT_HIGH = 337.8
+
     var targetServoPosition = 0.5  // 0.5 = straight back
     var targetAngleRobotRef: Double = 180.0 // 0 is facing forward, CCW increasing
     var targetAngleField: Double = 270.0 // 0 is right, increases CCW
 
-    var staticPos: Double = 0.0
+    var targetAngleStatic: Double = 0.0
+    var targetAngleAV: Double = 0.0
 
     @JvmField var goalTrackingActive = false
     @JvmField var kVF = 0.0
 
 
-    var newX = 0.0
-    var newY = 0.0
+    var turretX = 0.0
+    var turretY = 0.0
 
     @JvmField var TURRET_OFFSET = -2.03852
 
@@ -52,6 +56,8 @@ object NewTurret : Subsystem {
         turret2 = dev.nextftc.ftc.ActiveOpMode.hardwareMap.get(Servo::class.java, "turret2")
     }
 
+    val encoderDPosition = { backRightMotor.currentPosition }
+    val encoderDAngle = { 360.0 - backRightMotor.currentPosition * (360.0/12000.0) }
     fun trackTarget() {
         goalTrackingActive = true
     }
@@ -97,14 +103,13 @@ object NewTurret : Subsystem {
             targetAngleRobotRef -= 360.0
         }
 
-        staticPos = targetAngleRobotRef
+        if(targetAngleRobotRef < TURRET_LIMIT_LOW)
+            targetAngleRobotRef = TURRET_LIMIT_LOW;
+        if(targetAngleRobotRef > TURRET_LIMIT_HIGH)
+            targetAngleRobotRef = TURRET_LIMIT_HIGH
 
-        if (targetAngleRobotRef < 15.0 || targetAngleRobotRef > 345.0 ) return
-
-        targetServoPosition = (targetAngleRobotRef - 15.0) / 330.0
-
+        targetServoPosition = (targetAngleRobotRef - TURRET_LIMIT_LOW) / (TURRET_LIMIT_HIGH - TURRET_LIMIT_LOW)
         toPos()
-
     }
 
     fun getTurretPose(): Pose {
@@ -135,26 +140,25 @@ object NewTurret : Subsystem {
 
         var robotHeading = Math.toDegrees(follower.heading)
 
-        newX = getTurretPose().x
-        newY = getTurretPose().y
+        turretX = getTurretPose().x
+        turretY = getTurretPose().y
 
         if (robotHeading < 0.0) {
             robotHeading += 360.0
         }
         val turretRobotAdj = 360.0 - robotHeading
 
-        val goal = if (newY > 50.0) goalClose else goalFar
+        val goal = if (turretY > 50.0) goalClose else goalFar
 
         // Compute target angle in degrees
         targetAngleField = if (PoseStorage.blueAlliance) {
-            180.0 - Math.toDegrees(atan2(abs(goal.y - newY), abs(goal.x - newX)))
+            180.0 - Math.toDegrees(atan2(abs(goal.y - turretY), abs(goal.x - turretX)))
         } else {
-            Math.toDegrees(atan2(abs(goal.y - newY), abs(goal.x - (141.5 - newX))))
+            Math.toDegrees(atan2(abs(goal.y - turretY), abs(goal.x - (141.5 - turretX))))
         }
 
-        val compensatedAngle = targetAngleField + turretRobotAdj + (angularVel * kVF)
-
-        toAngle(compensatedAngle + manualOffsetAngle)
-
+        targetAngleStatic = targetAngleField + turretRobotAdj;
+        targetAngleAV = targetAngleField + turretRobotAdj + (angularVel * kVF)
+        toAngle(targetAngleAV + manualOffsetAngle)
     }
 }

@@ -80,11 +80,11 @@ class TurretTeleOp : NextFTCOpMode() {
         // Show current turret position
         telemetry.addData("X", follower.pose.x)
         telemetry.addData("Y", follower.pose.y)
-        telemetry.addData("newX", NewTurret.newX)
-        telemetry.addData("newY", NewTurret.newY)
+        telemetry.addData("turretX", NewTurret.turretX)
+        telemetry.addData("turretY", NewTurret.turretY)
         panelsTelemetry.addData("Angular Vel", follower.angularVelocity)
         panelsTelemetry.addData("ff", follower.angularVelocity * NewTurret.kVF)
-        panelsTelemetry.addData("target pos", NewTurret.staticPos)
+        panelsTelemetry.addData("target pos", NewTurret.targetAngleStatic)
         panelsTelemetry.addData("encoder", (360.0 - NewTurret.backRightMotor.currentPosition * (360.0/12000.0)))
 
         // Update panel and telemetry
