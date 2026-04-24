@@ -58,7 +58,11 @@ class b18: NextFTCOpMode() {
                     SpindexerAuto.toIntake,
                     FollowPath(shootPGP),
                 ),
-                FollowPath(PGPshoot),
+                Intake.spinStopAuto,
+                ParallelGroup(
+                Intake.spinReverseAuto,
+                FollowPath(PGPshoot)
+                ),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
 
@@ -67,7 +71,11 @@ class b18: NextFTCOpMode() {
                     FollowPath(shootGate),
                 ),
                 Delay(1.1.seconds),
-                FollowPath(eatShoot),
+                Intake.spinStopAuto,
+                ParallelGroup(
+                    Intake.spinReverseAuto,
+                    FollowPath(eatShoot)
+                ),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
                     Intake.spinFastAuto,
@@ -75,7 +83,11 @@ class b18: NextFTCOpMode() {
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate)),
                 Delay(1.1.seconds),
-                FollowPath(eatShoot),
+                Intake.spinStopAuto,
+                ParallelGroup(
+                    Intake.spinReverseAuto,
+                    FollowPath(eatShoot)
+                ),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
 
@@ -84,7 +96,11 @@ class b18: NextFTCOpMode() {
                     FollowPath(shootGate),
                 ),
                 Delay(1.1.seconds),
-                FollowPath(eatShoot),
+                Intake.spinStopAuto,
+                ParallelGroup(
+                    Intake.spinReverseAuto,
+                    FollowPath(eatShoot)
+                ),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
 

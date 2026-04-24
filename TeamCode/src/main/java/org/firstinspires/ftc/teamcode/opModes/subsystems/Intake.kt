@@ -62,6 +62,8 @@ object Intake : Subsystem {
 
 val spinFastAuto = SetPower(intake, -1.0)
 val spinStopAuto = SetPower(intake, 0.0)
+    val spinReverseAuto = SetPower(intake, 1.0)
+
 
 
     val spinReverse = InstantCommand {
