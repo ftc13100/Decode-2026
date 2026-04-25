@@ -51,18 +51,14 @@ class b18: NextFTCOpMode() {
                     Shooter.spinAtSpeed(1700.0),
                     FollowPath(startShoot),
                 ),
-                    Intake.spinFastAuto,
-                    SpindexerAuto.toShoot,
+                Intake.spinFastAuto,
+                SpindexerAuto.toShoot,
                 ParallelGroup(
 
                     SpindexerAuto.toIntake,
                     FollowPath(shootPGP),
                 ),
-                Intake.spinStopAuto,
-                ParallelGroup(
-                Intake.spinReverseAuto,
-                FollowPath(PGPshoot)
-                ),
+                FollowPath(PGPshoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
 
@@ -71,11 +67,7 @@ class b18: NextFTCOpMode() {
                     FollowPath(shootGate),
                 ),
                 Delay(1.1.seconds),
-                Intake.spinStopAuto,
-                ParallelGroup(
-                    Intake.spinReverseAuto,
-                    FollowPath(eatShoot)
-                ),
+                FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
                     Intake.spinFastAuto,
@@ -83,11 +75,7 @@ class b18: NextFTCOpMode() {
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate)),
                 Delay(1.1.seconds),
-                Intake.spinStopAuto,
-                ParallelGroup(
-                    Intake.spinReverseAuto,
-                    FollowPath(eatShoot)
-                ),
+                FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
 
@@ -96,11 +84,7 @@ class b18: NextFTCOpMode() {
                     FollowPath(shootGate),
                 ),
                 Delay(1.1.seconds),
-                Intake.spinStopAuto,
-                ParallelGroup(
-                    Intake.spinReverseAuto,
-                    FollowPath(eatShoot)
-                ),
+                FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
 
@@ -112,15 +96,16 @@ class b18: NextFTCOpMode() {
                 ParallelGroup(
                     Intake.spinStopAuto,
                     SpindexerAuto.toIntake,
+                    FollowPath(goLeave),
                 ),
 
 
-                    )
+                )
 
 
     override fun onInit() {
         PedroComponent.Companion.follower.setMaxPower(1.0)
-        Spindexer.toIntakePos()
+        Spindexer.toIntakePos
 
     }
 
@@ -138,6 +123,8 @@ class b18: NextFTCOpMode() {
     }
 
     override fun onUpdate() {
+        telemetry.addData("pos", "%.3f", SpindexerAuto.spindexer.currentPosition);
+
         telemetry.update()
     }
 

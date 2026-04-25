@@ -1,5 +1,5 @@
 
-package org.firstinspires.ftc.teamcode.opModes.auto.blue
+package org.firstinspires.ftc.teamcode.opModes.auto.red
 
 import SpindexerAuto
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
@@ -96,6 +96,7 @@ class r18: NextFTCOpMode() {
                 ParallelGroup(
                     Intake.spinStopAuto,
                     SpindexerAuto.toIntake,
+                    FollowPath(goLeave),
                 ),
 
 
@@ -104,15 +105,15 @@ class r18: NextFTCOpMode() {
 
     override fun onInit() {
         PedroComponent.Companion.follower.setMaxPower(1.0)
-        Spindexer.toIntakePos()
+        Spindexer.toIntakePos
 
     }
 
     override fun onStartButtonPressed() {
         PedroComponent.Companion.follower.setStartingPose(redAutoPaths.start)
         redAutoPaths.buildPaths()
-        PoseStorage.blueAlliance = false
         PoseStorage.redAlliance = true
+        PoseStorage.blueAlliance = false
         NewTurret.goalTrackingActive = true
         autoRoutine()
     }
@@ -122,6 +123,8 @@ class r18: NextFTCOpMode() {
     }
 
     override fun onUpdate() {
+        telemetry.addData("pos", "%.3f", SpindexerAuto.spindexer.currentPosition);
+
         telemetry.update()
     }
 

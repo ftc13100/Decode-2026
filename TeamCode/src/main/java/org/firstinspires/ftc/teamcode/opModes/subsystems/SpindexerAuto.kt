@@ -16,7 +16,7 @@ object SpindexerAuto : Subsystem {
         posPid(posPIDCoefficients)
     }
 
-    val toShoot = RunToPosition(controlSystem, -9600.0, 26.0).requires(this)
+    val toShoot = RunToPosition(controlSystem, -9600.0, 100.0).requires(this)
     val toIntake = RunToPosition(controlSystem, 0.0, 26.0).requires(this)
 
     override fun periodic() {
