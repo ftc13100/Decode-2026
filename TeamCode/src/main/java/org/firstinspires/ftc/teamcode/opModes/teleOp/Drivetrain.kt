@@ -230,7 +230,7 @@ class Drivetrain : NextFTCOpMode() {
 
         button { gamepad2.a }
             .whenTrue {
-                Spindexer.spinShot()
+                Spindexer.spinShotIndex()
             }
             .whenBecomesFalse {
                 Spindexer.stopShot()

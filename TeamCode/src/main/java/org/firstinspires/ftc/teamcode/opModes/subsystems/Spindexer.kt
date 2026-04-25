@@ -228,6 +228,12 @@ object Spindexer : Subsystem {
     }
         .requires(this)
 
+    val spinShotIndex = InstantCommand {
+        //    Intake.spinSlowSpeed()() // shouldn't be necessary, also is bad for battery usage when shooting
+        state = State.MANUAL
+        spindexer.power = 0.5
+    }
+        .requires(this)
 
     val shootTimedOrPosition = LambdaCommand("shootTimedOrPosition")
         .setStart {
