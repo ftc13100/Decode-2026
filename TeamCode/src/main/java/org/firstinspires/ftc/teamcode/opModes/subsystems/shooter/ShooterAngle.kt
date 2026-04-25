@@ -40,6 +40,12 @@ object ShooterAngle : Subsystem {
         // was 0.7
     }
 
+    val angle_ooga = InstantCommand {
+        servo.position = 0.6
+        // was 0.7
+    }
+
+
     fun toPos(pos: Double) =
         InstantCommand {
             servo.position = pos.coerceIn(SHOOTER_ANGLE_MIN, SHOOTER_ANGLE_MAX)

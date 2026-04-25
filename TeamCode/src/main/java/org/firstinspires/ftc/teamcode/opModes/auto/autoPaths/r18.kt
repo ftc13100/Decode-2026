@@ -66,7 +66,7 @@ class r18: NextFTCOpMode() {
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate),
                 ),
-                Delay(1.1.seconds),
+                Delay(1.0.seconds),
                 FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
@@ -74,7 +74,7 @@ class r18: NextFTCOpMode() {
 
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate)),
-                Delay(1.1.seconds),
+                Delay(1.0.seconds),
                 FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
@@ -83,7 +83,7 @@ class r18: NextFTCOpMode() {
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate),
                 ),
-                Delay(1.1.seconds),
+                Delay(1.0.seconds),
                 FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
