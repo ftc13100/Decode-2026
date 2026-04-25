@@ -7,7 +7,6 @@ import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
 import dev.nextftc.control.feedforward.BasicFeedforwardParameters
-import dev.nextftc.control2.feedforward.SimpleFFCoefficients
 import dev.nextftc.core.commands.delays.WaitUntil
 import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.commands.utility.InstantCommand
@@ -16,13 +15,13 @@ import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode.hardwareMap
 import dev.nextftc.hardware.controllable.RunToPosition
 import dev.nextftc.hardware.impl.MotorEx
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
 
 @Configurable
 object Spindexer : Subsystem {
     @JvmField var target = 0.0
     // Position PID used for indexing
-    @JvmField var posPIDCoefficients = PIDCoefficients(-0.0045, 0.0, -0.000125)
-    @JvmField var posFFCoefficients = BasicFeedforwardParameters(0.0, 0.0, 0.0)
+    @JvmField var posPIDCoefficients = PIDCoefficients(-0.0015, 0.0, -0.000033)
 
     //ID 23: PPG = 2
     //ID 22: PGP = 1
@@ -30,10 +29,9 @@ object Spindexer : Subsystem {
 
     val controlSystem = controlSystem {
         posPid(posPIDCoefficients)
-        basicFF(posFFCoefficients)
     }
 
-    val tolerance = KineticState(20.0)
+    val tolerance = KineticState(40.0)
 
     val spinAngle: Double
         get() = (360.0 / (4000.0) * spindexer.currentPosition)
@@ -137,11 +135,11 @@ object Spindexer : Subsystem {
     fun intakePos(adj : Double = 0.0): Double {
         // Get nearest intake position. If adj is 0, it should return same position if already at an intake position
         var curPos = (digEncLimitV() + adj) % SPINDEXER_ENCODER_MAX;
-        if(curPos <= intakePos1)
+        if (curPos <= intakePos1)
             return spindexer.currentPosition + intakePos1 - curPos
-        else if(curPos <= intakePos2)
+        else if (curPos <= intakePos2)
             return spindexer.currentPosition + intakePos2 - curPos
-        else if(curPos <= intakePos3)
+        else if (curPos <= intakePos3)
             return spindexer.currentPosition + intakePos3 - curPos
         else
             return spindexer.currentPosition + intakePos1 + SPINDEXER_ENCODER_MAX - curPos
@@ -156,36 +154,18 @@ object Spindexer : Subsystem {
         }
         .setIsDone {
             targetReached = controlSystem.isWithinTolerance(tolerance)
+            if (targetReached) {
+                state = State.MANUAL
+            }
             targetReached
         }
-        .requires(this)
-
-    val theshootpos = InstantCommand {
-        state = State.PID
-
-        RunToPosition(controlSystem, 1200.0).requires(this)
-    }
-
-    // only if needed
-    val wiggle = LambdaCommand("wiggleUp")
-        .setStart {
-            state = State.PID
-            controlSystem.goal = KineticState(forwardOnlyTarget(10.0))
-        }
-        .setIsDone { controlSystem.isWithinTolerance(tolerance) }
-        .then(
-            LambdaCommand("wiggleBack")
-                .setStart {
-                    controlSystem.goal = KineticState(spindexer.currentPosition-angleToTicks(10.0))
-                }
-                .setIsDone { controlSystem.isWithinTolerance(tolerance) }
-        )
         .requires(this)
 
     // Indexing
     // PID state: schedules RunToPosition
     val index0 = LambdaCommand("Index0Overshoot")
         .setStart {
+            Intake.spinSlowSpeed()()
             state = State.PID
             targetReached = false
             targetPosition = intakePos()
@@ -194,19 +174,17 @@ object Spindexer : Subsystem {
         }
         .setIsDone {
             targetReached = controlSystem.isWithinTolerance(tolerance)
+            if (targetReached) {
+                state = State.MANUAL
+                Intake.spinStop()
+            }
             targetReached
         }
-//        .then(
-//            LambdaCommand("Index0Return")
-//                .setStart {
-//                    controlSystemLarge.goalClose = KineticState(spindexer.currentPosition-angleToTicks(120.0))
-//                }
-//                .setIsDone { controlSystemLarge.isWithinTolerance(tolerance) }
-//        )
         .requires(this)
 
     val index1 = LambdaCommand("Index1Overshoot")
         .setStart {
+            Intake.spinSlowSpeed()()
             state = State.PID
             targetReached = false
             targetPosition = intakePos() + SPINDEXER_STEP
@@ -215,19 +193,17 @@ object Spindexer : Subsystem {
         }
         .setIsDone {
             targetReached = controlSystem.isWithinTolerance(tolerance)
+            if (targetReached) {
+                state = State.MANUAL
+                Intake.spinStop()
+            }
             targetReached
         }
-//        .then(
-//            LambdaCommand("Index1Return")
-//                .setStart {
-//                    controlSystemLarge.goalClose = KineticState(spindexer.currentPosition-angleToTicks(120.0))
-//                }
-//                .setIsDone { controlSystemLarge.isWithinTolerance(tolerance) }
-//        )
         .requires(this)
 
     val index2 = LambdaCommand("Index2Overshoot")
         .setStart {
+            Intake.spinSlowSpeed()()
             state = State.PID
             targetReached = false
             targetPosition = intakePos() + SPINDEXER_STEP * 2
@@ -236,15 +212,12 @@ object Spindexer : Subsystem {
         }
         .setIsDone {
             targetReached = controlSystem.isWithinTolerance(tolerance)
+            if (targetReached) {
+                state = State.MANUAL
+                Intake.spinStop()
+            }
             targetReached
         }
-//        .then(
-//            LambdaCommand("Index2Return")
-//                .setStart {
-//                    controlSystemLarge.goalClose = KineticState(spindexer.currentPosition-angleToTicks(120.0))
-//                }
-//                .setIsDone { controlSystemLarge.isWithinTolerance(tolerance) }
-//        )
         .requires(this)
 
     // manual: periodic stops PID
@@ -262,7 +235,7 @@ object Spindexer : Subsystem {
             startTime = System.currentTimeMillis()
             startPos = spindexer.currentPosition
             hasStopped = false
-            spindexer.power = 1.0
+            spindexer.power = 0.9
         }
         .setIsDone {
             val now = System.currentTimeMillis()
@@ -284,18 +257,6 @@ object Spindexer : Subsystem {
         clearColors()
     }
         .requires(this)
-
-
-    val runToStartPos = {
- //       SequentialGroup(
- //           InstantCommand { spindexer.atPosition(analogS.voltage/3.225 * 4000.0) },
- //           InstantCommand { state = State.PID },
- //           RunToPosition(controlSystem, 339.0),
- //           WaitUntil { controlSystem.isWithinTolerance(tolerance) },
- //           InstantCommand { spindexer.atPosition(0.0) }
- //       )
- //           .requires(this)
-    }
 
     fun autoIndex(b3: Int) = InstantCommand {
         state = State.PID
@@ -348,8 +309,6 @@ object Spindexer : Subsystem {
             else -> SpindexerColor.EMPTY
         }
     }
-
-//    val intakePos = RunToPosition(controlSystem, 0.0).requires(this)
 
     private fun colorToDigit(color: SpindexerColor): Int =
         when (color) {

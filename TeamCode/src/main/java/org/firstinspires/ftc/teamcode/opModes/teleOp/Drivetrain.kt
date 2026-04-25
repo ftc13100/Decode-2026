@@ -219,6 +219,15 @@ class Drivetrain : NextFTCOpMode() {
                 Intake.spinStop()
             }
 
+        button { gamepad1.left_trigger > 0.4 }
+            .whenTrue {
+                Spindexer.spinShot()
+            }
+            .whenBecomesFalse {
+                Spindexer.stopShot()
+                Intake.spinStop()
+            }
+
         button { gamepad2.a }
             .whenTrue {
                 Spindexer.spinShot()
@@ -230,20 +239,17 @@ class Drivetrain : NextFTCOpMode() {
 
         button { gamepad2.x}
             .whenBecomesTrue {
-                //Spindexer.autoIndex(0)()
-                Spindexer.index0()
+                Spindexer.autoIndex(0)()
             }
 
         button { gamepad2.y}
             .whenBecomesTrue {
-                //Spindexer.autoIndex(1)()
-                Spindexer.index1()
+                Spindexer.autoIndex(1)()
             }
 
         button { gamepad2.b}
             .whenBecomesTrue {
-                //Spindexer.autoIndex(2)()
-                Spindexer.index2()
+                Spindexer.autoIndex(2)()
             }
 
 
@@ -313,7 +319,7 @@ class Drivetrain : NextFTCOpMode() {
             telemetry.addData("Pos", "(%.1f, %.1f, %.1f), Tur: (%.1f, %.1f)", follower.pose.x, follower.pose.y, Math.toDegrees(follower.heading), NewTurret.turretX, NewTurret.turretY)
 
             telemetry.addData("Turret", "F: %.1f, R: %.1f, S: %.3f",NewTurret.targetAngleField, NewTurret.targetAngleRobotRef, NewTurret.targetServoPosition)
-//            telemetry.addData("TurretEnc", "E: %.0f, A: %.1f, Err: %.1f",NewTurret.encoderDPosition(), NewTurret.encoderDAngle())
+        //    telemetry.addData("TurretEnc", "E: %.0f, A: %.1f, Err: %.1f",NewTurret.encoderDPosition(), NewTurret.encoderDAngle())
             telemetry.addData("TurretAng", "Static: %.1f, AngV: %.1f, Err: %.1f", NewTurret.targetAngleStatic, NewTurret.targetAngleAV, NewTurret.encoderDAngle() - NewTurret.targetAngleRobotRef)
 
             telemetry.addData("Shooter", "V: %.0f, T: %.0f, Offset: %.0f",Shooter.shooter.velocity, Shooter.target, Shooter.manualOffset)
