@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
+import com.bylazar.telemetry.PanelsTelemetry
 import com.pedropathing.geometry.Pose
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -41,6 +42,8 @@ class Drivetrain : NextFTCOpMode() {
             PedroComponent(Constants::createFollower)
         )
     }
+
+    private val panelsTelemetry = PanelsTelemetry.telemetry
 
     private val frontLeftName = "frontLeft"
     private val frontRightName = "frontRight"
@@ -284,6 +287,11 @@ class Drivetrain : NextFTCOpMode() {
         BindingManager.update()
         driverControlled.update()
         follower.update()
+
+        panelsTelemetry.addData("velocity", Shooter.shooter.velocity)
+        panelsTelemetry.addData("target", Shooter.target)
+        panelsTelemetry.addData("power", Shooter.shooter.power)
+        panelsTelemetry.update(telemetry)
 
         val now = System.nanoTime() / 1_000_000.0
 

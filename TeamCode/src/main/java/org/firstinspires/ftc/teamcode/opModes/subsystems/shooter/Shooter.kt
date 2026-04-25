@@ -15,13 +15,13 @@ import dev.nextftc.hardware.impl.VoltageCompensatingMotor
 @Configurable
 object Shooter : Subsystem {
     @JvmField var target = 0.0
-    @JvmField var velPIDCoefficients = PIDCoefficients(0.0007, 0.0, 0.0)
-    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.00036825, 0.0, 0.041)
+    @JvmField var velPIDCoefficients = PIDCoefficients(0.0006, 0.0, 0.0)
+    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.0003685, 0.0, 0.041)
 
     val shooter = VoltageCompensatingMotor(
         MotorEx("shooter").brakeMode().reversed(),
         voltageCacheTimeSeconds = 0.5,
-        nominalVoltage = 12.75
+        nominalVoltage = 12.8
     )
 
     val SHOOTER_MAX_SPEED = 2200.0
@@ -39,9 +39,16 @@ object Shooter : Subsystem {
 
     override fun periodic() {
         if (shooterActive) {
-            val motorPower = controller.calculate(
-                shooter.state
-            )
+
+            val currentVel = shooter.velocity
+            val error = target - currentVel
+
+            val motorPower = if (error > 100.0) {
+                1.0
+            } else {
+                controller.calculate(shooter.state)
+            }
+
             shooter.power = motorPower
 
         } else {
