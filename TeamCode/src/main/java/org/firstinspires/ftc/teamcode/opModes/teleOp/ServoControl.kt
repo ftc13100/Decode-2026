@@ -53,12 +53,12 @@ class ServoControl : NextFTCOpMode() {
 
         button { gamepad1.dpad_right}
             .whenBecomesTrue {
-                NewTurret.incrementAngle(10.0)
+                NewTurret.adjustAngle(10.0)
             }
 
         button { gamepad1.dpad_left }
             .whenBecomesTrue {
-                NewTurret.decrementAngle(10.0)
+                NewTurret.adjustAngle(-10.0)
             }
 
         button {gamepad1.a}

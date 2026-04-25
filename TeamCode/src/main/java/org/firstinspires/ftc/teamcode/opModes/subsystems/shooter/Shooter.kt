@@ -24,6 +24,7 @@ object Shooter : Subsystem {
         nominalVoltage = 12.8
     )
 
+    val SHOOTER_MAX_SPEED = 2200.0
     var manualOffset: Double = 0.0
 
     var shooterActive = false
@@ -50,7 +51,7 @@ object Shooter : Subsystem {
 
     fun spinAtSpeed(speed: Double) =
         InstantCommand {
-            target = speed
+            target = speed.coerceIn(0.0, SHOOTER_MAX_SPEED)
             shooterActive = true
             shooterReady = false
             shooterReadyMs = 0.00
@@ -62,6 +63,10 @@ object Shooter : Subsystem {
                 shooterReadyMs = runtime.milliseconds()
             }
         ).setInterruptible(true).requires(this)
+
+    fun adjustSpeed(adj : Double) {
+        spinAtSpeed(target + adj)()
+    }
 
     val stallShooter = spinAtSpeed(1600.0)
 

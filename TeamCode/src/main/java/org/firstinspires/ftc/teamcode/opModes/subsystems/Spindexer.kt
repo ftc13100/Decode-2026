@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
+import dev.nextftc.control.feedforward.BasicFeedforwardParameters
+import dev.nextftc.control2.feedforward.SimpleFFCoefficients
 import dev.nextftc.core.commands.delays.WaitUntil
 import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.commands.utility.InstantCommand
@@ -19,7 +21,8 @@ import dev.nextftc.hardware.impl.MotorEx
 object Spindexer : Subsystem {
     @JvmField var target = 0.0
     // Position PID used for indexing
-    @JvmField var posPIDCoefficients = PIDCoefficients(-0.0014, 0.0, -0.000035)
+    @JvmField var posPIDCoefficients = PIDCoefficients(-0.0045, 0.0, -0.000125)
+    @JvmField var posFFCoefficients = BasicFeedforwardParameters(0.0, 0.0, 0.0)
 
     //ID 23: PPG = 2
     //ID 22: PGP = 1
@@ -27,6 +30,7 @@ object Spindexer : Subsystem {
 
     val controlSystem = controlSystem {
         posPid(posPIDCoefficients)
+        basicFF(posFFCoefficients)
     }
 
     val tolerance = KineticState(20.0)
@@ -42,7 +46,7 @@ object Spindexer : Subsystem {
 
     enum class State { PID, MANUAL }
 
-    var state = State.PID
+    var state = State.MANUAL
 
     var cached0 = SpindexerColor.EMPTY
     var cached1 = SpindexerColor.EMPTY
@@ -54,7 +58,51 @@ object Spindexer : Subsystem {
     private var startPos = 0.0
     private var hasStopped = false
 
+    val SPINDEXER_ENCODER_MAX = 4000.0
+    val SPINDEXER_STEP = SPINDEXER_ENCODER_MAX / 3.0
+    val SPINDEXER_ABS_ENC_V_MAX = 3.225
+    val INTAKE_ABS_POS = 339.0
+    var initDone = false
+    var intakePos1 = 0.0
+    var intakePos2 = 0.0
+    var intakePos3 = 0.0
+    var targetPosition = 0.0
+    var targetReached = false
+    val absEncV = { analogS.voltage }
+    val absEncP = { analogS.voltage / SPINDEXER_ABS_ENC_V_MAX * SPINDEXER_ENCODER_MAX }
+    val digEncV = { spindexer.currentPosition }
+    fun digEncLimitV() : Double {
+        var enc = spindexer.currentPosition % SPINDEXER_ENCODER_MAX
+        if (enc < 0.0)
+            enc += SPINDEXER_ENCODER_MAX
+        return enc
+    }
+
     override fun periodic() {
+
+        if(!initDone) {
+            var digEncOffset = (digEncLimitV() - absEncP()) % SPINDEXER_ENCODER_MAX
+            if(digEncOffset < 0)
+                digEncOffset += SPINDEXER_ENCODER_MAX
+
+            var p1 = (INTAKE_ABS_POS + digEncOffset) % SPINDEXER_ENCODER_MAX
+
+            if(p1 < SPINDEXER_STEP)
+                intakePos1 = p1
+            else {
+                p1 = (p1 + SPINDEXER_STEP) % SPINDEXER_ENCODER_MAX
+                if(p1 < SPINDEXER_STEP)
+                    intakePos1 = p1
+                else {
+                    p1 = (p1 + SPINDEXER_STEP) % SPINDEXER_ENCODER_MAX
+                    intakePos1 = p1
+                }
+            }
+            intakePos2 = intakePos1 + SPINDEXER_STEP
+            intakePos3 = intakePos2 + SPINDEXER_STEP
+
+            initDone = true
+        }
 
         // Detect rising edge (intake just started)
         val currentlyRunning = Intake.intakeRunning
@@ -78,33 +126,40 @@ object Spindexer : Subsystem {
 
     fun forwardOnlyTarget(angleDeg: Double): Double {
         val targetInRev = angleToTicks(angleDeg)
-        val currentRev = kotlin.math.floor(spindexer.currentPosition / (4000.0))
-        var newTarget = currentRev * (4000.0) + targetInRev
+        val currentRev = kotlin.math.floor(spindexer.currentPosition / (SPINDEXER_ENCODER_MAX))
+        var newTarget = currentRev * (SPINDEXER_ENCODER_MAX) + targetInRev
         if (newTarget <= spindexer.currentPosition) {
-            newTarget += (4000.0)
+            newTarget += (SPINDEXER_ENCODER_MAX)
         }
         return newTarget
     }
 
-    fun intakePos(): Double {
-        val step = 1333.33
-        return kotlin.math.round(spindexer.currentPosition / step) * step
+    fun intakePos(adj : Double = 0.0): Double {
+        // Get nearest intake position. If adj is 0, it should return same position if already at an intake position
+        var curPos = (digEncLimitV() + adj) % SPINDEXER_ENCODER_MAX;
+        if(curPos <= intakePos1)
+            return spindexer.currentPosition + intakePos1 - curPos
+        else if(curPos <= intakePos2)
+            return spindexer.currentPosition + intakePos2 - curPos
+        else if(curPos <= intakePos3)
+            return spindexer.currentPosition + intakePos3 - curPos
+        else
+            return spindexer.currentPosition + intakePos1 + SPINDEXER_ENCODER_MAX - curPos
     }
 
     val toIntakePos = LambdaCommand("toIntakePos")
         .setStart {
             state = State.PID
-            controlSystem.goal =
-                KineticState(intakePos())
+            targetReached = false
+            targetPosition = intakePos()
+            controlSystem.goal = KineticState(targetPosition)
         }
-        .setIsDone { controlSystem.isWithinTolerance(tolerance) }
+        .setIsDone {
+            targetReached = controlSystem.isWithinTolerance(tolerance)
+            targetReached
+        }
         .requires(this)
 
-    val theintakepos = InstantCommand {
-        state = State.PID
-
-        RunToPosition(controlSystem, 0.0).requires(this)
-    }
     val theshootpos = InstantCommand {
         state = State.PID
 
@@ -132,9 +187,15 @@ object Spindexer : Subsystem {
     val index0 = LambdaCommand("Index0Overshoot")
         .setStart {
             state = State.PID
-            controlSystem.goal = KineticState(forwardOnlyTarget(0.0))
+            targetReached = false
+            targetPosition = intakePos()
+//            controlSystem.goal = KineticState(forwardOnlyTarget(0.0))
+              controlSystem.goal = KineticState(targetPosition)
         }
-        .setIsDone { controlSystem.isWithinTolerance(tolerance) }
+        .setIsDone {
+            targetReached = controlSystem.isWithinTolerance(tolerance)
+            targetReached
+        }
 //        .then(
 //            LambdaCommand("Index0Return")
 //                .setStart {
@@ -147,9 +208,15 @@ object Spindexer : Subsystem {
     val index1 = LambdaCommand("Index1Overshoot")
         .setStart {
             state = State.PID
-            controlSystem.goal = KineticState(forwardOnlyTarget(120.0))
+            targetReached = false
+            targetPosition = intakePos() + SPINDEXER_STEP
+            //controlSystem.goal = KineticState(forwardOnlyTarget(120.0))
+            controlSystem.goal = KineticState(targetPosition)
         }
-        .setIsDone { controlSystem.isWithinTolerance(tolerance) }
+        .setIsDone {
+            targetReached = controlSystem.isWithinTolerance(tolerance)
+            targetReached
+        }
 //        .then(
 //            LambdaCommand("Index1Return")
 //                .setStart {
@@ -162,9 +229,15 @@ object Spindexer : Subsystem {
     val index2 = LambdaCommand("Index2Overshoot")
         .setStart {
             state = State.PID
-            controlSystem.goal = KineticState(forwardOnlyTarget(240.0))
+            targetReached = false
+            targetPosition = intakePos() + SPINDEXER_STEP * 2
+            //controlSystem.goal = KineticState(forwardOnlyTarget(240.0))
+            controlSystem.goal = KineticState(targetPosition)
         }
-        .setIsDone { controlSystem.isWithinTolerance(tolerance) }
+        .setIsDone {
+            targetReached = controlSystem.isWithinTolerance(tolerance)
+            targetReached
+        }
 //        .then(
 //            LambdaCommand("Index2Return")
 //                .setStart {
@@ -195,7 +268,7 @@ object Spindexer : Subsystem {
             val now = System.currentTimeMillis()
             val timeDone = (now - startTime) >= 500
             val positionDone =
-                (spindexer.currentPosition - startPos) <= -4000.0
+                (spindexer.currentPosition - startPos) <= -SPINDEXER_ENCODER_MAX
             val done = timeDone || positionDone
             if (done && !hasStopped) {
                 spindexer.power = 0.0
@@ -214,14 +287,14 @@ object Spindexer : Subsystem {
 
 
     val runToStartPos = {
-        SequentialGroup(
-            InstantCommand { spindexer.atPosition(analogS.voltage/3.225 * 4000.0) },
-            InstantCommand { state = State.PID },
-            RunToPosition(controlSystem, 339.0),
-            WaitUntil { controlSystem.isWithinTolerance(tolerance) },
-            InstantCommand { spindexer.atPosition(0.0) }
-        )
-            .requires(this)
+ //       SequentialGroup(
+ //           InstantCommand { spindexer.atPosition(analogS.voltage/3.225 * 4000.0) },
+ //           InstantCommand { state = State.PID },
+ //           RunToPosition(controlSystem, 339.0),
+ //           WaitUntil { controlSystem.isWithinTolerance(tolerance) },
+ //           InstantCommand { spindexer.atPosition(0.0) }
+ //       )
+ //           .requires(this)
     }
 
     fun autoIndex(b3: Int) = InstantCommand {
@@ -276,7 +349,7 @@ object Spindexer : Subsystem {
         }
     }
 
-    val intakePos = RunToPosition(controlSystem, 0.0).requires(this)
+//    val intakePos = RunToPosition(controlSystem, 0.0).requires(this)
 
     private fun colorToDigit(color: SpindexerColor): Int =
         when (color) {

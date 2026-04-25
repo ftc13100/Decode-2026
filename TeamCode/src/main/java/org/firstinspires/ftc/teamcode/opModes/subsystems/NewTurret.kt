@@ -29,6 +29,8 @@ object NewTurret : Subsystem {
     val TURRET_LIMIT_LOW = 22.2
     val TURRET_LIMIT_HIGH = 337.8
 
+    var turretEInitialized : Boolean = false
+    var turretEOffset = 0.0
     var targetServoPosition = 0.5  // 0.5 = straight back
     var targetAngleRobotRef: Double = 180.0 // 0 is facing forward, CCW increasing
     var targetAngleField: Double = 270.0 // 0 is right, increases CCW
@@ -56,8 +58,8 @@ object NewTurret : Subsystem {
         turret2 = dev.nextftc.ftc.ActiveOpMode.hardwareMap.get(Servo::class.java, "turret2")
     }
 
-    val encoderDPosition = { backRightMotor.currentPosition }
-    val encoderDAngle = { 360.0 - backRightMotor.currentPosition * (360.0/12000.0) }
+    val encoderDPosition = { backRightMotor.currentPosition - turretEOffset}
+    val encoderDAngle = { 360.0 - (backRightMotor.currentPosition - turretEOffset) * (360.0/12000.0) }
     fun trackTarget() {
         goalTrackingActive = true
     }
@@ -83,18 +85,11 @@ object NewTurret : Subsystem {
         setServoPos()
     }
 
-    fun incrementAngle(angle: Double) {
+    fun adjustAngle(angle: Double) {
         stopTracking()
         targetAngleRobotRef += angle
         setServoPos()
     }
-
-    fun decrementAngle(angle: Double) {
-        stopTracking()
-        targetAngleRobotRef -= angle
-        setServoPos()
-    }
-
     fun setServoPos() {
         if (targetAngleRobotRef < 0) {
             targetAngleRobotRef += 360.0
