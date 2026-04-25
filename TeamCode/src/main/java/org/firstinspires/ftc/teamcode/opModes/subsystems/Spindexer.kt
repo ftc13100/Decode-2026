@@ -6,16 +6,13 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor
 import dev.nextftc.control.KineticState
 import dev.nextftc.control.builder.controlSystem
 import dev.nextftc.control.feedback.PIDCoefficients
-import dev.nextftc.control.feedforward.BasicFeedforwardParameters
-import dev.nextftc.core.commands.delays.WaitUntil
-import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.commands.utility.InstantCommand
 import dev.nextftc.core.commands.utility.LambdaCommand
 import dev.nextftc.core.subsystems.Subsystem
 import dev.nextftc.ftc.ActiveOpMode.hardwareMap
-import dev.nextftc.hardware.controllable.RunToPosition
 import dev.nextftc.hardware.impl.MotorEx
-import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake.intake
+import org.firstinspires.ftc.teamcode.opModes.subsystems.Prism.GoBildaPrismDriver
+
 
 @Configurable
 object Spindexer : Subsystem {
@@ -37,6 +34,8 @@ object Spindexer : Subsystem {
         get() = (360.0 / (4000.0) * spindexer.currentPosition)
 
     val spindexer = MotorEx("spindexer").brakeMode()
+    lateinit var prism: GoBildaPrismDriver
+    lateinit var leds: LEDSubsystem
     lateinit var color0: NormalizedColorSensor
     lateinit var color1: NormalizedColorSensor
     lateinit var color2: NormalizedColorSensor
@@ -78,35 +77,34 @@ object Spindexer : Subsystem {
 
     override fun periodic() {
 
-        if(!initDone) {
+        if (!initDone) {
             var digEncOffset = (digEncLimitV() - absEncP()) % SPINDEXER_ENCODER_MAX
-            if(digEncOffset < 0)
+            if (digEncOffset < 0)
                 digEncOffset += SPINDEXER_ENCODER_MAX
 
             var p1 = (INTAKE_ABS_POS + digEncOffset) % SPINDEXER_ENCODER_MAX
 
-            if(p1 < SPINDEXER_STEP)
+            if (p1 < SPINDEXER_STEP)
                 intakePos1 = p1
             else {
                 p1 = (p1 + SPINDEXER_STEP) % SPINDEXER_ENCODER_MAX
-                if(p1 < SPINDEXER_STEP)
+                if (p1 < SPINDEXER_STEP)
                     intakePos1 = p1
                 else {
                     p1 = (p1 + SPINDEXER_STEP) % SPINDEXER_ENCODER_MAX
                     intakePos1 = p1
                 }
             }
+
             intakePos2 = intakePos1 + SPINDEXER_STEP
             intakePos3 = intakePos2 + SPINDEXER_STEP
 
             initDone = true
         }
 
-        // Detect rising edge (intake just started)
         val currentlyRunning = Intake.intakeRunning
 
         if (currentlyRunning) {
-            // Only read while intake is running
             cached0 = detectColorRGB(color0)
             cached1 = detectColorRGB(color1)
             cached2 = detectColorRGB(color2)
@@ -116,10 +114,40 @@ object Spindexer : Subsystem {
 
         when (state) {
             State.PID -> {
-                spindexer.power = controlSystem.calculate(spindexer.state).coerceIn(-0.8, 0.8)
+                spindexer.power =
+                    controlSystem.calculate(spindexer.state).coerceIn(-0.8, 0.8)
             }
-            State.MANUAL -> return
+
+            State.MANUAL -> {
+                return
+            }
         }
+
+//        if (::leds.isInitialized) {
+//
+//            var count = 0
+//            if (cached0 != SpindexerColor.EMPTY) count++
+//            if (cached1 != SpindexerColor.EMPTY) count++
+//            if (cached2 != SpindexerColor.EMPTY) count++
+//
+//            when {
+//                currentlyRunning -> {
+//                    leds.setIntakeLights(true)
+//                }
+//
+//                isFull -> {
+//                    leds.setSpindexerLights(3)
+//                }
+//
+//                isBusy -> {
+//                    leds.setDecorative() //leds.setIntakeLights(false) // solid white while moving
+//                }
+//
+//                else -> {
+//                    leds.setSpindexerLights(count)
+//                }
+//            }
+//        }
     }
 
     fun forwardOnlyTarget(angleDeg: Double): Double {
@@ -367,7 +395,17 @@ object Spindexer : Subsystem {
     val isBusy: Boolean
         get() = state == State.PID || (state == State.MANUAL && spindexer.power > 0.2)
 
+    fun pixelCount(): Int {
+        var count = 0
+        if (cached0 != SpindexerColor.EMPTY) count++
+        if (cached1 != SpindexerColor.EMPTY) count++
+        if (cached2 != SpindexerColor.EMPTY) count++
+        return count
+    }
+
     override fun initialize() {
+        prism = hardwareMap.get(GoBildaPrismDriver::class.java, "led")
+        leds = LEDSubsystem(prism)
         analogS = hardwareMap.get(AnalogInput::class.java, "analogS")
         color0 = hardwareMap.get(NormalizedColorSensor::class.java, "cs0")
         color0.gain = 12.0f

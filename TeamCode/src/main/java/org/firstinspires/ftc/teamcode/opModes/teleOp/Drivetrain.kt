@@ -83,12 +83,12 @@ class Drivetrain : NextFTCOpMode() {
             it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
         follower.update()
-        NewTurret.toAngle(180.0)
+//        NewTurret.trackTarget()
     }
 
     override fun onStartButtonPressed() {
-        NewTurret.backRightMotor.atPosition(6000.0)
-//        NewTurret.trackTarget()
+//        NewTurret.backRightMotor.atPosition(6000.0)
+        NewTurret.trackTarget()
 
         driverControlled = MecanumDriverControlled(
             frontLeftMotor,
@@ -286,6 +286,7 @@ class Drivetrain : NextFTCOpMode() {
         follower.update()
 
         val now = System.nanoTime() / 1_000_000.0
+
         if(firstOnUpdate)
         {
             lastTelemetryTime = now
@@ -320,23 +321,23 @@ class Drivetrain : NextFTCOpMode() {
 
             telemetry.addData("Turret", "F: %.1f, R: %.1f, S: %.3f",NewTurret.targetAngleField, NewTurret.targetAngleRobotRef, NewTurret.targetServoPosition)
         //    telemetry.addData("TurretEnc", "E: %.0f, A: %.1f, Err: %.1f",NewTurret.encoderDPosition(), NewTurret.encoderDAngle())
-            telemetry.addData("TurretAng", "Static: %.1f, AngV: %.1f, Err: %.1f", NewTurret.targetAngleStatic, NewTurret.targetAngleAV, NewTurret.encoderDAngle() - NewTurret.targetAngleRobotRef)
+//            telemetry.addData("TurretAng", "Static: %.1f, AngV: %.1f, Err: %.1f", NewTurret.targetAngleStatic, NewTurret.targetAngleAV, NewTurret.encoderDAngle() - NewTurret.targetAngleRobotRef)
 
             telemetry.addData("Shooter", "V: %.0f, T: %.0f, Offset: %.0f",Shooter.shooter.velocity, Shooter.target, Shooter.manualOffset)
             telemetry.addData("Hood", "Pos: %.2f, Offset: %.2f", ShooterAngle.servo.position, ShooterAngle.manualOffset)
 
-            telemetry.addData("Spindexer", "D: %.0f (%.0f), A: %.0f (%.3f)", Spindexer.digEncLimitV(), Spindexer.digEncV(), Spindexer.absEncP(), Spindexer.absEncV())
-            telemetry.addData("SpindexerTarget", "%.0f, Error: %.0f, Done: %b", Spindexer.targetPosition, Spindexer.targetPosition - Spindexer.digEncV(),
-                Spindexer.targetReached)
-            telemetry.addData("SpindexerConst", "I1: %.0f, I2: %.0f, I3: %.0f", Spindexer.intakePos1, Spindexer.intakePos2, Spindexer.intakePos3)
+//            telemetry.addData("Spindexer", "D: %.0f (%.0f), A: %.0f (%.3f)", Spindexer.digEncLimitV(), Spindexer.digEncV(), Spindexer.absEncP(), Spindexer.absEncV())
+//            telemetry.addData("SpindexerTarget", "%.0f, Error: %.0f, Done: %b", Spindexer.targetPosition, Spindexer.targetPosition - Spindexer.digEncV(),
+//                Spindexer.targetReached)
+//            telemetry.addData("SpindexerConst", "I1: %.0f, I2: %.0f, I3: %.0f", Spindexer.intakePos1, Spindexer.intakePos2, Spindexer.intakePos3)
 
             telemetry.addData(
-                "Intake", "%s (Power: %+1.1f, Current: %3.2f mA)",
+                "Intake", "%s", //(Power: %+1.1f, Current: %3.2f mA)",
                 if (intakeRunning) {
                     "Running"
                 } else {
                     "Stopped"
-                }, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
+                }//, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
             )
 
 //            telemetry.addData("analog", "%.0f", (Spindexer.analogS.voltage/3.225 * 4000.0))

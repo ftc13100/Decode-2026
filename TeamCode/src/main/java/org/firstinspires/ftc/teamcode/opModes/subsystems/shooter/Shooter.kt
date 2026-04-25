@@ -21,7 +21,7 @@ object Shooter : Subsystem {
     val shooter = VoltageCompensatingMotor(
         MotorEx("shooter").brakeMode().reversed(),
         voltageCacheTimeSeconds = 0.5,
-        nominalVoltage = 12.7
+        nominalVoltage = 12.75
     )
 
     val SHOOTER_MAX_SPEED = 2200.0
