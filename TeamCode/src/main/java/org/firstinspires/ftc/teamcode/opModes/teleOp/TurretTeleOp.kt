@@ -33,10 +33,12 @@ class TurretTeleOp : NextFTCOpMode() {
     private val frontLeftName = "frontLeft"
     private val frontRightName = "frontRight"
     private val backLeftName = "backLeft"
+    private val backRightName = "backRight"
 
     private lateinit var frontLeftMotor: MotorEx
     private lateinit var frontRightMotor: MotorEx
     private lateinit var backLeftMotor: MotorEx
+    private lateinit var backRightMotor: MotorEx
 
     private lateinit var driverControlled: MecanumDriverControlled
 
@@ -47,20 +49,19 @@ class TurretTeleOp : NextFTCOpMode() {
         frontRightMotor = MotorEx(frontRightName)
         backLeftMotor = MotorEx(backLeftName)
 
-        listOf(frontLeftMotor, frontRightMotor, backLeftMotor, NewTurret.backRightMotor).forEach {
+        listOf(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor).forEach {
             it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         }
         follower.update()
-        NewTurret.backRightMotor.atPosition(6000.0)
     }
 
     override fun onStartButtonPressed() {
-        NewTurret.backRightMotor.atPosition(6000.0)
+        //NewTurret.backRightMotor.atPosition(6000.0)
         driverControlled = MecanumDriverControlled(
             frontLeftMotor,
             frontRightMotor,
             backLeftMotor,
-            NewTurret.backRightMotor,
+            backRightMotor,
             -Gamepads.gamepad1.leftStickY,
             Gamepads.gamepad1.leftStickX,
             Gamepads.gamepad1.rightStickX,
@@ -85,7 +86,7 @@ class TurretTeleOp : NextFTCOpMode() {
         panelsTelemetry.addData("Angular Vel", follower.angularVelocity)
         panelsTelemetry.addData("ff", follower.angularVelocity * NewTurret.kVF)
         panelsTelemetry.addData("target pos", NewTurret.targetAngleStatic)
-        panelsTelemetry.addData("encoder", (360.0 - NewTurret.backRightMotor.currentPosition * (360.0/12000.0)))
+        //panelsTelemetry.addData("encoder", (360.0 - NewTurret.backRightMotor.currentPosition * (360.0/12000.0)))
 
         // Update panel and telemetry
         panelsTelemetry.update(telemetry)

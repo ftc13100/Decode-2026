@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.opModes.teleOp.BiLinearShooter.goalFar
 @Configurable
 object NewTurret : Subsystem {
 
-    val backRightMotor = MotorEx("backRight").brakeMode()
+    //val backRightMotor = MotorEx("backRight").brakeMode()
 
     lateinit var turret1: Servo
     lateinit var turret2: Servo
@@ -58,8 +58,8 @@ object NewTurret : Subsystem {
         turret2 = dev.nextftc.ftc.ActiveOpMode.hardwareMap.get(Servo::class.java, "turret2")
     }
 
-    val encoderDPosition = { backRightMotor.currentPosition - turretEOffset}
-    val encoderDAngle = { 360.0 - (backRightMotor.currentPosition - turretEOffset) * (360.0/12000.0) }
+    //val encoderDPosition = { backRightMotor.currentPosition - turretEOffset}
+    //val encoderDAngle = { 360.0 - (backRightMotor.currentPosition - turretEOffset) * (360.0/12000.0) }
     fun trackTarget() {
         goalTrackingActive = true
     }

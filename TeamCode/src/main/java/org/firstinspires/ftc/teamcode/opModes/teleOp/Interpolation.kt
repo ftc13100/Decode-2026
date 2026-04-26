@@ -2,12 +2,15 @@ package org.firstinspires.ftc.teamcode.opModes.teleOp
 
 import com.pedropathing.geometry.Pose
 import dev.nextftc.control2.util.InterpolatingMap2D
+import dev.nextftc.core.commands.CommandManager
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
+import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 
 object Interpolation {
 
     private val flywheelVelocity = InterpolatingMap2D.bilinear()
     private val hood = InterpolatingMap2D.bilinear()
-//    private val airTime = InterpolatingMap2D.bilinear()
+    private val airTime = InterpolatingMap2D.bilinear()
 
     init {
 
@@ -70,32 +73,24 @@ object Interpolation {
         hood[72.0, 21.97] = 0.800
         hood[96.0, 21.97] = 0.780
 
-        // AIR TIME
-//
-//        airTime[24.0, 117.97] = 0.41
-//        airTime[48.0, 117.97] = 0.54
-//        airTime[72.0, 117.97] = 0.38
-//        airTime[96.0, 117.97] = 0.35
-//
-//        airTime[24.0, 93.97] = 0.44
-//        airTime[48.0, 93.97] = 0.38
-//        airTime[72.0, 93.97] = 0.27
-//        airTime[96.0, 93.97] = 0.35
-//
-//        airTime[24.0, 69.97] = 0.46
-//        airTime[48.0, 69.97] = 0.50
-//        airTime[72.0, 69.97] = 0.42
-//        airTime[96.0, 69.97] = 0.39
-//
-//        airTime[24.0, 45.97] = 0.55
-//        airTime[48.0, 45.97] = 0.60
-//        airTime[72.0, 45.97] = 0.70
-//        airTime[96.0, 45.97] = 0.68
-//
-//        airTime[24.0, 21.97] = 0.78
-//        airTime[48.0, 21.97] = 0.79
-//        airTime[72.0, 21.97] = 0.80
-//        airTime[96.0, 21.97] = 0.81
+
+        // AIR TIME - 9 measurement points in a 3x3 grid
+        // Adjust these coordinates and values based on your actual measurements
+
+        // Close range (y = 117.97)
+        airTime[24.0, 117.97] = 0.41
+        airTime[60.0, 117.97] = 0.46
+        airTime[96.0, 117.97] = 0.35
+
+        // Mid range (y = 69.97)
+        airTime[24.0, 69.97] = 0.46
+        airTime[60.0, 69.97] = 0.50
+        airTime[96.0, 69.97] = 0.39
+
+        // Far range (y = 21.97)
+        airTime[24.0, 21.97] = 0.78
+        airTime[60.0, 21.97] = 0.79
+        airTime[96.0, 21.97] = 0.81
     }
 
     fun getFlywheelVelocity(pose: Pose): Double {
@@ -106,8 +101,21 @@ object Interpolation {
         return hood[pose.x, pose.y]
     }
 
-//    fun getAirTime(pose: Pose): Double {
-//        return airTime[pose.x, pose.y]
-//    }
+    fun getAirTime(pose: Pose): Double {
+        return airTime[pose.x, pose.y]
+    }
+
+    /**
+     * Apply a shot by setting the hood angle and flywheel speed based on robot pose.
+     */
+
+    fun applyShot(pose: Pose) {
+        val velocity = getFlywheelVelocity(pose)
+        val angle = getHood(pose)
+
+        ShooterAngle.targetPosition = angle + ShooterAngle.manualOffset
+        CommandManager.scheduleCommand(ShooterAngle.update())
+        CommandManager.scheduleCommand(Shooter.spinAtSpeed(velocity + Shooter.manualOffset))
+    }
 
 }
