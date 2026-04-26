@@ -125,10 +125,10 @@ object Spindexer : Subsystem {
         }
 
         // LED control approach using artboards
-        if (::leds.isInitialized) {
-            val count = pixelCount()
-            leds.setIntakeAndSpindexerLights(count, currentlyRunning)
-        }
+//        if (::leds.isInitialized) {
+//            val count = pixelCount()
+//            leds.setIntakeAndSpindexerLights(count, currentlyRunning)
+//        }
     }
 
     fun forwardOnlyTarget(angleDeg: Double): Double {
