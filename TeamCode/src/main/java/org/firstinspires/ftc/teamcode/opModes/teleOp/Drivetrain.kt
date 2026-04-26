@@ -231,6 +231,15 @@ class Drivetrain : NextFTCOpMode() {
                 Intake.spinStop()
             }
 
+        button { gamepad1.right_trigger > 0.4 }
+            .whenTrue {
+                Spindexer.spinShotIndex()
+            }
+            .whenBecomesFalse {
+                Spindexer.stopShot()
+                Intake.spinStop()
+            }
+
         button { gamepad2.a }
             .whenTrue {
                 Spindexer.spinShotIndex()
