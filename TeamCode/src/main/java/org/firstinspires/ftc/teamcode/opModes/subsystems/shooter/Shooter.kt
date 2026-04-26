@@ -16,7 +16,7 @@ import dev.nextftc.hardware.impl.VoltageCompensatingMotor
 object Shooter : Subsystem {
     @JvmField var target = 0.0
     @JvmField var velPIDCoefficients = PIDCoefficients(0.001, 0.0, 0.0)
-    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.0004, 0.0, 0.061)
+    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.000385, 0.0, 0.061)
 
     val shooter = VoltageCompensatingMotor(
         MotorEx("shooter").brakeMode().reversed(),

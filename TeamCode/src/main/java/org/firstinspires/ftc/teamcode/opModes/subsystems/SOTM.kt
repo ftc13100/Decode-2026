@@ -22,7 +22,7 @@ object SOTM : Subsystem {
 
         for (i in 0..<ITERATIONS) {
             // Get air time for current virtual position
-            val airTime = Interpolation.getAirTime(virtualPose)
+            val airTime = Interpolation.getAirTime(virtualPose.x,virtualPose.y)
 
             // Calculate where robot will be after this air time
             val futureX = robotPose.x + robotVelocity.xComponent * airTime

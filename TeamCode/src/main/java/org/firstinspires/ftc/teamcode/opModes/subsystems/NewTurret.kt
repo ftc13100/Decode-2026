@@ -39,8 +39,7 @@ object NewTurret : Subsystem {
     var targetAngleAV: Double = 0.0
 
     @JvmField var goalTrackingActive = false
-    @JvmField var kVF = 0.0
-
+    @JvmField var kVF = -4.5
 
     var turretX = 0.0
     var turretY = 0.0

@@ -48,6 +48,7 @@ class TurretTeleOp : NextFTCOpMode() {
         frontLeftMotor = MotorEx(frontLeftName)
         frontRightMotor = MotorEx(frontRightName)
         backLeftMotor = MotorEx(backLeftName)
+        backRightMotor = MotorEx(backRightName)
 
         listOf(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor).forEach {
             it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
