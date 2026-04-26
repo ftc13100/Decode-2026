@@ -5,6 +5,8 @@ import kotlin.math.max
 import kotlin.math.min
 
 class LEDSubsystem(prism: GoBildaPrismDriver) {
+
+    // internal state machine
     private enum class ActiveMode {
         NONE,
         SPIX,
@@ -12,13 +14,46 @@ class LEDSubsystem(prism: GoBildaPrismDriver) {
     }
 
     private val prism: GoBildaPrismDriver
+
+    // caching to avoid unnecessary I2C writes like sachet said
     private var lastMode = ActiveMode.NONE
     private var lastSpindexerCount = -1
     private var lastIntakeRunning: Boolean? = null
 
+    //cache of the last color written to each LED
+    private val ledCache = Array(STRIP_LENGTH) { Color.TRANSPARENT }
+
+    //dirty flag (thanks copilot for explaining what ts is) so we only call prism.show() when needed
+    private var dirty = false
+
+    //software blinking timer for intake mode
+    private var blinkState = false
+    private var lastBlinkTime = 0L
+
     init {
         this.prism = prism
         this.prism.setStripLength(STRIP_LENGTH)
+    }
+
+    //writes only if LED actually changed
+    private fun setRange(start: Int, end: Int, color: Color) {
+        var changed = false
+        for (i in start..end) {
+            if (ledCache[i] != color) {
+                ledCache[i] = color
+                prism.setPixelColor(i, color)
+                changed = true
+            }
+        }
+        if (changed) dirty = true
+    }
+
+    //flushes to hardware only when dirty
+    private fun flush() {
+        if (dirty) {
+            prism.show()
+            dirty = false
+        }
     }
 
     /**
@@ -27,23 +62,22 @@ class LEDSubsystem(prism: GoBildaPrismDriver) {
      */
     fun setSpindexerLights(ballCount: Int) {
         val count = max(0, min(ballCount, 3))
-        if (lastMode == ActiveMode.SPIX && lastSpindexerCount == count) {
-            return
+
+        // skip if nothing changed
+        if (lastMode == ActiveMode.SPIX && lastSpindexerCount == count) return
+
+        val color = when (count) {
+            0 -> Color.RED
+            1 -> Color.BLUE
+            2 -> Color.YELLOW
+            else -> Color.GREEN
         }
 
-        val color: Color?
-        if (count == 0) {
-            color = Color.RED
-        } else if (count == 1) {
-            color = Color.BLUE
-        } else if (count == 2) {
-            color = Color.YELLOW
-        } else {
-            color = Color.GREEN
-        }
+        // clear animations only when switching modes
+        if (lastMode != ActiveMode.SPIX) prism.clearAllAnimations()
 
-        prism.setSolidColor(FIRST_LED, LAST_LED, color)
-        prism.show()
+        setRange(FIRST_LED, LAST_LED, color)
+        flush()
 
         lastMode = ActiveMode.SPIX
         lastSpindexerCount = count
@@ -57,29 +91,16 @@ class LEDSubsystem(prism: GoBildaPrismDriver) {
      * stopped = solid white.
      */
     fun setIntakeLights(running: Boolean) {
-        if (lastMode == ActiveMode.INTAKE && lastIntakeRunning != null && lastIntakeRunning == running) {
-            return
-        }
+        //skip if nothing changed
+        if (lastMode == ActiveMode.INTAKE && lastIntakeRunning == running) return
 
-        prism.clearAllAnimations()
+        //clear animations only when switching modes
+        if (lastMode != ActiveMode.INTAKE) prism.clearAllAnimations()
 
-        if (running) {
-            val blink: PrismAnimations.Blink = PrismAnimations.Blink(
-                Color.WHITE,
-                Color.TRANSPARENT,
-                500,
-                250
-            )
-            blink.setStartIndex(FIRST_LED)
-            blink.setStopIndex(LAST_LED)
-            prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, blink)
-        } else {
-            prism.setSolidColor(
-                FIRST_LED,
-                LAST_LED,
-                Color.WHITE
-            )
-            prism.show()
+        if (!running) {
+            //solid white
+            setRange(FIRST_LED, LAST_LED, Color.WHITE)
+            flush()
         }
 
         lastMode = ActiveMode.INTAKE
@@ -87,25 +108,39 @@ class LEDSubsystem(prism: GoBildaPrismDriver) {
         lastSpindexerCount = -1
     }
 
+    //call this from your loop
+    fun update(timeMs: Long) {
+        if (lastMode == ActiveMode.INTAKE && lastIntakeRunning == true) {
+            //software blink every 300ms
+            if (timeMs - lastBlinkTime > 300) {
+                blinkState = !blinkState
+                lastBlinkTime = timeMs
+
+                val color = if (blinkState) Color.WHITE else Color.TRANSPARENT
+                setRange(FIRST_LED, LAST_LED, color)
+                flush()
+            }
+        }
+    }
+
     fun clear() {
-        prism.setSolidColor(
-            FIRST_LED,
-            LAST_LED,
-            Color.TRANSPARENT
-        )
-        prism.show()
+        setRange(FIRST_LED, LAST_LED, Color.TRANSPARENT)
+        flush()
+
         lastMode = ActiveMode.NONE
         lastSpindexerCount = -1
         lastIntakeRunning = null
     }
 
-    //stuff that copilot told me to add so "legacy wrappers still work" i didnt really understand it
+    //legacy wrapper thing that copilot told me to have
     fun setLights(mode: Int) {
         setSpindexerLights(mode)
     }
 
     fun setDecorative() {
-        prism.clearAllAnimations()
+        // only clear animations if not already in decorative mode
+        if (lastMode != ActiveMode.NONE) prism.clearAllAnimations()
+
         prism.insertAndUpdateAnimation(
             GoBildaPrismDriver.LayerHeight.LAYER_0,
             PrismAnimations.Rainbow()
@@ -114,29 +149,26 @@ class LEDSubsystem(prism: GoBildaPrismDriver) {
             GoBildaPrismDriver.LayerHeight.LAYER_1,
             PrismAnimations.Sparkle()
         )
+
         lastMode = ActiveMode.NONE
     }
 
     fun setLights(index: Int, colorCode: Int) {
-        if (index < 0 || index > 2) {
-            return
-        }
+        if (index < 0 || index > 2) return
 
-        val color: Color?
-        if (colorCode == 0) {
-            color = Color.TRANSPARENT
-        } else if (colorCode == 1) {
-            color = Color.PURPLE
-        } else if (colorCode == 2) {
-            color = Color.GREEN
-        } else {
-            return
+        val color = when (colorCode) {
+            0 -> Color.TRANSPARENT
+            1 -> Color.PURPLE
+            2 -> Color.GREEN
+            else -> return
         }
 
         val start = index * 4
         val end = min(start + 3, LAST_LED)
-        prism.setSolidColor(start, end, color)
-        prism.show()
+
+        setRange(start, end, color)
+        flush()
+
         lastMode = ActiveMode.NONE
     }
 
