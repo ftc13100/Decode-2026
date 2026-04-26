@@ -41,7 +41,7 @@ class LEDSubsystem(prism: GoBildaPrismDriver) {
         for (i in start..end) {
             if (ledCache[i] != color) {
                 ledCache[i] = color
-                prism.setPixelColor(i, color)
+                prism.setSolidColor(start, end, color)
                 changed = true
             }
         }

@@ -43,8 +43,8 @@ object Shooter : Subsystem {
             val currentVel = shooter.velocity
             val error = target - currentVel
 
-            val motorPower = if (error > 100.0) {
-                1.0
+            val motorPower = if (kotlin.math.abs(error) > 100.0) {
+                kotlin.math.sign(error) * 1.0
             } else {
                 controller.calculate(shooter.state)
             }
