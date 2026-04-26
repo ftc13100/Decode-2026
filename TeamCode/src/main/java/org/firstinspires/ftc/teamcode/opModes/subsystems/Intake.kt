@@ -19,8 +19,13 @@ object Intake : Subsystem {
     var intakeRunning = false
     var intakeSpindexer = false
 
-    @JvmField var CURRENT_THRESHOLD_FAST = 6500.0
+    @JvmField var CURRENT_THRESHOLD_FAST = 5500.0
     @JvmField var CURRENT_THRESHOLD_SLOW = 4500.0
+
+    val spinHeld = InstantCommand {
+        intakeRunning = true
+        intake.power = -1.0
+    }
 
     val spinFast =
         if (!Spindexer.isFull) {

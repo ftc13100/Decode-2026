@@ -15,8 +15,8 @@ import dev.nextftc.hardware.impl.VoltageCompensatingMotor
 @Configurable
 object Shooter : Subsystem {
     @JvmField var target = 0.0
-    @JvmField var velPIDCoefficients = PIDCoefficients(0.0006, 0.0, 0.0)
-    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.0003685, 0.0, 0.041)
+    @JvmField var velPIDCoefficients = PIDCoefficients(0.001, 0.0, 0.0)
+    @JvmField var basicFFParameters = BasicFeedforwardParameters(0.0004, 0.0, 0.061)
 
     val shooter = VoltageCompensatingMotor(
         MotorEx("shooter").brakeMode().reversed(),
@@ -43,8 +43,10 @@ object Shooter : Subsystem {
             val currentVel = shooter.velocity
             val error = target - currentVel
 
-            val motorPower = if (kotlin.math.abs(error) > 100.0) {
-                kotlin.math.sign(error) * 1.0
+            val motorPower =  if (error > 100.0) {
+                1.0
+            } else if (error < -100.0 ) {
+                0.0
             } else {
                 controller.calculate(shooter.state)
             }

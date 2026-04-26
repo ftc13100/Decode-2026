@@ -36,7 +36,7 @@ object Spindexer : Subsystem {
 
     val spindexer = MotorEx("spindexer").brakeMode()
     lateinit var prism: GoBildaPrismDriver
-    lateinit var leds: LEDSubsystem
+    lateinit var leds: LedArtboard
     lateinit var color0: NormalizedColorSensor
     lateinit var color1: NormalizedColorSensor
     lateinit var color2: NormalizedColorSensor
@@ -124,31 +124,11 @@ object Spindexer : Subsystem {
             }
         }
 
-//        if (::leds.isInitialized) {
-//
-//            var count = 0
-//            if (cached0 != SpindexerColor.EMPTY) count++
-//            if (cached1 != SpindexerColor.EMPTY) count++
-//            if (cached2 != SpindexerColor.EMPTY) count++
-//
-//            when {
-//                currentlyRunning -> {
-//                    leds.setIntakeLights(true)
-//                }
-//
-//                isFull -> {
-//                    leds.setSpindexerLights(3)
-//                }
-//
-//                isBusy -> {
-//                    leds.setDecorative() //leds.setIntakeLights(false) // solid white while moving
-//                }
-//
-//                else -> {
-//                    leds.setSpindexerLights(count)
-//                }
-//            }
-//        }
+        // LED control approach using artboards
+        if (::leds.isInitialized) {
+            val count = pixelCount()
+            leds.setIntakeAndSpindexerLights(count, currentlyRunning)
+        }
     }
 
     fun forwardOnlyTarget(angleDeg: Double): Double {
@@ -413,7 +393,7 @@ object Spindexer : Subsystem {
 
     override fun initialize() {
         prism = hardwareMap.get(GoBildaPrismDriver::class.java, "led")
-        leds = LEDSubsystem(prism)
+        leds = LedArtboard(prism)
         analogS = hardwareMap.get(AnalogInput::class.java, "analogS")
         color0 = hardwareMap.get(NormalizedColorSensor::class.java, "cs0")
         color0.gain = 12.0f

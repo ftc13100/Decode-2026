@@ -9,8 +9,7 @@ class PrismArtboardSetup : LinearOpMode() {
 
     override fun runOpMode() {
         val prismClass = findClass(
-            "org.firstinspires.ftc.teamcode.Prism.GoBildaPrismDriver",
-            "com.qualcomm.hardware.gobilda.GoBildaPrismDriver"
+            "org.firstinspires.ftc.teamcode.opModes.subsystems.Prism.GoBildaPrismDriver"
         )
 
         if (prismClass == null) {
@@ -21,11 +20,10 @@ class PrismArtboardSetup : LinearOpMode() {
         }
 
         @Suppress("UNCHECKED_CAST")
-        val prism = hardwareMap.get(prismClass as Class<out HardwareDevice>, "fikerled")
+        val prism = hardwareMap.get(prismClass as Class<out HardwareDevice>, "led")
 
         val colorClass = findClass(
-            "org.firstinspires.ftc.teamcode.Prism.Color",
-            "com.qualcomm.hardware.gobilda.GoBildaPrismDriver\$Color"
+            "org.firstinspires.ftc.teamcode.opModes.subsystems.Prism.Color"
         )
 
         if (colorClass == null) {
@@ -41,85 +39,131 @@ class PrismArtboardSetup : LinearOpMode() {
         val green = getStaticField(colorClass, "GREEN")
         val transparent = getStaticField(colorClass, "TRANSPARENT")
 
+        // FIXED: removed escaped quote
         val blinkClass = findClass(
-            "org.firstinspires.ftc.teamcode.Prism.PrismAnimations\$Blink",
-            "com.qualcomm.hardware.gobilda.PrismAnimations\$Blink"
+            "org.firstinspires.ftc.teamcode.opModes.subsystems.Prism.PrismAnimations\$Blink"
+        )
+
+        val solidClass = findClass(
+            "org.firstinspires.ftc.teamcode.opModes.subsystems.Prism.PrismAnimations\$Solid"
         )
 
         val layer0 = getLayer0(prismClass)
+        val artboardEnum = getArtboardEnum(prismClass)
+
+        if (layer0 == null) {
+            telemetry.addLine("Could not get LayerHeight.LAYER_0")
+            telemetry.update()
+            waitForStart()
+            return
+        }
+
+        if (artboardEnum == null) {
+            telemetry.addLine("Could not get Artboard enum")
+            telemetry.update()
+            waitForStart()
+            return
+        }
 
         callMethod(prism, "setStripLength", 12)
 
-        // helper to fill all leds with a color
-        fun fill(color: Any) {
-            for (i in 0 until 12) {
-                callMethod(prism, "setPixelColor", i, color)
+        fun applySolid(color: Any?) {
+            callMethod(prism, "clearAllAnimations")
+            val solid = createSolid(solidClass, color, 0, 11)
+            if (solid != null) {
+                callMethod(prism, "insertAndUpdateAnimation", layer0, solid)
+            } else {
+                telemetry.addLine("Could not create solid animation")
             }
         }
 
-        fun applyBlink(primary: Any, secondary: Any) {
-            val blink = createBlink(blinkClass, primary, secondary)
+        fun applyBlink(color: Any?) {
+            callMethod(prism, "clearAllAnimations")
+            val blink = createBlink(blinkClass, color, transparent)
             if (blink != null) {
-                val inserted = if (layer0 != null) {
-                    callMethod(prism, "insertAnimation", layer0, blink) ||
-                        callMethod(prism, "insertAndUpdateAnimation", layer0, blink)
-                } else {
-                    callMethod(prism, "insertAnimation", blink)
-                }
-                if (!inserted) {
-                    telemetry.addLine("Could not insert blink animation")
-                }
+                callMethod(prism, "insertAndUpdateAnimation", layer0, blink)
             } else {
-                telemetry.addLine("Could not construct blink animation")
+                telemetry.addLine("Could not create blink animation")
+            }
+        }
+
+        fun saveToArtboard(index: Int) {
+            val artboard = getArtboard(artboardEnum, index)
+            if (artboard != null) {
+                callMethod(prism, "saveCurrentAnimationsToArtboard", artboard)
+                telemetry.addLine("Saved artboard $index")
+            } else {
+                telemetry.addLine("Could not get artboard $index")
             }
         }
 
         waitForStart()
         if (isStopRequested) return
 
-        // artboard 0: solid red
-        fill(red)
-        callMethod(prism, "saveToArtboard", 0)
-
-        // artboard 1: blinking red
-        fill(red)
-        applyBlink(red, transparent)
-        callMethod(prism, "saveToArtboard", 1)
-        callMethod(prism, "clearAllAnimations")
-
-        // artboard 2: solid blue
-        fill(blue)
-        callMethod(prism, "saveToArtboard", 2)
-
-        // artboard 3: blinking blue
-        fill(blue)
-        applyBlink(blue, transparent)
-        callMethod(prism, "saveToArtboard", 3)
-        callMethod(prism, "clearAllAnimations")
-
-        // artboard 4: solid yellow
-        fill(yellow)
-        callMethod(prism, "saveToArtboard", 4)
-
-        // artboard 5: blinking yellow
-        fill(yellow)
-        applyBlink(yellow, transparent)
-        callMethod(prism, "saveToArtboard", 5)
-        callMethod(prism, "clearAllAnimations")
-
-        // artboard 6: solid green
-        fill(green)
-        callMethod(prism, "saveToArtboard", 6)
-
-        // artboard 7: blinking green
-        fill(green)
-        applyBlink(green, transparent)
-        callMethod(prism, "saveToArtboard", 7)
-        callMethod(prism, "clearAllAnimations")
-
-        telemetry.addLine("Artboards programmed successfully")
+        // Artboard 0: solid red (0 balls, stopped)
+        applySolid(red)
+        sleep(500)
+        saveToArtboard(0)
         telemetry.update()
-        sleep(2000)
+        sleep(500)
+
+        // Artboard 1: blinking red (0 balls, running)
+        applyBlink(red)
+        sleep(500)
+        saveToArtboard(1)
+        telemetry.update()
+        sleep(500)
+
+        // Artboard 2: solid blue (1 ball, stopped)
+        applySolid(blue)
+        sleep(500)
+        saveToArtboard(2)
+        telemetry.update()
+        sleep(500)
+
+        // Artboard 3: blinking blue (1 ball, running)
+        applyBlink(blue)
+        sleep(500)
+        saveToArtboard(3)
+        telemetry.update()
+        sleep(500)
+
+        // Artboard 4: solid yellow (2 balls, stopped)
+        applySolid(yellow)
+        sleep(500)
+        saveToArtboard(4)
+        telemetry.update()
+        sleep(500)
+
+        // Artboard 5: blinking yellow (2 balls, running)
+        applyBlink(yellow)
+        sleep(500)
+        saveToArtboard(5)
+        telemetry.update()
+        sleep(500)
+
+        // Artboard 6: solid green (3 balls, stopped)
+        applySolid(green)
+        sleep(500)
+        saveToArtboard(6)
+        telemetry.update()
+        sleep(500)
+
+        // Artboard 7: blinking green (3 balls, running)
+        applyBlink(green)
+        sleep(500)
+        saveToArtboard(7)
+        telemetry.update()
+        sleep(500)
+
+        callMethod(prism, "clearAllAnimations")
+
+        telemetry.addLine("✓ All artboards programmed successfully!")
+        telemetry.update()
+
+        while (opModeIsActive()) {
+            sleep(100)
+        }
     }
 
     private fun findClass(vararg classNames: String): Class<*>? {
@@ -133,31 +177,77 @@ class PrismArtboardSetup : LinearOpMode() {
         return null
     }
 
-    private fun getStaticField(clazz: Class<*>, fieldName: String): Any {
-        return requireNotNull(clazz.getField(fieldName).get(null))
+    private fun getStaticField(clazz: Class<*>, fieldName: String): Any? {
+        return try {
+            clazz.getField(fieldName).get(null)
+        } catch (_: Throwable) {
+            null
+        }
     }
 
     private fun getLayer0(prismClass: Class<*>): Any? {
         return try {
-            val layerClass = prismClass.declaredClasses.firstOrNull { it.simpleName == "LayerHeight" } ?: return null
+            val layerClass = prismClass.declaredClasses.firstOrNull {
+                it.simpleName == "LayerHeight"
+            } ?: return null
             layerClass.getField("LAYER_0").get(null)
         } catch (_: Throwable) {
             null
         }
     }
 
-    private fun createBlink(blinkClass: Class<*>?, primary: Any, secondary: Any): Any? {
-        if (blinkClass == null) return null
+    private fun getArtboardEnum(prismClass: Class<*>): Class<*>? {
+        return try {
+            prismClass.declaredClasses.firstOrNull {
+                it.simpleName == "Artboard"
+            }
+        } catch (_: Throwable) {
+            null
+        }
+    }
 
-        val colorClass = primary.javaClass
+    private fun getArtboard(artboardEnum: Class<*>, index: Int): Any? {
+        return try {
+            artboardEnum.getField("ARTBOARD_$index").get(null)
+        } catch (_: Throwable) {
+            null
+        }
+    }
+
+    private fun createSolid(solidClass: Class<*>?, color: Any?, start: Int, end: Int): Any? {
+        if (solidClass == null) return null
+        val colorClass = color?.javaClass
 
         return try {
-            blinkClass.getConstructor(colorClass, colorClass, Int::class.javaPrimitiveType, Int::class.javaPrimitiveType)
-                .newInstance(primary, secondary, 500, 250)
+            solidClass.getConstructor(
+                colorClass,
+                Int::class.javaPrimitiveType,
+                Int::class.javaPrimitiveType
+            ).newInstance(color, start, end)
+        } catch (e: Throwable) {
+            null
+        }
+    }
+
+    private fun createBlink(blinkClass: Class<*>?, primary: Any?, secondary: Any?): Any? {
+        if (blinkClass == null) return null
+        val colorClass = primary?.javaClass
+
+        // Try constructor with colors and timing
+        return try {
+            blinkClass.getConstructor(
+                colorClass,
+                colorClass,
+                Int::class.javaPrimitiveType,
+                Int::class.javaPrimitiveType
+            ).newInstance(primary, secondary, 500, 500)
         } catch (_: Throwable) {
+            // Try simpler constructor
             try {
-                blinkClass.getConstructor(Int::class.javaPrimitiveType, Int::class.javaPrimitiveType)
-                    .newInstance(500, 250)
+                blinkClass.getConstructor(
+                    colorClass,
+                    colorClass
+                ).newInstance(primary, secondary)
             } catch (_: Throwable) {
                 null
             }
@@ -171,7 +261,7 @@ class PrismArtboardSetup : LinearOpMode() {
             try {
                 m.invoke(target, *args)
                 return true
-            } catch (_: Throwable) {
+            } catch (e: Throwable) {
                 // try next overload
             }
         }

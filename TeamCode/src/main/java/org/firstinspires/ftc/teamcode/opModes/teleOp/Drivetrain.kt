@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOp
 
-import com.bylazar.telemetry.PanelsTelemetry
 import com.pedropathing.geometry.Pose
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -42,8 +41,6 @@ class Drivetrain : NextFTCOpMode() {
             PedroComponent(Constants::createFollower)
         )
     }
-
-    private val panelsTelemetry = PanelsTelemetry.telemetry
 
     private val frontLeftName = "frontLeft"
     private val frontRightName = "frontRight"
@@ -117,7 +114,7 @@ class Drivetrain : NextFTCOpMode() {
 
         // slow mode
         button { gamepad1.y }
-            .whenTrue { driverControlled.scalar = 0.4 }
+            .whenTrue { driverControlled.scalar = 0.5 }
             .whenFalse { driverControlled.scalar = 1.0 }
 
 
@@ -231,14 +228,14 @@ class Drivetrain : NextFTCOpMode() {
                 Intake.spinStop()
             }
 
-        button { gamepad1.right_trigger > 0.4 }
-            .whenTrue {
-                Spindexer.spinShotIndex()
-            }
-            .whenBecomesFalse {
-                Spindexer.stopShot()
-                Intake.spinStop()
-            }
+//        button { gamepad1.right_trigger > 0.4 }
+//            .whenTrue {
+//                Spindexer.spinShotIndex()
+//            }
+//            .whenBecomesFalse {
+//                Spindexer.stopShot()
+//                Intake.spinStop()
+//            }
 
         button { gamepad2.a }
             .whenTrue {
@@ -297,11 +294,6 @@ class Drivetrain : NextFTCOpMode() {
         driverControlled.update()
         follower.update()
 
-        panelsTelemetry.addData("velocity", Shooter.shooter.velocity)
-        panelsTelemetry.addData("target", Shooter.target)
-        panelsTelemetry.addData("power", Shooter.shooter.power)
-        panelsTelemetry.update(telemetry)
-
         val now = System.nanoTime() / 1_000_000.0
 
         if(firstOnUpdate)
@@ -343,18 +335,18 @@ class Drivetrain : NextFTCOpMode() {
             telemetry.addData("Shooter", "V: %.0f, T: %.0f, Offset: %.0f",Shooter.shooter.velocity, Shooter.target, Shooter.manualOffset)
             telemetry.addData("Hood", "Pos: %.2f, Offset: %.2f", ShooterAngle.servo.position, ShooterAngle.manualOffset)
 
-//            telemetry.addData("Spindexer", "D: %.0f (%.0f), A: %.0f (%.3f)", Spindexer.digEncLimitV(), Spindexer.digEncV(), Spindexer.absEncP(), Spindexer.absEncV())
-//            telemetry.addData("SpindexerTarget", "%.0f, Error: %.0f, Done: %b", Spindexer.targetPosition, Spindexer.targetPosition - Spindexer.digEncV(),
-//                Spindexer.targetReached)
-//            telemetry.addData("SpindexerConst", "I1: %.0f, I2: %.0f, I3: %.0f", Spindexer.intakePos1, Spindexer.intakePos2, Spindexer.intakePos3)
+            telemetry.addData("Spindexer", "D: %.0f (%.0f), A: %.0f (%.3f)", Spindexer.digEncLimitV(), Spindexer.digEncV(), Spindexer.absEncP(), Spindexer.absEncV())
+            telemetry.addData("SpindexerTarget", "%.0f, Error: %.0f, Done: %b", Spindexer.targetPosition, Spindexer.targetPosition - Spindexer.digEncV(),
+                Spindexer.targetReached)
+            telemetry.addData("SpindexerConst", "I1: %.0f, I2: %.0f, I3: %.0f", Spindexer.intakePos1, Spindexer.intakePos2, Spindexer.intakePos3)
 
             telemetry.addData(
-                "Intake", "%s", //(Power: %+1.1f, Current: %3.2f mA)",
+                "Intake", "%s (Power: %+1.1f, Current: %3.2f mA)",
                 if (intakeRunning) {
                     "Running"
                 } else {
                     "Stopped"
-                }//, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
+                }, intake.power, intake.motor.getCurrent(CurrentUnit.MILLIAMPS)
             )
 
 //            telemetry.addData("analog", "%.0f", (Spindexer.analogS.voltage/3.225 * 4000.0))
