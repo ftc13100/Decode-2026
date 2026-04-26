@@ -28,7 +28,8 @@ object Spindexer : Subsystem {
         posPid(posPIDCoefficients)
     }
 
-    val tolerance = KineticState(40.0)
+    val SPINDEXER_TOLERANCE = 40.0
+    val tolerance = KineticState(SPINDEXER_TOLERANCE)
 
     val spinAngle: Double
         get() = (360.0 / (4000.0) * spindexer.currentPosition)
@@ -163,14 +164,21 @@ object Spindexer : Subsystem {
     fun intakePos(adj : Double = 0.0): Double {
         // Get nearest intake position. If adj is 0, it should return same position if already at an intake position
         var curPos = (digEncLimitV() + adj) % SPINDEXER_ENCODER_MAX;
-        if (curPos <= intakePos1)
-            return spindexer.currentPosition + intakePos1 - curPos
-        else if (curPos <= intakePos2)
-            return spindexer.currentPosition + intakePos2 - curPos
-        else if (curPos <= intakePos3)
-            return spindexer.currentPosition + intakePos3 - curPos
+        var movePos = 0.0
+
+        if(curPos <= intakePos1)
+            movePos = intakePos1 - curPos
+        else if(curPos <= intakePos2)
+            movePos =  intakePos2 - curPos
+        else if(curPos <= intakePos3)
+            movePos = intakePos3 - curPos
         else
-            return spindexer.currentPosition + intakePos1 + SPINDEXER_ENCODER_MAX - curPos
+            movePos = intakePos1 + SPINDEXER_ENCODER_MAX - curPos
+
+        if(movePos > (SPINDEXER_STEP - SPINDEXER_TOLERANCE))
+            movePos -= SPINDEXER_STEP
+
+        return spindexer.currentPosition + movePos
     }
 
     val toIntakePos = LambdaCommand("toIntakePos")
