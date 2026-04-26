@@ -4,110 +4,88 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.Prism.*
 import kotlin.math.max
 import kotlin.math.min
 
+@Suppress("unused")
 class LedArtboard(private val prism: GoBildaPrismDriver) {
 
-    // coach wants this conceptually to just be on/off (intake running or not)
     private enum class ActiveMode {
         OFF,
         ON
     }
 
-    // cache so we only write to the led driver when something actually changed
     private var lastMode = ActiveMode.OFF
     private var lastBallCount = -1
     private var lastIntakeRunning: Boolean? = null
     private var lastArtboard = -1
 
     init {
-        this.prism.setStripLength(STRIP_LENGTH)
-
-        // artboards are assumed to be preconfigured on the prism:
-        //
-        // artboard 0 - 0 balls, intake stopped - solid red
-        // artboard 1 - 0 balls, intake running - blinking red
-        // artboard 2 - 1 ball,  intake stopped - solid blue
-        // artboard 3 - 1 ball,  intake running - blinking blue
-        // artboard 4 - 2 balls, intake stopped - solid yellow
-        // artboard 5 - 2 balls, intake running - blinking yellow
-        // artboard 6 - 3 balls, intake stopped - solid green
-        // artboard 7 - 3 balls, intake running - blinking green
+        prism.setStripLength(STRIP_LENGTH)
     }
 
-    /**
-     * unified led state:
-     *
-     * - ballcount picks the color (0=red, 1=blue, 2=yellow, 3=green)
-     * - intakerunning picks solid vs blinking
-     *
-     * only writes to the prism if something actually changed
-     */
     fun setIntakeAndSpindexerLights(ballCount: Int, intakeRunning: Boolean) {
         val clamped = max(0, min(ballCount, 3))
-
-        // skip if nothing changed
         if (clamped == lastBallCount && lastIntakeRunning == intakeRunning) return
 
-        // compute artboard index
-        val artboardIndex = clamped * 2 + if (intakeRunning) 1 else 0
+        prism.clearAllAnimations()
 
-        // avoid redundant writes
-        if (artboardIndex != lastArtboard) {
-            val artboard = GoBildaPrismDriver.Artboard.values()[artboardIndex]
-            prism.loadAnimationsFromArtboard(artboard)
-            lastArtboard = artboardIndex
+        val color = when (clamped) {
+            0 -> Color.RED
+            1 -> Color.BLUE
+            2 -> Color.YELLOW
+            else -> Color.GREEN
+        }
+
+        if (intakeRunning) {
+            val blink = PrismAnimations.Blink(color, Color.TRANSPARENT)
+            blink.setBrightness(75)
+            blink.setPeriod(600)
+            blink.setPrimaryColorPeriod(300)
+            blink.setStartIndex(FIRST_LED)
+            blink.setStopIndex(LAST_LED)
+            prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, blink)
+            lastMode = ActiveMode.ON
+        } else {
+            val solid = PrismAnimations.Solid(color, 75, FIRST_LED, LAST_LED)
+            prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, solid)
+            lastMode = ActiveMode.OFF
         }
 
         lastBallCount = clamped
         lastIntakeRunning = intakeRunning
-        lastMode = if (intakeRunning) ActiveMode.ON else ActiveMode.OFF
+        lastArtboard = -1
     }
 
-    /**
-     * legacy wrapper:
-     * spindexer lights assume intake is stopped (solid)
-     */
     fun setSpindexerLights(ballCount: Int) {
         setIntakeAndSpindexerLights(ballCount, false)
     }
 
-    /**
-     * legacy wrapper:
-     * intake lights use last known ballcount
-     */
     fun setIntakeLights(running: Boolean) {
         val count = if (lastBallCount >= 0) lastBallCount else 0
         setIntakeAndSpindexerLights(count, running)
     }
 
-    /**
-     * clear = treat as 0 balls, intake stopped
-     */
     fun clear() {
-        setIntakeAndSpindexerLights(0, false)
+        prism.clearAllAnimations()
+        prism.show()
+        lastMode = ActiveMode.OFF
+        lastBallCount = -1
+        lastIntakeRunning = null
+        lastArtboard = -1
     }
 
-    /**
-     * legacy wrapper:
-     * interpret mode as ballcount, intake stopped
-     */
     fun setLights(mode: Int) {
         setSpindexerLights(mode)
     }
 
-    /**
-     * decorative mode uses animations directly
-     * this is intentionally separate from artboard logic
-     */
     fun setDecorative() {
         prism.clearAllAnimations()
-        prism.insertAndUpdateAnimation(
-            GoBildaPrismDriver.LayerHeight.LAYER_0,
-            PrismAnimations.Rainbow()
-        )
-        prism.insertAndUpdateAnimation(
-            GoBildaPrismDriver.LayerHeight.LAYER_1,
-            PrismAnimations.Sparkle()
-        )
+
+        val rainbow = PrismAnimations.Rainbow()
+        rainbow.setBrightness(75)
+        val sparkle = PrismAnimations.Sparkle()
+        sparkle.setBrightness(75)
+
+        prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_0, rainbow)
+        prism.insertAndUpdateAnimation(GoBildaPrismDriver.LayerHeight.LAYER_1, sparkle)
 
         lastMode = ActiveMode.OFF
         lastBallCount = -1
@@ -115,17 +93,33 @@ class LedArtboard(private val prism: GoBildaPrismDriver) {
         lastArtboard = -1
     }
 
-    /**
-     * legacy per-section api:
-     * intentionally no-op to avoid slow i2c pixel writes
-     */
     fun setLights(index: Int, @Suppress("UNUSED_PARAMETER") colorCode: Int) {
         if (index !in 0..2) return
-        // no-op
+
+        val color = when (colorCode) {
+            0 -> Color.TRANSPARENT
+            1 -> Color.PURPLE
+            2 -> Color.GREEN
+            else -> return
+        }
+
+        val start = index * 4
+        val end = min(start + 3, LAST_LED)
+        prism.setSolidColor(start, end, dim(color))
+        prism.show()
+    }
+
+    private fun dim(color: Color): Color {
+        return Color(
+            (color.red * 0.75).toInt().coerceAtMost(255),
+            (color.green * 0.75).toInt().coerceAtMost(255),
+            (color.blue * 0.75).toInt().coerceAtMost(255)
+        )
     }
 
     companion object {
-        //if we ever add more leds we can change that stuff here
         private const val STRIP_LENGTH = 12
+        private const val FIRST_LED = 0
+        private val LAST_LED = STRIP_LENGTH - 1
     }
 }
