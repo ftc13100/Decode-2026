@@ -43,6 +43,7 @@ class r18: NextFTCOpMode() {
         )
     }
 
+
     val autoRoutine: Command
         get() =
             SequentialGroup(
@@ -52,14 +53,18 @@ class r18: NextFTCOpMode() {
                     FollowPath(startShoot),
                 ),
                 Intake.spinFastAuto,
+                Intake.spinReverseAuto,
                 SpindexerAuto.toShoot,
+
                 ParallelGroup(
 
                     SpindexerAuto.toIntake,
                     FollowPath(shootPGP),
                 ),
                 FollowPath(PGPshoot),
+                Intake.spinReverseAuto,
                 SpindexerAuto.toShoot,
+
                 ParallelGroup(
 
                     Intake.spinFastAuto,
@@ -68,7 +73,9 @@ class r18: NextFTCOpMode() {
                 ),
                 Delay(1.0.seconds),
                 FollowPath(eatShoot),
+                Intake.spinReverseAuto,
                 SpindexerAuto.toShoot,
+
                 ParallelGroup(
                     Intake.spinFastAuto,
 
@@ -76,7 +83,9 @@ class r18: NextFTCOpMode() {
                     FollowPath(shootGate)),
                 Delay(1.0.seconds),
                 FollowPath(eatShoot),
+                Intake.spinReverseAuto,
                 SpindexerAuto.toShoot,
+
                 ParallelGroup(
 
                     Intake.spinFastAuto,
@@ -85,13 +94,16 @@ class r18: NextFTCOpMode() {
                 ),
                 Delay(1.0.seconds),
                 FollowPath(eatShoot),
+                Intake.spinReverseAuto,
                 SpindexerAuto.toShoot,
+
                 ParallelGroup(
 
                     SpindexerAuto.toIntake,
                     FollowPath(shootPPG),
                 ),
                 FollowPath(goLeave),
+                Intake.spinReverseAuto,
                 SpindexerAuto.toShoot,
                 ParallelGroup(
                     Intake.spinStopAuto,
