@@ -397,13 +397,5 @@ object Spindexer : Subsystem {
         color1.gain = 12.0f
         color2 = hardwareMap.get(NormalizedColorSensor::class.java, "cs2")
         color2.gain = 12.0f
-
-        refreshLeds(Intake.intakeRunning)
-    }
-
-    private fun refreshLeds(currentlyRunning: Boolean) {
-        if (::leds.isInitialized) {
-            leds.setIntakeAndSpindexerLights(pixelCount(), currentlyRunning)
-        }
     }
 }

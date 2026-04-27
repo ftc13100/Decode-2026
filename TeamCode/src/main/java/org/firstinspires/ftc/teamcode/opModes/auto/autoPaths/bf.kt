@@ -42,16 +42,21 @@ class bf: NextFTCOpMode() {
 
     val start = Pose(56.24784853700516, 8.247848537005176, Math.toRadians(180.0))
 
-    val corn = Pose(9.0, 9.0, Math.toRadians(180.0))
-    val cornback = Pose(20.0, 9.0, Math.toRadians(180.0))
+    val corn = Pose(16.0, 10.0, Math.toRadians(-160.0))
+    val cornback = Pose(19.5, 10.0, Math.toRadians(180.0))
 
-    val row = Pose(7.845094664371786, 35.25129087779688, Math.toRadians(180.0))
+    val cornback2 = Pose(16.0, 10.0, Math.toRadians(200.0))
+
+
+    val row = Pose(9.545094664371787, 35.25129087779688, Math.toRadians(180.0))
 
     val rowControl = Pose(47.66523235800346, 37.82530120481927, Math.toRadians(180.0))
 
-    val sweepUp = Pose(10.734939759036147, 45.860585197934604, Math.toRadians(-120.0))
+    val sweepUp = Pose(10.0, 35.048192771084345, Math.toRadians(89.0))
 
-    val sweepDown = Pose(10.858864027538726, 5.22203098106715, Math.toRadians(-120.0))
+    val sweepUpControl = Pose(8.69793459552496, 13.33304647160069, Math.toRadians(90.0))
+    val sweepUpControl2 = Pose(4.821858864027539, 6.23493975903615, Math.toRadians(90.0))
+
 
     lateinit var startCorn : PathChain
     lateinit var path1 : PathChain
@@ -62,7 +67,6 @@ class bf: NextFTCOpMode() {
 
     lateinit var startRow : PathChain
     lateinit var startSweep : PathChain
-    lateinit var sweepUpSweepDown : PathChain
 
     lateinit var rowStart : PathChain
     lateinit var sweepDownStart : PathChain
@@ -77,19 +81,17 @@ class bf: NextFTCOpMode() {
             .setLinearHeadingInterpolation(start.heading, corn.heading)
             .setNoDeceleration()
             .build()
+        cornStart = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(cornback2, start))
+            .setLinearHeadingInterpolation(corn.heading, start.heading)
+            .build()
         path1 = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierLine(corn, cornback))
-            .setLinearHeadingInterpolation(start.heading, corn.heading)
-            .setNoDeceleration()
+            .setLinearHeadingInterpolation(corn.heading, cornback.heading)
             .build()
         path2 = PedroComponent.Companion.follower.pathBuilder()
-            .addPath(BezierLine(cornback, corn))
-            .setLinearHeadingInterpolation(start.heading, corn.heading)
-            .setNoDeceleration()
-            .build()
-        cornStart = PedroComponent.Companion.follower.pathBuilder()
-            .addPath(BezierLine(corn, start))
-            .setLinearHeadingInterpolation(corn.heading, start.heading)
+            .addPath(BezierLine(cornback, cornback2))
+            .setLinearHeadingInterpolation(cornback.heading, cornback2.heading)
             .build()
         startRow = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierCurve(start, rowControl, row))
@@ -101,20 +103,13 @@ class bf: NextFTCOpMode() {
             .setLinearHeadingInterpolation(row.heading, start.heading)
             .build()
         startSweep = PedroComponent.Companion.follower.pathBuilder()
-            .addPath(BezierLine(start, sweepUp))
-            .setLinearHeadingInterpolation(start.heading, sweepUp.heading, 0.2)
-            .setNoDeceleration()
-            .build()
-        sweepUpSweepDown = PedroComponent.Companion.follower.pathBuilder()
-            .addPath(BezierLine(sweepUp, sweepDown))
-            .setLinearHeadingInterpolation(sweepUp.heading, sweepDown.heading, 0.5)
-            .setNoDeceleration()
-            .build()
-        sweepDownStart = PedroComponent.Companion.follower.pathBuilder()
-            .addPath(BezierLine(sweepDown, start))
-            .setLinearHeadingInterpolation(sweepDown.heading, start.heading, 0.5)
+            .addPath(BezierCurve(start, sweepUpControl, sweepUpControl2, sweepUp))
             .setTangentHeadingInterpolation()
-            .setReversed()
+            .build()
+
+        sweepDownStart = PedroComponent.Companion.follower.pathBuilder()
+            .addPath(BezierLine(sweepUp, start))
+            .setLinearHeadingInterpolation(sweepUp.heading, start.heading, 0.5)
             .build()
     }
 
@@ -122,8 +117,8 @@ class bf: NextFTCOpMode() {
         get() =
             SequentialGroup(
                 ParallelGroup(
-                    ShooterAngle.angle_mid,
-                    Shooter.spinAtSpeed(2000.0),
+                    ShooterAngle.angle_ooga,
+                    Shooter.spinAtSpeed(2100.0),
                 ),
                 Intake.spinFastAuto,
                 SpindexerAuto.toShoot,
@@ -138,7 +133,7 @@ class bf: NextFTCOpMode() {
                 ParallelGroup(
                     Intake.spinFastAuto,
                     SpindexerAuto.toIntake,
-                   FollowPath(startRow),
+                   FollowPath(startRow, true, 0.7),
                 ),
                 FollowPath(rowStart),
                 SpindexerAuto.toShoot,
@@ -146,18 +141,29 @@ class bf: NextFTCOpMode() {
                     Intake.spinFastAuto,
                     SpindexerAuto.toIntake,
                     FollowPath(startSweep)),
-                FollowPath(sweepUpSweepDown),
                 FollowPath(sweepDownStart),
                 SpindexerAuto.toShoot,
                 ParallelGroup(
                     Intake.spinFastAuto,
                     SpindexerAuto.toIntake,
                     FollowPath(startSweep)),
-                FollowPath(sweepUpSweepDown),
                 FollowPath(sweepDownStart),
                 SpindexerAuto.toShoot,
-
-
+                ParallelGroup(
+                    ShooterAngle.angle_ooga,
+                    Shooter.spinAtSpeed(2100.0),
+                ),
+                Intake.spinFastAuto,
+                SpindexerAuto.toShoot,
+                ParallelGroup(
+                    SpindexerAuto.toIntake,
+                    FollowPath(startCorn),
+                ),
+                FollowPath(path1),
+                FollowPath(path2),
+                FollowPath(cornStart),
+                SpindexerAuto.toShoot,
+                FollowPath(startCorn),
                 )
 
 
