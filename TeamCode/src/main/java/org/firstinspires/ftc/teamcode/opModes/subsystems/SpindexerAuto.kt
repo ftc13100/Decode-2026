@@ -17,7 +17,7 @@ object SpindexerAuto : Subsystem {
     }
 
     val toShoot = RunToPosition(controlSystem, -9600.0, 100.0).requires(this)
-    val toIntake = RunToPosition(controlSystem, 0.0, 26.0).requires(this)
+    val toIntake = RunToPosition(controlSystem, 0.0, 50.0).requires(this)
 
     override fun periodic() {
         spindexer.power = controlSystem.calculate(spindexer.state)

@@ -27,35 +27,35 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.TurretAuto
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
 import kotlin.time.Duration.Companion.seconds
 
-@Autonomous(name = "bf")
-class bf: NextFTCOpMode() {
+@Autonomous(name = "rf")
+class rf: NextFTCOpMode() {
     init {
         addComponents(
             SubsystemComponent(
                 Shooter, ShooterAngle, Intake, PoseStorage,
-                 SpindexerAuto, TurretAuto, NewTurret
+                SpindexerAuto, TurretAuto, NewTurret
             ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
     }
 
-    val start = Pose(56.24784853700516, 8.247848537005176, Math.toRadians(180.0))
+    val start = Pose(56.24784853700516, 8.247848537005176, Math.toRadians(180.0)).mirror()
 
-    val corn = Pose(16.0, 10.0, Math.toRadians(-160.0))
-    val cornback = Pose(19.5, 10.0, Math.toRadians(180.0))
+    val corn = Pose(16.0, 10.0, Math.toRadians(-160.0)).mirror()
+    val cornback = Pose(19.5, 10.0, Math.toRadians(180.0)).mirror()
 
-    val cornback2 = Pose(14.0, 10.0, Math.toRadians(200.0))
+    val cornback2 = Pose(14.0, 10.0, Math.toRadians(200.0)).mirror()
 
 
-    val row = Pose(9.545094664371787, 35.25129087779688, Math.toRadians(180.0))
+    val row = Pose(9.545094664371787, 35.25129087779688, Math.toRadians(180.0)).mirror()
 
-    val rowControl = Pose(47.66523235800346, 37.82530120481927, Math.toRadians(180.0))
+    val rowControl = Pose(47.66523235800346, 37.82530120481927, Math.toRadians(180.0)).mirror()
 
-    val sweepUp = Pose(10.0, 35.048192771084345, Math.toRadians(89.0))
+    val sweepUp = Pose(10.0, 35.048192771084345, Math.toRadians(89.0)).mirror()
 
-    val sweepUpControl = Pose(8.69793459552496, 13.33304647160069, Math.toRadians(90.0))
-    val sweepUpControl2 = Pose(4.821858864027539, 6.23493975903615, Math.toRadians(90.0))
+    val sweepUpControl = Pose(8.69793459552496, 13.33304647160069, Math.toRadians(90.0)).mirror()
+    val sweepUpControl2 = Pose(4.821858864027539, 6.23493975903615, Math.toRadians(90.0)).mirror()
 
 
     lateinit var startCorn : PathChain
@@ -133,7 +133,7 @@ class bf: NextFTCOpMode() {
                 ParallelGroup(
                     Intake.spinFastAuto,
                     SpindexerAuto.toIntake,
-                   FollowPath(startRow, true, 0.7),
+                    FollowPath(startRow, true, 0.7),
                 ),
                 FollowPath(rowStart),
                 SpindexerAuto.toShoot,
@@ -164,7 +164,7 @@ class bf: NextFTCOpMode() {
                 FollowPath(cornStart),
                 SpindexerAuto.toShoot,
                 FollowPath(startCorn),
-                )
+            )
 
 
     override fun onInit() {
@@ -176,8 +176,8 @@ class bf: NextFTCOpMode() {
     override fun onStartButtonPressed() {
         PedroComponent.Companion.follower.setStartingPose(start)
         buildPaths()
-        PoseStorage.blueAlliance = true
-        PoseStorage.redAlliance = false
+        PoseStorage.redAlliance = true
+        PoseStorage.blueAlliance = false
         NewTurret.goalTrackingActive = true
         autoRoutine()
     }
