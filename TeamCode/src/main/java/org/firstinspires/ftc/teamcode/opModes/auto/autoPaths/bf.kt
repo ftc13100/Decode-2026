@@ -2,14 +2,12 @@
 package org.firstinspires.ftc.teamcode.opModes.auto.blue
 
 import SpindexerAuto
-import android.graphics.SweepGradient
 import com.pedropathing.geometry.BezierCurve
 import com.pedropathing.geometry.BezierLine
 import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
-import dev.nextftc.core.commands.delays.Delay
 import dev.nextftc.core.commands.groups.ParallelGroup
 import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.SubsystemComponent
@@ -25,7 +23,6 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.TurretAuto
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
-import kotlin.time.Duration.Companion.seconds
 
 @Autonomous(name = "bf")
 class bf: NextFTCOpMode() {

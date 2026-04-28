@@ -7,7 +7,6 @@ import com.pedropathing.geometry.Pose
 import com.pedropathing.paths.PathChain
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import dev.nextftc.core.commands.Command
-import dev.nextftc.core.commands.delays.Delay
 import dev.nextftc.core.commands.groups.ParallelGroup
 import dev.nextftc.core.commands.groups.SequentialGroup
 import dev.nextftc.core.components.SubsystemComponent
@@ -15,13 +14,6 @@ import dev.nextftc.extensions.pedro.FollowPath
 import dev.nextftc.extensions.pedro.PedroComponent
 import dev.nextftc.ftc.NextFTCOpMode
 import dev.nextftc.ftc.components.BulkReadComponent
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.PGPshoot
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.eatShoot
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.goLeave
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.shootGate
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.shootPGP
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.shootPPG
-import org.firstinspires.ftc.teamcode.opModes.auto.autoPaths.redAutoPaths.startShoot
 import org.firstinspires.ftc.teamcode.opModes.subsystems.Intake
 import org.firstinspires.ftc.teamcode.opModes.subsystems.NewTurret
 import org.firstinspires.ftc.teamcode.opModes.subsystems.PoseStorage
@@ -30,8 +22,6 @@ import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.Shooter
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.ShooterAngle
 import org.firstinspires.ftc.teamcode.opModes.subsystems.shooter.TurretAuto
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants.createFollower
-import kotlin.time.Duration.Companion.seconds
 
 @Autonomous(name = "rc")
 class rc: NextFTCOpMode() {
@@ -141,7 +131,6 @@ class rc: NextFTCOpMode() {
                     FollowPath(startRow, true, 0.7),
                 ),
                 FollowPath(rowStart),
-                SpindexerAuto.toShoot,
                 Intake.spinFastAuto,
                 SpindexerAuto.toShoot,
                 ParallelGroup(
