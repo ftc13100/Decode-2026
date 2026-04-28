@@ -113,6 +113,8 @@ object Spindexer : Subsystem {
 
         lastIntakeState = currentlyRunning
 
+        refreshLeds(currentlyRunning)
+
         when (state) {
             State.PID -> {
                 spindexer.power =
@@ -123,12 +125,6 @@ object Spindexer : Subsystem {
                 return
             }
         }
-
-        // LED control approach using artboards
-//        if (::leds.isInitialized) {
-//            val count = pixelCount()
-//            leds.setIntakeAndSpindexerLights(count, currentlyRunning)
-//        }
     }
 
     fun forwardOnlyTarget(angleDeg: Double): Double {
