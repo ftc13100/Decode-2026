@@ -170,8 +170,8 @@ class bc: NextFTCOpMode() {
     }
 
     override fun onStartButtonPressed() {
-        PedroComponent.Companion.follower.setStartingPose(blueAutoPaths.start)
-        blueAutoPaths.buildPaths()
+        PedroComponent.Companion.follower.setStartingPose(start)
+        buildPaths()
         PoseStorage.blueAlliance = true
         PoseStorage.redAlliance = false
         NewTurret.goalTrackingActive = true

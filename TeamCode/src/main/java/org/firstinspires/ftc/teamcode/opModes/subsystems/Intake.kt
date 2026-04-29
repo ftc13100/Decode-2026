@@ -26,6 +26,7 @@ object Intake : Subsystem {
         intakeRunning = true
         intake.power = -1.0
     }
+        .requires(this)
 
     val spinFast =
         if (!Spindexer.isFull) {

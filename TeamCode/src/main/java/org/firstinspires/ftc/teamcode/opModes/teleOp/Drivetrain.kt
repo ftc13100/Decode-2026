@@ -200,6 +200,7 @@ class Drivetrain : NextFTCOpMode() {
 
         //Intake artifact
         button { gamepad1.left_bumper }
+  //          .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 Spindexer.toIntakePos()
             }
@@ -210,9 +211,8 @@ class Drivetrain : NextFTCOpMode() {
                 Intake.spinStop()
             }
 
-        //Outtake artifact
+                //Outtake artifact
         button { gamepad1.right_bumper }
-            .toggleOnBecomesTrue()
             .whenBecomesTrue {
                 Intake.spinReverse()
             }

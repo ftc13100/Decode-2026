@@ -113,7 +113,7 @@ object Spindexer : Subsystem {
 
         lastIntakeState = currentlyRunning
 
-        refreshLeds(currentlyRunning)
+        //refreshLeds(currentlyRunning)
 
         when (state) {
             State.PID -> {
