@@ -37,10 +37,10 @@ class rc: NextFTCOpMode() {
     }
     val start = Pose(56.24784853700516, 8.247848537005176, Math.toRadians(180.0)).mirror()
 
-    val corn = Pose(16.0, 10.0, Math.toRadians(-160.0)).mirror()
+    val corn = Pose(13.3, 10.0, Math.toRadians(160.0)).mirror()
     val cornback = Pose(19.5, 10.0, Math.toRadians(180.0)).mirror()
 
-    val cornback2 = Pose(14.0, 10.0, Math.toRadians(200.0)).mirror()
+    val cornback2 = Pose(13.0, 10.0, Math.toRadians(210.0)).mirror()
 
 
     val row = Pose(9.545094664371787, 35.25129087779688, Math.toRadians(180.0)).mirror()
@@ -90,7 +90,7 @@ class rc: NextFTCOpMode() {
             .build()
         startRow = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierCurve(start, rowControl, row))
-            .setLinearHeadingInterpolation(start.heading, row.heading)
+            .setTangentHeadingInterpolation()
             .setNoDeceleration()
             .build()
         rowStart = PedroComponent.Companion.follower.pathBuilder()
@@ -155,12 +155,8 @@ class rc: NextFTCOpMode() {
                     SpindexerAuto.toIntake,
                     FollowPath(startCorn),
                 ),
-                FollowPath(path1),
-                FollowPath(path2),
-                FollowPath(cornStart),
-                SpindexerAuto.toShoot,
-                FollowPath(startCorn)
-            )
+
+                )
 
 
             override fun onInit() {
@@ -183,7 +179,6 @@ class rc: NextFTCOpMode() {
     }
 
     override fun onUpdate() {
-        telemetry.addData("pos", "%.3f", SpindexerAuto.spindexer.currentPosition);
 
         telemetry.update()
     }

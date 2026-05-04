@@ -29,28 +29,28 @@ class bc: NextFTCOpMode() {
         addComponents(
             SubsystemComponent(
                 Shooter, ShooterAngle, Intake, PoseStorage,
-                 SpindexerAuto, TurretAuto, NewTurret
+                SpindexerAuto, TurretAuto, NewTurret
             ),
             BulkReadComponent,
             PedroComponent(Constants::createFollower)
         )
     }
-    val start = Pose(56.24784853700516, 8.247848537005176, Math.toRadians(180.0)).mirror()
+    val start = Pose(56.24784853700516, 8.247848537005176, Math.toRadians(180.0))
 
-    val corn = Pose(16.0, 10.0, Math.toRadians(-160.0)).mirror()
-    val cornback = Pose(19.5, 10.0, Math.toRadians(180.0)).mirror()
+    val corn = Pose(13.3, 10.0, Math.toRadians(160.0))
+    val cornback = Pose(19.5, 10.0, Math.toRadians(180.0))
 
-    val cornback2 = Pose(14.0, 10.0, Math.toRadians(200.0)).mirror()
+    val cornback2 = Pose(13.0, 10.0, Math.toRadians(210.0))
 
 
-    val row = Pose(9.545094664371787, 35.25129087779688, Math.toRadians(180.0)).mirror()
+    val row = Pose(9.545094664371787, 35.25129087779688, Math.toRadians(180.0))
 
-    val rowControl = Pose(47.66523235800346, 37.82530120481927, Math.toRadians(180.0)).mirror()
+    val rowControl = Pose(47.66523235800346, 37.82530120481927, Math.toRadians(180.0))
 
-    val sweepUp = Pose(10.0, 35.048192771084345, Math.toRadians(89.0)).mirror()
+    val sweepUp = Pose(10.0, 35.048192771084345, Math.toRadians(89.0))
 
-    val sweepUpControl = Pose(8.69793459552496, 13.33304647160069, Math.toRadians(90.0)).mirror()
-    val sweepUpControl2 = Pose(4.821858864027539, 6.23493975903615, Math.toRadians(90.0)).mirror()
+    val sweepUpControl = Pose(8.69793459552496, 13.33304647160069, Math.toRadians(90.0))
+    val sweepUpControl2 = Pose(4.821858864027539, 6.23493975903615, Math.toRadians(90.0))
 
 
     lateinit var startCorn : PathChain
@@ -90,7 +90,7 @@ class bc: NextFTCOpMode() {
             .build()
         startRow = PedroComponent.Companion.follower.pathBuilder()
             .addPath(BezierCurve(start, rowControl, row))
-            .setLinearHeadingInterpolation(start.heading, row.heading)
+            .setTangentHeadingInterpolation()
             .setNoDeceleration()
             .build()
         rowStart = PedroComponent.Companion.follower.pathBuilder()
@@ -155,12 +155,8 @@ class bc: NextFTCOpMode() {
                     SpindexerAuto.toIntake,
                     FollowPath(startCorn),
                 ),
-                FollowPath(path1),
-                FollowPath(path2),
-                FollowPath(cornStart),
-                SpindexerAuto.toShoot,
-                FollowPath(startCorn)
-            )
+
+                )
 
 
     override fun onInit() {
@@ -172,8 +168,8 @@ class bc: NextFTCOpMode() {
     override fun onStartButtonPressed() {
         PedroComponent.Companion.follower.setStartingPose(start)
         buildPaths()
-        PoseStorage.blueAlliance = true
         PoseStorage.redAlliance = false
+        PoseStorage.blueAlliance = true
         NewTurret.goalTrackingActive = true
         autoRoutine()
     }
@@ -183,7 +179,6 @@ class bc: NextFTCOpMode() {
     }
 
     override fun onUpdate() {
-        telemetry.addData("pos", "%.3f", SpindexerAuto.spindexer.currentPosition);
 
         telemetry.update()
     }
