@@ -73,7 +73,7 @@ class r18: NextFTCOpMode() {
                     Intake.spinFastAuto,
                     SpindexerAuto.toIntake,
                     FollowPath(shootGate)),
-                Delay(0.75.seconds),
+                Delay(0.65.seconds),
                 Intake.spinStopAuto,
                 FollowPath(eatShoot),
                 SpindexerAuto.toShoot,
